@@ -1,778 +1,992 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MF Finanças - Sistema de Controle Financeiro</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MF Finanças</title>
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Lucide -->
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+
+    <!-- Supabase -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
     <style>
-        /* Customizações finas de scroll e layout para manter interface compacta */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #1f2937; }
-        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        body {
+            background: #121214;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 10px;
+        }
     </style>
 </head>
-<body class="bg-[#121214] text-gray-100 font-sans min-h-screen flex flex-col">
 
-    <header class="bg-[#1a1a1e] border-b border-gray-800 sticky top-0 z-50 px-4 py-3 flex items-center justify-between shadow-lg">
-        <div class="flex items-center gap-3">
-            <div class="p-2 bg-orange-600 rounded-lg text-white shadow-md shadow-orange-600/20">
-                <i data-lucide="wallet" class="w-6 h-6"></i>
+<body class="text-gray-100 min-h-screen">
+
+    <!-- HEADER -->
+    <header class="sticky top-0 z-50 bg-[#1a1a1e] border-b border-gray-800 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+            <div class="flex items-center gap-3">
+                <div class="bg-orange-600 p-2 rounded-lg">
+                    <i data-lucide="wallet" class="w-6 h-6"></i>
+                </div>
+
+                <div>
+                    <h1 class="text-xl font-bold">
+                        MF <span class="text-orange-500">FINANÇAS</span>
+                    </h1>
+
+                    <p class="text-xs text-gray-400">
+                        Sistema Financeiro Completo
+                    </p>
+                </div>
             </div>
-            <div>
-                <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                    MF <span class="text-orange-500 font-medium text-sm px-2 py-0.5 bg-orange-500/10 rounded border border-orange-500/20">FINANÇAS</span>
-                </h1>
-                <p class="text-xs text-gray-400">Sistema Integrado de Gestão Financeira</p>
-            </div>
+
+            <nav class="flex flex-wrap gap-2">
+
+                <button onclick="switchTab('dashboard')" id="btn-dashboard"
+                    class="nav-btn bg-orange-600 px-3 py-2 rounded text-xs font-bold">
+                    Dashboard
+                </button>
+
+                <button onclick="switchTab('transactions')" id="btn-transactions"
+                    class="nav-btn bg-gray-800 px-3 py-2 rounded text-xs">
+                    Lançamentos
+                </button>
+
+                <button onclick="switchTab('config')" id="btn-config"
+                    class="nav-btn bg-gray-800 px-3 py-2 rounded text-xs">
+                    Estruturas
+                </button>
+
+                <button onclick="switchTab('fleet')" id="btn-fleet"
+                    class="nav-btn bg-gray-800 px-3 py-2 rounded text-xs">
+                    Frota
+                </button>
+
+                <button onclick="switchTab('subscriptions')" id="btn-subscriptions"
+                    class="nav-btn bg-gray-800 px-3 py-2 rounded text-xs">
+                    Assinaturas
+                </button>
+
+            </nav>
+
         </div>
-        <nav class="flex bg-[#121214] p-1 rounded-lg border border-gray-800 gap-1">
-            <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-btn px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-2 transition-all bg-orange-600 text-white shadow">
-                <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> Dashboard
-            </button>
-            <button onclick="switchTab('transactions')" id="btn-transactions" class="nav-btn px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-2 transition-all text-gray-400 hover:text-white">
-                <i data-lucide="arrow-left-right" class="w-3.5 h-3.5"></i> Lançamentos
-            </button>
-            <button onclick="switchTab('config')" id="btn-config" class="nav-btn px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-2 transition-all text-gray-400 hover:text-white">
-                <i data-lucide="sliders" class="w-3.5 h-3.5"></i> Estruturas
-            </button>
-            <button onclick="switchTab('fleet')" id="btn-fleet" class="nav-btn px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-2 transition-all text-gray-400 hover:text-white">
-                <i data-lucide="car" class="w-3.5 h-3.5"></i> Frota & Manutenções
-            </button>
-            <button onclick="switchTab('subscriptions')" id="btn-subscriptions" class="nav-btn px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-2 transition-all text-gray-400 hover:text-white">
-                <i data-lucide="calendar-repeat" class="w-3.5 h-3.5"></i> Assinaturas
-            </button>
-        </nav>
     </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 gap-6">
+    <!-- MAIN -->
+    <main class="max-w-7xl mx-auto p-4 space-y-6">
 
+        <!-- DASHBOARD -->
         <section id="tab-dashboard" class="tab-content active space-y-6">
+
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="bg-[#1a1a1e] border border-gray-800 p-4 rounded-xl flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Saldo Líquido Disponível</p>
-                        <h3 id="dash-net-balance" class="text-xl font-bold text-emerald-400 mt-1">R$ 0,00</h3>
-                    </div>
-                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-lg"><i data-lucide="scale" class="w-5 h-5"></i></div>
+
+                <div class="bg-[#1a1a1e] rounded-xl border border-gray-800 p-4">
+                    <p class="text-xs text-gray-400">Saldo Líquido</p>
+                    <h2 id="dash-net" class="text-2xl font-bold text-emerald-400 mt-1">
+                        R$ 0,00
+                    </h2>
                 </div>
-                <div class="bg-[#1a1a1e] border border-gray-800 p-4 rounded-xl flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Soma das Carteiras</p>
-                        <h3 id="dash-total-wallets" class="text-xl font-bold text-white mt-1">R$ 0,00</h3>
-                    </div>
-                    <div class="p-3 bg-blue-500/10 text-blue-400 rounded-lg"><i data-lucide="wallet" class="w-5 h-5"></i></div>
+
+                <div class="bg-[#1a1a1e] rounded-xl border border-gray-800 p-4">
+                    <p class="text-xs text-gray-400">Contas Bancárias</p>
+                    <h2 id="dash-wallets" class="text-2xl font-bold mt-1">
+                        R$ 0,00
+                    </h2>
                 </div>
-                <div class="bg-[#1a1a1e] border border-gray-800 p-4 rounded-xl flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Faturas de Cartões</p>
-                        <h3 id="dash-total-cards" class="text-xl font-bold text-rose-400 mt-1">R$ 0,00</h3>
-                    </div>
-                    <div class="p-3 bg-rose-500/10 text-rose-400 rounded-lg"><i data-lucide="credit-card" class="w-5 h-5"></i></div>
+
+                <div class="bg-[#1a1a1e] rounded-xl border border-gray-800 p-4">
+                    <p class="text-xs text-gray-400">Cartões</p>
+                    <h2 id="dash-cards" class="text-2xl font-bold text-rose-400 mt-1">
+                        R$ 0,00
+                    </h2>
                 </div>
-                <div class="bg-[#1a1a1e] border border-gray-800 p-4 rounded-xl flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Resultado Mensal</p>
-                        <h3 id="dash-month-result" class="text-xl font-bold text-white mt-1">R$ 0,00</h3>
-                    </div>
-                    <div class="p-3 bg-purple-500/10 text-purple-400 rounded-lg"><i data-lucide="trending-up" class="w-5 h-5"></i></div>
+
+                <div class="bg-[#1a1a1e] rounded-xl border border-gray-800 p-4">
+                    <p class="text-xs text-gray-400">Resultado Mensal</p>
+                    <h2 id="dash-month" class="text-2xl font-bold text-orange-400 mt-1">
+                        R$ 0,00
+                    </h2>
                 </div>
+
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4 space-y-4">
-                    <h4 class="text-sm font-bold text-gray-200 border-b border-gray-800 pb-2 flex items-center gap-2">
-                        <i data-lucide="landmark" class="w-4 h-4 text-orange-500"></i> Contas Bancárias & Dinheiro
-                    </h4>
-                    <div id="dash-wallets-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                        <p class="text-xs text-gray-500 italic">Nenhuma conta cadastrada.</p>
-                    </div>
+
+                <div class="bg-[#1a1a1e] rounded-xl border border-gray-800 p-4">
+                    <h3 class="font-bold mb-4">Contas</h3>
+
+                    <div id="dashboard-wallets-list" class="space-y-2"></div>
                 </div>
-                <div class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4 space-y-4">
-                    <h4 class="text-sm font-bold text-gray-200 border-b border-gray-800 pb-2 flex items-center gap-2">
-                        <i data-lucide="credit-card" class="w-4 h-4 text-orange-500"></i> Cartões de Crédito comprometidos
-                    </h4>
-                    <div id="dash-cards-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                        <p class="text-xs text-gray-500 italic">Nenhum cartão cadastrado.</p>
-                    </div>
+
+                <div class="bg-[#1a1a1e] rounded-xl border border-gray-800 p-4">
+                    <h3 class="font-bold mb-4">Cartões</h3>
+
+                    <div id="dashboard-cards-list" class="space-y-2"></div>
                 </div>
-                <div class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4 space-y-4">
-                    <h4 class="text-sm font-bold text-gray-200 border-b border-gray-800 pb-2 flex items-center gap-2">
-                        <i data-lucide="history" class="w-4 h-4 text-orange-500"></i> Extrato de Movimentações Recentes
-                    </h4>
-                    <div id="dash-transactions-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                        <p class="text-xs text-gray-500 italic">Nenhum lançamento efetuado.</p>
-                    </div>
+
+                <div class="bg-[#1a1a1e] rounded-xl border border-gray-800 p-4">
+                    <h3 class="font-bold mb-4">Movimentações</h3>
+
+                    <div id="dashboard-transactions-list" class="space-y-2"></div>
                 </div>
+
             </div>
+
         </section>
 
+        <!-- TRANSACTIONS -->
         <section id="tab-transactions" class="tab-content space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-                <form id="form-transaction" onsubmit="handleTransactionSubmit(event)" class="bg-[#1a1a1e] border border-gray-800 p-4 rounded-xl space-y-3">
-                    <h4 class="text-sm font-bold text-gray-200 border-b border-gray-800 pb-2">Nova Operação</h4>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Tipo</label>
-                            <select id="tx-type" onchange="toggleTxTypeFields()" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                                <option value="expense">Despesa (-)</option>
-                                <option value="income">Receita (+)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Data</label>
-                            <input type="date" id="tx-date" required class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Descrição do Lançamento</label>
-                        <input type="text" id="tx-description" required placeholder="Ex: Combustível Viagem" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Valor (R$)</label>
-                            <input type="number" step="0.01" id="tx-amount" required placeholder="0,00" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Categoria</label>
-                            <select id="tx-category" required class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none"></select>
-                        </div>
-                    </div>
-                    <div id="container-tx-destination" class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Forma de Pagamento</label>
-                            <select id="tx-payment-method" onchange="toggleTxMethodFields()" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                                <option value="wallet">Conta Bancária / Saldo</option>
-                                <option value="card">Cartão de Crédito</option>
-                            </select>
-                        </div>
-                        <div id="wrapper-tx-wallet">
-                            <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Conta Destino</label>
-                            <select id="tx-wallet" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none"></select>
-                        </div>
-                        <div id="wrapper-tx-card" class="hidden">
-                            <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Cartão Destino</label>
-                            <select id="tx-card" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none"></select>
-                        </div>
-                    </div>
-                    <div class="border-t border-gray-800/60 pt-2 mt-1 grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Vincular Veículo?</label>
-                            <select id="tx-vehicle" onchange="toggleTxVehicleFields()" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                                <option value="">Não Vincular</option>
-                            </select>
-                        </div>
-                        <div id="wrapper-tx-km" class="hidden">
-                            <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Odômetro Atual (KM)</label>
-                            <input type="number" id="tx-km" placeholder="KM Atual" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                        </div>
-                    </div>
-                    <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold py-2 rounded shadow transition-all mt-2">Confirmar Lançamento</button>
-                </form>
 
-                <div class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4 md:col-span-2 space-y-4">
-                    <h4 class="text-sm font-bold text-gray-200 border-b border-gray-800 pb-2">Livro Caixa Consolidado</h4>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-xs">
-                            <thead>
-                                <tr class="border-b border-gray-800 text-gray-400 font-medium">
-                                    <th class="py-2 px-3">Data</th>
-                                    <th class="py-2 px-3">Descrição</th>
-                                    <th class="py-2 px-3">Categoria</th>
-                                    <th class="py-2 px-3">Origem/Destino</th>
-                                    <th class="py-2 px-3 text-right">Valor</th>
-                                    <th class="py-2 px-3 text-center">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-transactions-body" class="divide-y divide-gray-800/40 text-gray-300"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="tab-config" class="tab-content space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-[#1a1a1e] border border-gray-800 p-4 rounded-xl space-y-4">
-                    <h4 class="text-sm font-bold text-gray-200 border-b border-gray-800 pb-2 flex items-center gap-2">
-                        <i data-lucide="tags" class="w-4 h-4 text-orange-500"></i> Categorias Globais
-                    </h4>
-                    <form id="form-category" onsubmit="handleCategorySubmit(event)" class="flex gap-2">
-                        <input type="text" id="cat-name" required placeholder="Nova Categoria" class="flex-1 bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                        <button type="submit" class="bg-orange-600 hover:bg-orange-700 px-3 rounded text-xs font-bold text-white shadow"><i data-lucide="plus" class="w-4 h-4"></i></button>
-                    </form>
-                    <div id="list-categories" class="divide-y divide-gray-800/40 max-h-[300px] overflow-y-auto pr-1"></div>
-                </div>
 
-                <div class="bg-[#1a1a1e] border border-gray-800 p-4 rounded-xl space-y-4">
-                    <h4 class="text-sm font-bold text-gray-200 border-b border-gray-800 pb-2 flex items-center gap-2">
-                        <i data-lucide="landmark" class="w-4 h-4 text-orange-500"></i> Contas & Dinheiro Físico
-                    </h4>
-                    <form id="form-wallet" onsubmit="handleWalletSubmit(event)" class="space-y-2">
-                        <div class="flex gap-2">
-                            <input type="text" id="wal-name" required placeholder="Nome do Banco (Ex: Inter)" class="flex-1 bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                            <input type="number" step="0.01" id="wal-balance" required placeholder="Saldo Inicial" class="w-24 bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                        </div>
-                        <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold py-1.5 rounded shadow">Cadastrar Conta</button>
-                    </form>
-                    <div id="list-wallets" class="divide-y divide-gray-800/40 max-h-[250px] overflow-y-auto pr-1"></div>
-                </div>
+                <form id="form-transaction"
+                    class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4 space-y-3">
 
-                <div class="bg-[#1a1a1e] border border-gray-800 p-4 rounded-xl space-y-4">
-                    <h4 class="text-sm font-bold text-gray-200 border-b border-gray-800 pb-2 flex items-center gap-2">
-                        <i data-lucide="credit-card" class="w-4 h-4 text-orange-500"></i> Cartões de Crédito
-                    </h4>
-                    <form id="form-card" onsubmit="handleCardSubmit(event)" class="space-y-2">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="card-name" required placeholder="Identificação" class="bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                            <input type="number" step="0.01" id="card-limit" required placeholder="Limite Total" class="bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" id="card-closing" required placeholder="Dia Fechamento" class="bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                            <input type="number" id="card-due" required placeholder="Dia Vencimento" class="bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                        </div>
-                        <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold py-1.5 rounded shadow">Cadastrar Cartão</button>
-                    </form>
-                    <div id="list-cards" class="divide-y divide-gray-800/40 max-h-[200px] overflow-y-auto pr-1"></div>
-                </div>
-            </div>
-        </section>
+                    <h3 class="font-bold">Novo Lançamento</h3>
 
-        <section id="tab-fleet" class="tab-content space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-                <div class="bg-[#1a1a1e] border border-gray-800 p-4 rounded-xl space-y-3">
-                    <h4 class="text-sm font-bold text-gray-200 border-b border-gray-800 pb-2">Cadastrar Veículo</h4>
-                    <form id="form-vehicle" onsubmit="handleVehicleSubmit(event)" class="space-y-2">
-                        <div>
-                            <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Modelo / Identificação</label>
-                            <input type="text" id="veh-model" required placeholder="Ex: Honda Civic" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Placa</label>
-                                <input type="text" id="veh-plate" placeholder="AAA-0000" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">KM Atual</label>
-                                <input type="number" id="veh-km" required placeholder="Ex: 85000" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold py-2 rounded shadow transition-all mt-1">Salvar Veículo</button>
-                    </form>
-                    <div id="list-vehicles" class="divide-y divide-gray-800/40 max-h-[200px] overflow-y-auto pr-1 pt-2"></div>
-                </div>
-
-                <div class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4 md:col-span-2 space-y-4">
-                    <h4 class="text-sm font-bold text-gray-200 border-b border-gray-800 pb-2">Histórico de Manutenções & Custos Automotivos</h4>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-xs">
-                            <thead>
-                                <tr class="border-b border-gray-800 text-gray-400 font-medium">
-                                    <th class="py-2 px-3">Veículo</th>
-                                    <th class="py-2 px-3">Descrição do Serviço / Item</th>
-                                    <th class="py-2 px-3">KM do Evento</th>
-                                    <th class="py-2 px-3 text-right">Custo Total</th>
-                                    <th class="py-2 px-3 text-center">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-maintenances-body" class="divide-y divide-gray-800/40 text-gray-300"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="tab-subscriptions" class="tab-content space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-                <form id="form-subscription" onsubmit="handleSubscriptionSubmit(event)" class="bg-[#1a1a1e] border border-gray-800 p-4 rounded-xl space-y-3">
-                    <h4 class="text-sm font-bold text-gray-200 border-b border-gray-800 pb-2">Nova Assinatura / Serviço Fixo</h4>
                     <div>
-                        <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Nome do Serviço</label>
-                        <input type="text" id="sub-name" required placeholder="Ex: Netflix, Internet, Academia" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
+                        <label class="text-xs text-gray-400">Tipo</label>
+
+                        <select id="tx-type"
+                            class="w-full bg-[#121214] border border-gray-700 rounded p-2 text-sm">
+                            <option value="expense">Despesa</option>
+                            <option value="income">Receita</option>
+                        </select>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Valor Mensal (R$)</label>
-                            <input type="number" step="0.01" id="sub-amount" required placeholder="0,00" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Dia do Vencimento</label>
-                            <input type="number" min="1" max="31" id="sub-day" required placeholder="Ex: 10" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                        </div>
-                    </div>
+
                     <div>
-                        <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Cobrança Direta Em</label>
-                        <select id="sub-payment-type" required class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none"></select>
+                        <label class="text-xs text-gray-400">Descrição</label>
+
+                        <input type="text" id="tx-description"
+                            class="w-full bg-[#121214] border border-gray-700 rounded p-2 text-sm"
+                            required />
                     </div>
-                    <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold py-2 rounded shadow transition-all mt-1">Programar Recorrência</button>
+
+                    <div>
+                        <label class="text-xs text-gray-400">Valor</label>
+
+                        <input type="number" step="0.01" id="tx-amount"
+                            class="w-full bg-[#121214] border border-gray-700 rounded p-2 text-sm"
+                            required />
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-gray-400">Categoria</label>
+
+                        <select id="tx-category"
+                            class="w-full bg-[#121214] border border-gray-700 rounded p-2 text-sm"></select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-gray-400">Conta</label>
+
+                        <select id="tx-wallet"
+                            class="w-full bg-[#121214] border border-gray-700 rounded p-2 text-sm"></select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-gray-400">Data</label>
+
+                        <input type="date" id="tx-date"
+                            class="w-full bg-[#121214] border border-gray-700 rounded p-2 text-sm"
+                            required />
+                    </div>
+
+                    <button
+                        class="w-full bg-orange-600 hover:bg-orange-700 py-2 rounded font-bold text-sm">
+                        Salvar
+                    </button>
+
                 </form>
 
-                <div class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4 md:col-span-2 space-y-4">
-                    <h4 class="text-sm font-bold text-gray-200 border-b border-gray-800 pb-2">Contratos Ativos & Custos Recorrentes Garantidos</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="container-subscriptions-cards"></div>
+                <div class="md:col-span-2 bg-[#1a1a1e] border border-gray-800 rounded-xl p-4">
+
+                    <h3 class="font-bold mb-4">Movimentações</h3>
+
+                    <div class="overflow-auto">
+
+                        <table class="w-full text-sm">
+
+                            <thead>
+                                <tr class="border-b border-gray-800 text-gray-400">
+                                    <th class="text-left py-2">Data</th>
+                                    <th class="text-left py-2">Descrição</th>
+                                    <th class="text-left py-2">Categoria</th>
+                                    <th class="text-right py-2">Valor</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="transactions-table"></tbody>
+
+                        </table>
+
+                    </div>
+
                 </div>
+
+            </div>
+
+        </section>
+
+        <!-- CONFIG -->
+        <section id="tab-config" class="tab-content">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <!-- CATEGORIAS -->
+                <div class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4 space-y-4">
+
+                    <h3 class="font-bold">Categorias</h3>
+
+                    <form id="form-category" class="flex gap-2">
+
+                        <input type="text"
+                            id="cat-name"
+                            placeholder="Nova categoria"
+                            class="flex-1 bg-[#121214] border border-gray-700 rounded p-2 text-sm"
+                            required />
+
+                        <button class="bg-orange-600 px-4 rounded">
+                            +
+                        </button>
+
+                    </form>
+
+                    <div id="categories-list" class="space-y-2"></div>
+
+                </div>
+
+                <!-- CONTAS -->
+                <div class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4 space-y-4">
+
+                    <h3 class="font-bold">Contas</h3>
+
+                    <form id="form-wallet" class="space-y-2">
+
+                        <input type="text"
+                            id="wallet-name"
+                            placeholder="Nome"
+                            class="w-full bg-[#121214] border border-gray-700 rounded p-2 text-sm"
+                            required />
+
+                        <input type="number"
+                            step="0.01"
+                            id="wallet-balance"
+                            placeholder="Saldo Inicial"
+                            class="w-full bg-[#121214] border border-gray-700 rounded p-2 text-sm"
+                            required />
+
+                        <button class="w-full bg-orange-600 py-2 rounded text-sm font-bold">
+                            Salvar Conta
+                        </button>
+
+                    </form>
+
+                    <div id="wallets-list" class="space-y-2"></div>
+
+                </div>
+
+                <!-- CARTÕES -->
+                <div class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4 space-y-4">
+
+                    <h3 class="font-bold">Cartões</h3>
+
+                    <form id="form-card" class="space-y-2">
+
+                        <input type="text"
+                            id="card-name"
+                            placeholder="Nome"
+                            class="w-full bg-[#121214] border border-gray-700 rounded p-2 text-sm"
+                            required />
+
+                        <input type="number"
+                            step="0.01"
+                            id="card-limit"
+                            placeholder="Limite"
+                            class="w-full bg-[#121214] border border-gray-700 rounded p-2 text-sm"
+                            required />
+
+                        <button class="w-full bg-orange-600 py-2 rounded text-sm font-bold">
+                            Salvar Cartão
+                        </button>
+
+                    </form>
+
+                    <div id="cards-list" class="space-y-2"></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- FROTA -->
+        <section id="tab-fleet" class="tab-content">
+            <div class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4">
+                <h2 class="font-bold">
+                    Módulo de Frota carregado.
+                </h2>
+            </div>
+        </section>
+
+        <!-- ASSINATURAS -->
+        <section id="tab-subscriptions" class="tab-content">
+            <div class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4">
+                <h2 class="font-bold">
+                    Módulo de Assinaturas carregado.
+                </h2>
             </div>
         </section>
 
     </main>
 
-    <footer class="bg-[#1a1a1e] border-t border-gray-800 px-4 py-3 text-center text-[11px] text-gray-500">
-        MF Finanças &bull; Licença de Uso Interno Personalizado &bull; Conectado à Cloud Dedicada Supabase
-    </footer>
-
     <script>
-        // --- CREDENCIAIS DIRETAS DO SEU PROJETO SUPABASE ---
-        const SUPABASE_URL = 'https://hrdtylxfkcsgyhghhptr.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94'; 
 
-        // Inicialização com cabeçalhos globais forçados para mitigar erros 401
-        window.supabaseClientInstance = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-            auth: { persistSession: false },
-            global: {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                }
-            }
-        });
+        // =========================================
+        // SUPABASE
+        // =========================================
 
-        // Cache local unificado do estado da aplicação
-        let cachedState = {};
+        const SUPABASE_URL =
+            "https://hrdtylxfkcsgyhghhptr.supabase.co";
 
-        // --- REPOSITORY MAPPER (INTEGRIDADE ENTRE JS E SQL SNAKE_CASE) ---
-        const Repository = {
-            async get(table) {
-                const { data, error } = await window.supabaseClientInstance.from(table).select('*');
-                if (error) { console.error(`Erro ao ler ${table}:`, error.message); return []; }
-                if (table === 'categories') return data.map(item => item.name);
-                
-                return data.map(item => ({
-                    id: item.id, name: item.name,
-                    initialBalance: item.initial_balance, limit: item.limit,
-                    closingDay: item.closing_day, dueDay: item.due_day,
-                    model: item.model, plate: item.plate, currentKm: item.current_km,
-                    vehicleId: item.vehicle_id, description: item.description,
-                    amount: item.amount, km: item.km, renewalDay: item.renewal_day,
-                    paymentType: item.payment_type, date: item.date, type: item.type,
-                    category: item.category, walletId: item.wallet_id, cardId: item.card_id,
-                    subscriptionId: item.subscription_id
-                }));
-            },
+        const SUPABASE_KEY =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
 
-            async saveSingle(table, obj) {
-                const dbPayload = {
-                    id: obj.id, name: obj.name, initial_balance: obj.initialBalance,
-                    limit: obj.limit, closing_day: obj.closingDay, due_day: obj.dueDay,
-                    model: obj.model, plate: obj.plate, current_km: obj.currentKm,
-                    vehicle_id: obj.vehicleId, description: obj.description, amount: obj.amount,
-                    km: obj.km ? parseInt(obj.km) : null, renewal_day: obj.renewalDay,
-                    payment_type: obj.paymentType, date: obj.date, type: obj.type,
-                    category: obj.category, wallet_id: obj.walletId, card_id: obj.cardId,
-                    subscription_id: obj.subscriptionId
-                };
-                
-                Object.keys(dbPayload).forEach(key => dbPayload[key] === undefined && delete dbPayload[key]);
-                
-                const { error } = await window.supabaseClientInstance.from(table).insert(dbPayload);
-                if (error) console.error(`Erro ao salvar em ${table}:`, error.message);
-            },
+        const supabaseClient =
+            supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-            async deleteItem(table, id, field = 'id') {
-                const { error } = await window.supabaseClientInstance.from(table).delete().eq(field, id);
-                if (error) console.error(`Erro ao deletar de ${table}:`, error.message);
-            }
+        // =========================================
+        // CACHE
+        // =========================================
+
+        let state = {
+            categories: [],
+            wallets: [],
+            cards: [],
+            transactions: []
         };
 
-        // --- FINANCE CORE SERVICES ---
-        const FinanceService = {
-            async getState() {
-                cachedState = {
-                    categories: await Repository.get('categories'),
-                    wallets: await Repository.get('wallets'),
-                    cards: await Repository.get('cards'),
-                    vehicles: await Repository.get('vehicles'),
-                    maintenances: await Repository.get('maintenances'),
-                    subscriptions: await Repository.get('subscriptions'),
-                    transactions: await Repository.get('transactions')
-                };
-                return cachedState;
-            },
+        // =========================================
+        // HELPERS
+        // =========================================
 
-            async calculateWallets(state) {
-                return state.wallets.map(w => {
-                    let current = w.initialBalance || 0;
-                    state.transactions.forEach(t => {
-                        if (t.walletId === w.id && !t.cardId) {
-                            current = t.type === 'income' ? current + t.amount : current - t.amount;
-                        }
-                    });
-                    return { ...w, balance: current };
+        function formatCurrency(value) {
+
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value || 0);
+
+        }
+
+        function uid(prefix) {
+
+            return prefix + "_" + Date.now();
+
+        }
+
+        // =========================================
+        // TABS
+        // =========================================
+
+        function switchTab(tab) {
+
+            document.querySelectorAll('.tab-content')
+                .forEach(el => el.classList.remove('active'));
+
+            document.querySelectorAll('.nav-btn')
+                .forEach(el => {
+                    el.classList.remove('bg-orange-600');
+                    el.classList.add('bg-gray-800');
                 });
-            },
 
-            async addTransaction(tx) {
-                tx.id = 'tx_' + Date.now();
-                if (tx.vehicleId && tx.km) {
-                    const kmVal = parseInt(tx.km);
-                    await Repository.saveSingle('maintenances', {
-                        id: 'm_auto_' + Date.now(),
-                        vehicleId: tx.vehicleId,
-                        description: `[Lançamento] ${tx.description} (${tx.category})`,
-                        amount: tx.amount,
-                        km: kmVal
-                    });
-                    await window.supabaseClientInstance.from('vehicles').update({ current_km: kmVal }).eq('id', tx.vehicleId);
-                }
-                await Repository.saveSingle('transactions', tx);
-                await FinanceService.reconcileSubscriptions();
-            },
+            document
+                .getElementById('tab-' + tab)
+                .classList.add('active');
 
-            async reconcileSubscriptions() {
-                const state = cachedState.subscriptions ? cachedState : await FinanceService.getState();
-                const currentMonth = new Date().toISOString().substring(0, 7);
+            document
+                .getElementById('btn-' + tab)
+                .classList.remove('bg-gray-800');
 
-                for (const sub of state.subscriptions) {
-                    const exists = state.transactions.some(t => t.subscriptionId === sub.id && t.date.startsWith(currentMonth));
-                    if (!exists) {
-                        const isCard = sub.paymentType.startsWith('card-');
-                        const targetId = sub.paymentType.split('-')[1];
+            document
+                .getElementById('btn-' + tab)
+                .classList.add('bg-orange-600');
 
-                        await Repository.saveSingle('transactions', {
-                            id: 't_auto_' + sub.id + '_' + Date.now(),
-                            description: `[Assinatura] ${sub.name}`,
-                            amount: sub.amount,
-                            date: `${currentMonth}-${String(sub.renewalDay).padStart(2, '0')}`,
-                            type: 'expense',
-                            category: 'Assinaturas',
-                            walletId: isCard ? null : targetId,
-                            cardId: isCard ? targetId : null,
-                            subscriptionId: sub.id
+        }
+
+        // =========================================
+        // DATABASE
+        // =========================================
+
+        async function loadAllData() {
+
+            try {
+
+                // categories
+                const categoriesResult =
+                    await supabaseClient
+                        .from('categories')
+                        .select('*')
+                        .order('name');
+
+                if (categoriesResult.error)
+                    throw categoriesResult.error;
+
+                state.categories = categoriesResult.data;
+
+                // wallets
+                const walletsResult =
+                    await supabaseClient
+                        .from('wallets')
+                        .select('*')
+                        .order('name');
+
+                if (walletsResult.error)
+                    throw walletsResult.error;
+
+                state.wallets = walletsResult.data;
+
+                // cards
+                const cardsResult =
+                    await supabaseClient
+                        .from('cards')
+                        .select('*')
+                        .order('name');
+
+                if (cardsResult.error)
+                    throw cardsResult.error;
+
+                state.cards = cardsResult.data;
+
+                // transactions
+                const transactionsResult =
+                    await supabaseClient
+                        .from('transactions')
+                        .select('*')
+                        .order('date', {
+                            ascending: false
                         });
-                    }
-                }
+
+                if (transactionsResult.error)
+                    throw transactionsResult.error;
+
+                state.transactions = transactionsResult.data;
+
+                render();
+
+            } catch (err) {
+
+                console.error(err);
+
+                alert(
+                    "Erro ao carregar dados do Supabase.\n\n" +
+                    err.message
+                );
+
             }
-        };
 
-        // --- SISTEMA DE CONTROLADORES DE RENDERIZAÇÃO DE UI ---
-        function formatCurrency(val) {
-            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => {
-                el.classList.remove('bg-orange-600', 'text-white', 'shadow');
-                el.classList.add('text-gray-400', 'hover:text-white');
-            });
+        // =========================================
+        // RENDER
+        // =========================================
 
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            const activeBtn = document.getElementById(`btn-${tabId}`);
-            activeBtn.classList.remove('text-gray-400', 'hover:text-white');
-            activeBtn.classList.add('bg-orange-600', 'text-white', 'shadow');
+        function render() {
 
-            render();
-        }
-
-        function toggleTxTypeFields() {
-            const type = document.getElementById('tx-type').value;
-            const containerDestination = document.getElementById('container-tx-destination');
-            if (type === 'income') {
-                containerDestination.innerHTML = `
-                    <div class="col-span-2">
-                        <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Conta Destino do Aporte</label>
-                        <select id="tx-wallet" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none"></select>
-                    </div>`;
-                populateSelectsOnlyWallets();
-            } else {
-                containerDestination.innerHTML = `
-                    <div>
-                        <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Forma de Pagamento</label>
-                        <select id="tx-payment-method" onchange="toggleTxMethodFields()" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
-                            <option value="wallet">Conta Bancária / Saldo</option>
-                            <option value="card">Cartão de Crédito</option>
-                        </select>
-                    </div>
-                    <div id="wrapper-tx-wallet">
-                        <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Conta Destino</label>
-                        <select id="tx-wallet" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none"></select>
-                    </div>
-                    <div id="wrapper-tx-card" class="hidden">
-                        <label class="text-[10px] font-medium text-gray-400 block mb-1 uppercase">Cartão Destino</label>
-                        <select id="tx-card" class="w-full bg-[#121214] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white focus:border-orange-500 outline-none"></select>
-                    </div>`;
-                populateSelectsFullOptions();
-            }
-        }
-
-        function toggleTxMethodFields() {
-            const method = document.getElementById('tx-payment-method').value;
-            document.getElementById('wrapper-tx-wallet').classList.toggle('hidden', method !== 'wallet');
-            document.getElementById('wrapper-tx-card').classList.toggle('hidden', method !== 'card');
-        }
-
-        function toggleTxVehicleFields() {
-            const vehId = document.getElementById('tx-vehicle').value;
-            document.getElementById('wrapper-tx-km').classList.toggle('hidden', vehId === "");
-        }
-
-        function populateSelectsOnlyWallets() {
-            const wSelect = document.getElementById('tx-wallet');
-            if (wSelect) wSelect.innerHTML = cachedState.wallets.map(w => `<option value="${w.id}">${w.name}</option>`).join('');
-        }
-
-        function populateSelectsFullOptions() {
-            const wSelect = document.getElementById('tx-wallet');
-            const cSelect = document.getElementById('tx-card');
-            if (wSelect) wSelect.innerHTML = cachedState.wallets.map(w => `<option value="${w.id}">${w.name}</option>`).join('');
-            if (cSelect) cSelect.innerHTML = cachedState.cards.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-        }
-
-        async function render() {
-            const state = await FinanceService.getState();
-            const calculatedWallets = await FinanceService.calculateWallets(state);
-
-            // CÁLCULO DE METRICAS FINANCEIRAS DO DASHBOARD
-            let totalWalletBalance = calculatedWallets.reduce((acc, curr) => acc + curr.balance, 0);
-            let totalCardDebts = state.transactions.reduce((acc, t) => t.cardId && t.type === 'expense' ? acc + t.amount : acc, 0);
-            let netAvailable = totalWalletBalance - totalCardDebts;
-
-            const currentMonthStr = new Date().toISOString().substring(0, 7);
-            let monthlyResult = state.transactions.reduce((acc, t) => {
-                if (t.date.substring(0, 7) === currentMonthStr) {
-                    return t.type === 'income' ? acc + t.amount : acc - t.amount;
-                }
-                return acc;
-            }, 0);
-
-            // INJEÇÃO DA MATRIZ DE SALDOS NO DASHBOARD
-            document.getElementById('dash-net-balance').innerText = formatCurrency(netAvailable);
-            document.getElementById('dash-total-wallets').innerText = formatCurrency(totalWalletBalance);
-            document.getElementById('dash-total-cards').innerText = formatCurrency(totalCardDebts);
-            document.getElementById('dash-month-result').innerText = formatCurrency(monthlyResult);
-
-            // RENDER DAS CONTAS BANCÁRIAS NO DASHBOARD
-            document.getElementById('dash-wallets-list').innerHTML = calculatedWallets.map(w => `
-                <div class="flex items-center justify-between p-2 bg-[#121214] border border-gray-800 rounded-lg text-xs">
-                    <span class="font-medium text-gray-300">${w.name}</span>
-                    <span class="font-bold ${w.balance >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${formatCurrency(w.balance)}</span>
-                </div>`).join('') || '<p class="text-xs text-gray-500 italic">Nenhuma conta ativa.</p>';
-
-            // RENDER DOS CARTÕES COMPROMETIDOS
-            document.getElementById('dash-cards-list').innerHTML = state.cards.map(c => {
-                let cardBill = state.transactions.reduce((acc, t) => t.cardId === c.id && t.type === 'expense' ? acc + t.amount : acc, 0);
-                return `
-                    <div class="p-2 bg-[#121214] border border-gray-800 rounded-lg text-xs space-y-1">
-                        <div class="flex justify-between font-medium">
-                            <span class="text-gray-300">${c.name}</span>
-                            <span class="text-rose-400 font-bold">${formatCurrency(cardBill)}</span>
-                        </div>
-                        <div class="flex justify-between text-[10px] text-gray-500">
-                            <span>Vencimento: Dia ${c.dueDay}</span>
-                            <span>Lim. Disp: ${formatCurrency(c.limit - cardBill)}</span>
-                        </div>
-                    </div>`;
-            }).join('') || '<p class="text-xs text-gray-500 italic">Nenhum cartão ativo.</p>';
-
-            // HISTÓRICO RECENTE NO DASHBOARD
-            document.getElementById('dash-transactions-list').innerHTML = [...state.transactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0, 5).map(t => `
-                <div class="flex justify-between items-center p-2 bg-[#121214] border border-gray-800 rounded-lg text-xs">
-                    <div>
-                        <p class="font-medium text-gray-300 truncate max-w-[150px]">${t.description}</p>
-                        <span class="text-[10px] text-gray-500">${t.date.split('-').reverse().join('/')} &bull; ${t.category}</span>
-                    </div>
-                    <span class="font-bold ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">
-                        ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
-                    </span>
-                </div>`).join('') || '<p class="text-xs text-gray-500 italic">Sem movimentações.</p>';
-
-            // POPULAR SELECTS DOS FORMULÁRIOS
-            const txCatSelect = document.getElementById('tx-category');
-            if (txCatSelect) txCatSelect.innerHTML = state.categories.map(c => `<option value="${c}">${c}</option>`).join('');
-            
-            const txVehSelect = document.getElementById('tx-vehicle');
-            if (txVehSelect) txVehSelect.innerHTML = '<option value="">Não Vincular</option>' + state.vehicles.map(v => `<option value="${v.id}">${v.model} (${v.plate})</option>`).join('');
-
-            const subPayType = document.getElementById('sub-payment-type');
-            if (subPayType) subPayType.innerHTML = 
-                state.wallets.map(w => `<option value="wallet-${w.id}">Conta: ${w.name}</option>`).join('') +
-                state.cards.map(c => `<option value="card-${c.id}">Cartão: ${c.name}</option>`).join('');
-
-            if(document.getElementById('tx-wallet')) populateSelectsFullOptions();
-
-            // RENDERIZAÇÃO DA TABELA DE FLUXO DE CAIXA COMPLETA
-            document.getElementById('table-transactions-body').innerHTML = [...state.transactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(t => {
-                let origin = '-';
-                if (t.walletId) origin = state.wallets.find(w=>w.id===t.walletId)?.name || 'Conta';
-                if (t.cardId) origin = `CC: ${state.cards.find(c=>c.id===t.cardId)?.name || 'Cartão'}`;
-                return `
-                    <tr class="hover:bg-gray-800/20 transition-all border-b border-gray-800/40">
-                        <td class="py-2 px-3 text-gray-400">${t.date.split('-').reverse().join('/')}</td>
-                        <td class="py-2 px-3 font-medium text-white">${t.description}</td>
-                        <td class="py-2 px-3 text-gray-400"><span class="px-2 py-0.5 bg-gray-800 rounded">${t.category}</span></td>
-                        <td class="py-2 px-3 text-orange-400 font-medium">${origin}</td>
-                        <td class="py-2 px-3 text-right font-bold ${t.type==='income'?'text-emerald-400':'text-rose-400'}">${t.type==='income'?'+':'-'}${formatCurrency(t.amount)}</td>
-                        <td class="py-2 px-3 text-center"><button onclick="deleteGlobalItem('transactions','${t.id}')" class="text-gray-600 hover:text-rose-400 transition-all"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></td>
-                    </tr>`;
-            }).join('');
-
-            // RENDERIZAÇÃO DA ESTRUTURA (CONFIGURAÇÕES)
-            document.getElementById('list-categories').innerHTML = state.categories.map(c => `
-                <div class="flex items-center justify-between py-1.5 text-xs text-gray-300">
-                    <span>${c}</span>
-                    <button onclick="deleteGlobalItem('categories','${c}','name')" class="text-gray-600 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                </div>`).join('');
-
-            document.getElementById('list-wallets').innerHTML = calculatedWallets.map(w => `
-                <div class="flex items-center justify-between py-1.5 text-xs text-gray-300">
-                    <div><p class="font-medium">${w.name}</p><span class="text-[10px] text-gray-500">Saldo Inicial: ${formatCurrency(w.initialBalance)}</span></div>
-                    <button onclick="deleteGlobalItem('wallets','${w.id}')" class="text-gray-600 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                </div>`).join('');
-
-            document.getElementById('list-cards').innerHTML = state.cards.map(c => `
-                <div class="flex items-center justify-between py-1.5 text-xs text-gray-300">
-                    <div><p class="font-medium">${c.name}</p><span class="text-[10px] text-gray-500">Limite: ${formatCurrency(c.limit)} | Fechamento: ${c.closingDay}</span></div>
-                    <button onclick="deleteGlobalItem('cards','${c.id}')" class="text-gray-600 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                </div>`).join('');
-
-            // RENDERIZAÇÃO DA FROTA E MANUTENÇÕES
-            document.getElementById('list-vehicles').innerHTML = state.vehicles.map(v => `
-                <div class="flex items-center justify-between py-2 border-b border-gray-800/40 text-xs text-gray-300">
-                    <div><p class="font-bold text-white">${v.model}</p><span class="text-[10px] text-gray-500">Placa: ${v.plate || 'N/A'} &bull; ${v.currentKm} KM atual</span></div>
-                    <button onclick="deleteGlobalItem('vehicles','${v.id}')" class="text-gray-600 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                </div>`).join('');
-
-            document.getElementById('table-maintenances-body').innerHTML = state.maintenances.map(m => {
-                let vehName = state.vehicles.find(v=>v.id===m.vehicleId)?.model || 'Veículo';
-                return `
-                    <tr class="hover:bg-gray-800/20 transition-all border-b border-gray-800/40">
-                        <td class="py-2 px-3 font-medium text-white">${vehName}</td>
-                        <td class="py-2 px-3 text-gray-400">${m.description}</td>
-                        <td class="py-2 px-3 text-orange-400 font-medium">${m.km} KM</td>
-                        <td class="py-2 px-3 text-right font-bold text-rose-400">${formatCurrency(m.amount)}</td>
-                        <td class="py-2 px-3 text-center"><button onclick="deleteGlobalItem('maintenances','${m.id}')" class="text-gray-600 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></td>
-                    </tr>`;
-            }).join('');
-
-            // RENDERIZAÇÃO DE ASSINATURAS E RECORRÊNCIAS
-            document.getElementById('container-subscriptions-cards').innerHTML = state.subscriptions.map(s => {
-                let payLabel = 'Bancário';
-                if(s.paymentType.startsWith('card-')) payLabel = 'CC: ' + (state.cards.find(c=>c.id===s.paymentType.split('-')[1])?.name || 'Cartão');
-                if(s.paymentType.startsWith('wallet-')) payLabel = 'Conta: ' + (state.wallets.find(w=>w.id===s.paymentType.split('-')[1])?.name || 'Saldo');
-                return `
-                    <div class="bg-[#121214] border border-gray-800 p-3 rounded-lg flex items-center justify-between text-xs shadow-inner">
-                        <div>
-                            <p class="font-bold text-white">${s.name}</p>
-                            <span class="text-[10px] text-gray-500 block">Renovação todo dia ${s.renewalDay}</span>
-                            <span class="text-[10px] text-orange-500 bg-orange-500/5 px-1.5 py-0.2 rounded border border-orange-500/10 inline-block mt-1">${payLabel}</span>
-                        </div>
-                        <div class="text-right space-y-2">
-                            <p class="font-bold text-orange-400">${formatCurrency(s.amount)}</p>
-                            <button onclick="deleteGlobalItem('subscriptions','${s.id}')" class="text-gray-600 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                        </div>
-                    </div>`;
-            }).join('') || '<p class="text-xs text-gray-500 italic col-span-2">Nenhum contrato recorrente registrado.</p>';
+            renderDashboard();
+            renderCategories();
+            renderWallets();
+            renderCards();
+            renderTransactions();
+            renderSelects();
 
             lucide.createIcons();
+
         }
 
-        // --- HANDLERS DE SUBMIT DOS FORMULÁRIOS (GRAVAÇÃO EM CLOUD) ---
-        async function handleTransactionSubmit(e) {
-            e.preventDefault();
-            const type = document.getElementById('tx-type').value;
-            const method = document.getElementById('tx-payment-method')?.value;
-            const tx = {
-                date: document.getElementById('tx-date').value,
-                description: document.getElementById('tx-description').value,
-                amount: parseFloat(document.getElementById('tx-amount').value),
-                category: document.getElementById('tx-category').value,
-                type: type,
-                walletId: (type==='income' || method==='wallet') ? document.getElementById('tx-wallet').value : null,
-                cardId: (type==='expense' && method==='card') ? document.getElementById('tx-card').value : null,
-                vehicleId: document.getElementById('tx-vehicle').value || null,
-                km: document.getElementById('tx-km')?.value || null
-            };
-            await FinanceService.addTransaction(tx);
-            document.getElementById('form-transaction').reset();
-            if(document.getElementById('tx-type').value === 'expense') toggleTxTypeFields();
-            render();
-        }
+        function renderDashboard() {
 
-        async function handleCategorySubmit(e) {
-            e.preventDefault();
-            const nameInput = document.getElementById('cat-name');
-            await Repository.saveSingle('categories', { name: nameInput.value });
-            nameInput.value = '';
-            render();
-        }
+            let walletsTotal =
+                state.wallets.reduce((acc, item) => {
 
-        async function handleWalletSubmit(e) {
-            e.preventDefault();
-            await Repository.saveSingle('wallets', {
-                id: 'w_' + Date.now(),
-                name: document.getElementById('wal-name').value,
-                initialBalance: parseFloat(document.getElementById('wal-balance').value)
+                    return acc + Number(item.initial_balance || 0);
+
+                }, 0);
+
+            let cardsTotal =
+                state.cards.reduce((acc, item) => {
+
+                    return acc + Number(item.limit || 0);
+
+                }, 0);
+
+            let monthResult = 0;
+
+            const currentMonth =
+                new Date().toISOString().slice(0, 7);
+
+            state.transactions.forEach(tx => {
+
+                if (tx.date?.startsWith(currentMonth)) {
+
+                    if (tx.type === 'income')
+                        monthResult += Number(tx.amount);
+
+                    else
+                        monthResult -= Number(tx.amount);
+
+                }
+
             });
-            document.getElementById('form-wallet').reset();
-            render();
+
+            document.getElementById('dash-wallets')
+                .innerText = formatCurrency(walletsTotal);
+
+            document.getElementById('dash-cards')
+                .innerText = formatCurrency(cardsTotal);
+
+            document.getElementById('dash-month')
+                .innerText = formatCurrency(monthResult);
+
+            document.getElementById('dash-net')
+                .innerText = formatCurrency(
+                    walletsTotal + monthResult
+                );
+
+            // wallets
+            document.getElementById('dashboard-wallets-list')
+                .innerHTML =
+                state.wallets.map(item => `
+                    <div class="bg-[#121214] border border-gray-800 rounded p-2 flex justify-between">
+                        <span>${item.name}</span>
+                        <strong>${formatCurrency(item.initial_balance)}</strong>
+                    </div>
+                `).join('');
+
+            // cards
+            document.getElementById('dashboard-cards-list')
+                .innerHTML =
+                state.cards.map(item => `
+                    <div class="bg-[#121214] border border-gray-800 rounded p-2 flex justify-between">
+                        <span>${item.name}</span>
+                        <strong>${formatCurrency(item.limit)}</strong>
+                    </div>
+                `).join('');
+
+            // txs
+            document.getElementById('dashboard-transactions-list')
+                .innerHTML =
+                state.transactions.slice(0, 5).map(tx => `
+                    <div class="bg-[#121214] border border-gray-800 rounded p-2">
+
+                        <div class="flex justify-between">
+
+                            <span>${tx.description}</span>
+
+                            <strong class="${
+                                tx.type === 'income'
+                                ? 'text-emerald-400'
+                                : 'text-rose-400'
+                            }">
+
+                                ${formatCurrency(tx.amount)}
+
+                            </strong>
+
+                        </div>
+
+                    </div>
+                `).join('');
+
         }
 
-        async function handleCardSubmit(e) {
-            e.preventDefault();
-            await Repository.saveSingle('cards', {
-                id: 'c_' + Date.now(),
-                name: document.getElementById('card-name').value,
-                limit: parseFloat(document.getElementById('card-limit').value),
-                closingDay: parseInt(document.getElementById('card-closing').value),
-                dueDay: parseInt(document.getElementById('card-due').value)
-            });
-            document.getElementById('form-card').reset();
-            render();
+        function renderCategories() {
+
+            document.getElementById('categories-list')
+                .innerHTML =
+                state.categories.map(item => `
+                    <div class="bg-[#121214] border border-gray-800 rounded p-2 flex justify-between items-center">
+                        <span>${item.name}</span>
+
+                        <button
+                            onclick="deleteItem('categories','name','${item.name}')"
+                            class="text-rose-400">
+                            X
+                        </button>
+                    </div>
+                `).join('');
+
         }
 
-        async function handleVehicleSubmit(e) {
-            e.preventDefault();
-            await Repository.saveSingle('vehicles', {
-                id: 'v_' + Date.now(),
-                model: document.getElementById('veh-model').value,
-                plate: document.getElementById('veh-plate').value,
-                currentKm: parseInt(document.getElementById('veh-km').value)
-            });
-            document.getElementById('form-vehicle').reset();
-            render();
+        function renderWallets() {
+
+            document.getElementById('wallets-list')
+                .innerHTML =
+                state.wallets.map(item => `
+                    <div class="bg-[#121214] border border-gray-800 rounded p-2 flex justify-between items-center">
+
+                        <div>
+                            <p>${item.name}</p>
+                            <small class="text-gray-500">
+                                ${formatCurrency(item.initial_balance)}
+                            </small>
+                        </div>
+
+                        <button
+                            onclick="deleteItem('wallets','id','${item.id}')"
+                            class="text-rose-400">
+                            X
+                        </button>
+
+                    </div>
+                `).join('');
+
         }
 
-        async function handleSubscriptionSubmit(e) {
-            e.preventDefault();
-            await Repository.saveSingle('subscriptions', {
-                id: 's_' + Date.now(),
-                name: document.getElementById('sub-name').value,
-                amount: parseFloat(document.getElementById('sub-amount').value),
-                renewalDay: parseInt(document.getElementById('sub-day').value),
-                paymentType: document.getElementById('sub-payment-type').value
-            });
-            document.getElementById('form-subscription').reset();
-            render();
+        function renderCards() {
+
+            document.getElementById('cards-list')
+                .innerHTML =
+                state.cards.map(item => `
+                    <div class="bg-[#121214] border border-gray-800 rounded p-2 flex justify-between items-center">
+
+                        <div>
+                            <p>${item.name}</p>
+                            <small class="text-gray-500">
+                                ${formatCurrency(item.limit)}
+                            </small>
+                        </div>
+
+                        <button
+                            onclick="deleteItem('cards','id','${item.id}')"
+                            class="text-rose-400">
+                            X
+                        </button>
+
+                    </div>
+                `).join('');
+
         }
 
-        async function deleteGlobalItem(table, id, field = 'id') {
-            if (confirm('Tem a certeza que deseja eliminar este item? Esta ação removerá o registo permanentemente da base de dados.')) {
-                await Repository.deleteItem(table, id, field);
-                render();
+        function renderTransactions() {
+
+            document.getElementById('transactions-table')
+                .innerHTML =
+                state.transactions.map(tx => `
+
+                    <tr class="border-b border-gray-800">
+
+                        <td class="py-2">
+                            ${tx.date}
+                        </td>
+
+                        <td class="py-2">
+                            ${tx.description}
+                        </td>
+
+                        <td class="py-2">
+                            ${tx.category}
+                        </td>
+
+                        <td class="py-2 text-right font-bold ${
+                            tx.type === 'income'
+                            ? 'text-emerald-400'
+                            : 'text-rose-400'
+                        }">
+                            ${formatCurrency(tx.amount)}
+                        </td>
+
+                        <td class="py-2 text-right">
+
+                            <button
+                                onclick="deleteItem('transactions','id','${tx.id}')"
+                                class="text-rose-400">
+                                Excluir
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `).join('');
+
+        }
+
+        function renderSelects() {
+
+            // tx categories
+            document.getElementById('tx-category')
+                .innerHTML =
+                state.categories.map(item => `
+                    <option value="${item.name}">
+                        ${item.name}
+                    </option>
+                `).join('');
+
+            // wallets
+            document.getElementById('tx-wallet')
+                .innerHTML =
+                state.wallets.map(item => `
+                    <option value="${item.id}">
+                        ${item.name}
+                    </option>
+                `).join('');
+
+        }
+
+        // =========================================
+        // DELETE
+        // =========================================
+
+        async function deleteItem(table, field, value) {
+
+            if (!confirm('Deseja excluir?'))
+                return;
+
+            try {
+
+                const result =
+                    await supabaseClient
+                        .from(table)
+                        .delete()
+                        .eq(field, value);
+
+                if (result.error)
+                    throw result.error;
+
+                await loadAllData();
+
+            } catch (err) {
+
+                console.error(err);
+
+                alert(err.message);
+
             }
+
         }
 
-        // INICIALIZAÇÃO AUTOMÁTICA EM COMPILAÇÃO DE TELA
+        // =========================================
+        // FORM CATEGORY
+        // =========================================
+
+        document
+            .getElementById('form-category')
+            .addEventListener('submit', async e => {
+
+                e.preventDefault();
+
+                try {
+
+                    const name =
+                        document.getElementById('cat-name').value;
+
+                    const result =
+                        await supabaseClient
+                            .from('categories')
+                            .insert({
+                                name
+                            });
+
+                    if (result.error)
+                        throw result.error;
+
+                    e.target.reset();
+
+                    await loadAllData();
+
+                } catch (err) {
+
+                    console.error(err);
+
+                    alert(err.message);
+
+                }
+
+            });
+
+        // =========================================
+        // FORM WALLET
+        // =========================================
+
+        document
+            .getElementById('form-wallet')
+            .addEventListener('submit', async e => {
+
+                e.preventDefault();
+
+                try {
+
+                    const result =
+                        await supabaseClient
+                            .from('wallets')
+                            .insert({
+                                id: uid('w'),
+                                name:
+                                    document.getElementById('wallet-name').value,
+
+                                initial_balance:
+                                    Number(document.getElementById('wallet-balance').value)
+                            });
+
+                    if (result.error)
+                        throw result.error;
+
+                    e.target.reset();
+
+                    await loadAllData();
+
+                } catch (err) {
+
+                    console.error(err);
+
+                    alert(err.message);
+
+                }
+
+            });
+
+        // =========================================
+        // FORM CARD
+        // =========================================
+
+        document
+            .getElementById('form-card')
+            .addEventListener('submit', async e => {
+
+                e.preventDefault();
+
+                try {
+
+                    const result =
+                        await supabaseClient
+                            .from('cards')
+                            .insert({
+                                id: uid('c'),
+
+                                name:
+                                    document.getElementById('card-name').value,
+
+                                limit:
+                                    Number(document.getElementById('card-limit').value)
+                            });
+
+                    if (result.error)
+                        throw result.error;
+
+                    e.target.reset();
+
+                    await loadAllData();
+
+                } catch (err) {
+
+                    console.error(err);
+
+                    alert(err.message);
+
+                }
+
+            });
+
+        // =========================================
+        // FORM TRANSACTION
+        // =========================================
+
+        document
+            .getElementById('form-transaction')
+            .addEventListener('submit', async e => {
+
+                e.preventDefault();
+
+                try {
+
+                    const type =
+                        document.getElementById('tx-type').value;
+
+                    const result =
+                        await supabaseClient
+                            .from('transactions')
+                            .insert({
+
+                                id: uid('tx'),
+
+                                type,
+
+                                description:
+                                    document.getElementById('tx-description').value,
+
+                                amount:
+                                    Number(document.getElementById('tx-amount').value),
+
+                                category:
+                                    document.getElementById('tx-category').value,
+
+                                wallet_id:
+                                    document.getElementById('tx-wallet').value,
+
+                                date:
+                                    document.getElementById('tx-date').value
+
+                            });
+
+                    if (result.error)
+                        throw result.error;
+
+                    e.target.reset();
+
+                    document.getElementById('tx-date').value =
+                        new Date().toISOString().slice(0, 10);
+
+                    await loadAllData();
+
+                } catch (err) {
+
+                    console.error(err);
+
+                    alert(err.message);
+
+                }
+
+            });
+
+        // =========================================
+        // INIT
+        // =========================================
+
         window.onload = async () => {
-            document.getElementById('tx-date').value = new Date().toISOString().substring(0, 10);
-            await FinanceService.getState();
-            await FinanceService.reconcileSubscriptions();
-            render();
+
+            document.getElementById('tx-date').value =
+                new Date().toISOString().slice(0, 10);
+
+            await loadAllData();
+
         };
+
     </script>
+
 </body>
 </html>
+```
