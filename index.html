@@ -402,7 +402,7 @@
         // --- CREDENCIAIS DIRETAS DO SEU PROJETO SUPABASE ---
         const SUPABASE_URL = 'https://hrdtylxfkcsgyhghhptr.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_5aXcN4POjyndZh2-TYaKLA_Th8jyFEr'; // <--- Coloque sua chave pública anon aqui
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // Global state para cache temporário de renderização
         let cachedState = {};
