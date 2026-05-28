@@ -410,7 +410,7 @@
         // --- REPOSITORY MAPPER (INTEGRIDADE ENTRE JS E SQL SNAKE_CASE) ---
         const Repository = {
             async get(table) {
-                const { data, error } = await supabase.from(table).select('*');
+                const { data, error } = await supabaseClient.from(table).select('*');
                 if (error) { console.error(`Erro ao ler ${table}:`, error.message); return []; }
                 if (table === 'categories') return data.map(item => item.name);
                 
@@ -444,12 +444,12 @@
                 // Limpa campos nulos/indefinidos indesejados
                 Object.keys(dbPayload).forEach(key => dbPayload[key] === undefined && delete dbPayload[key]);
                 
-                const { error } = await supabase.from(table).insert([dbPayload]);
+                const { error } = await supabaseClient.from(table).insert([dbPayload]);
                 if (error) console.error(`Erro ao salvar em ${table}:`, error.message);
             },
 
             async deleteItem(table, id, field = 'id') {
-                const { error } = await supabase.from(table).delete().eq(field, id);
+                const { error } = await supabaseClient.from(table).delete().eq(field, id);
                 if (error) console.error(`Erro ao deletar de ${table}:`, error.message);
             }
         };
@@ -492,7 +492,7 @@
                         amount: tx.amount,
                         km: kmVal
                     });
-                    await supabase.from('vehicles').update({ current_km: kmVal }).eq('id', tx.vehicleId);
+                    await supabaseClient.from('vehicles').update({ current_km: kmVal }).eq('id', tx.vehicleId);
                 }
                 await Repository.saveSingle('transactions', tx);
                 await FinanceService.reconcileSubscriptions();
@@ -790,7 +790,7 @@
             e.preventDefault();
             const name = document.getElementById('cat-name').value.trim();
             if(!cachedState.categories.includes(name)) {
-                await supabase.from('categories').insert([{ name: name }]);
+                await supabaseClient.from('categories').insert([{ name: name }]);
             }
             document.getElementById('entity-category-form').reset();
             await render();
@@ -844,7 +844,7 @@
 
             const mId = 'm_' + Date.now();
             await Repository.saveSingle('maintenances', { id: mId, vehicleId: vId, description: desc, amount: amount, km: km });
-            await supabase.from('vehicles').update({ current_km: km }).eq('id', vId);
+            await supabaseClient.from('vehicles').update({ current_km: km }).eq('id', vId);
 
             const isCard = payment.startsWith('card-');
             const targetId = payment.split('-')[1];
