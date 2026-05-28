@@ -492,7 +492,7 @@
                         amount: tx.amount,
                         km: kmVal
                     });
-                    await supabaseClient.from('vehicles').update({ current_km: kmVal }).eq('id', tx.vehicleId);
+                    await window.supabaseClientInstance.from('vehicles').update({ current_km: kmVal }).eq('id', tx.vehicleId);
                 }
                 await Repository.saveSingle('transactions', tx);
                 await FinanceService.reconcileSubscriptions();
@@ -523,7 +523,6 @@
                 }
             }
         };
-
         // --- FUNÇÕES DE INTERFACE DO USUÁRIO ---
         function toggleWalletCardSelectors() {
             const type = document.getElementById('tx-type').value;
