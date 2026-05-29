@@ -28,24 +28,16 @@
         
         <form id="form-fleet" class="bg-[#16161a] border border-zinc-800 rounded-xl p-5 shadow-lg space-y-4">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-                <h3 id="form-title" class="font-bold text-[#d4af37] text-sm tracking-wide uppercase">Novo Lançamento / Registro</h3>
-                <span class="text-[10px] text-zinc-500">Insira as informações operacionais e financeiras do veículo</span>
+                <h3 id="form-title" class="font-bold text-[#d4af37] text-sm tracking-wide uppercase">Novo Lançamento de Despesa</h3>
+                <span class="text-[10px] text-zinc-500">Selecione o veículo operacional e informe os custos</span>
             </div>
             
             <div class="flex flex-wrap lg:flex-nowrap gap-4">
-                <div class="flex-1 min-w-[130px]">
-                    <label class="text-xs text-gray-400 block mb-1">Marca</label>
-                    <input type="text" id="fleet-brand" placeholder="Ex: Chevrolet" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
-                </div>
-
-                <div class="flex-1 min-w-[140px]">
-                    <label class="text-xs text-gray-400 block mb-1">Modelo</label>
-                    <input type="text" id="fleet-model" placeholder="Ex: Onix Plus" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
-                </div>
-
-                <div class="w-full sm:w-28">
-                    <label class="text-xs text-gray-400 block mb-1">Placa</label>
-                    <input type="text" id="fleet-plate" placeholder="ABC1D23" maxlength="7" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none text-center font-mono font-bold uppercase tracking-wider" required />
+                <div class="flex-1 min-w-[200px]">
+                    <label class="text-xs text-gray-400 block mb-1">Veículo</label>
+                    <select id="fleet-veiculo-id" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors text-zinc-200 font-medium" required>
+                        <option value="">Carregando veículos...</option>
+                    </select>
                 </div>
 
                 <div class="w-full sm:w-32">
@@ -57,21 +49,21 @@
                 </div>
 
                 <div class="w-full sm:w-32">
-                    <label class="text-xs text-gray-400 block mb-1">Valor</label>
+                    <label class="text-xs text-gray-400 block mb-1">Valor Pago</label>
                     <div class="relative">
                         <span class="absolute left-2 top-2 text-xs text-zinc-500 font-mono">R$</span>
                         <input type="number" step="0.01" id="fleet-value" placeholder="0,00" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg py-2 pl-7 pr-2 text-sm focus:border-[#d4af37] outline-none font-mono text-amber-500 font-semibold text-right" required />
                     </div>
                 </div>
 
-                <div class="w-full sm:w-44">
+                <div class="w-full sm:w-48">
                     <label class="text-xs text-gray-400 block mb-1">Tipo de Despesa</label>
                     <select id="fleet-expense-type" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors text-zinc-300" required>
                         <option value="">Carregando tipos...</option>
                     </select>
                 </div>
 
-                <div class="w-full sm:w-44">
+                <div class="w-full sm:w-48">
                     <label class="text-xs text-gray-400 block mb-1">Meio de Pagamento</label>
                     <select id="fleet-payment-method" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors text-zinc-300" required>
                         <option value="">Carregando contas...</option>
@@ -90,12 +82,12 @@
         </form>
 
         <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-5 shadow-lg">
-            <h3 class="font-bold text-[#d4af37] mb-4 border-b border-zinc-800 pb-2 text-sm tracking-wide uppercase">Frota e Despesas Registradas</h3>
+            <h3 class="font-bold text-[#d4af37] mb-4 border-b border-zinc-800 pb-2 text-sm tracking-wide uppercase">Histórico de Custos da Frota</h3>
             <div class="overflow-auto max-h-[500px]">
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="border-b border-zinc-800 text-gray-400 text-left text-xs uppercase tracking-wider">
-                            <th class="py-3 pr-2">Veículo</th>
+                            <th class="py-3 pr-2">Veículo Operando</th>
                             <th class="py-3 pr-2 text-center">Placa</th>
                             <th class="py-3 pr-2 text-right">Quilometragem</th>
                             <th class="py-3 pr-2 text-right">Valor Pago</th>
@@ -143,7 +135,7 @@
             if (nome.includes('gasolina') || nome.includes('combustível')) {
                 return `<svg class="w-4 h-4 text-amber-500 inline-block mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.656 48.656 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3M3 12h16.5M10.5 18v-3m0 3h3m-3 0H6" /></svg>`;
             }
-            if (nome.includes('manutenção')) {
+            if (nome.includes('manutenção') || nome.includes('óleo')) {
                 return `<svg class="w-4 h-4 text-blue-400 inline-block mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11.42 15.17L17.25 21A2.67 2.67 0 1113.5 17.25l-5.83-5.83m3.75 3.75a3.75 3.75 0 11-5.3-5.3m4.7 4.7l3-3m0 0l-3-3m3 3H9" /></svg>`;
             }
             if (nome.includes('pedágio')) {
@@ -158,11 +150,17 @@
         const formatKM = v => new Intl.NumberFormat('pt-BR').format(v) + " Km";
         const formatCurrency = v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
-        document.getElementById('fleet-plate').addEventListener('input', e => {
-            e.target.value = e.target.value.toUpperCase();
-        });
+        // 1. BUSCA OS VEÍCULOS POPULADOS GLOBALMENTE
+        async function fetchVeiculos() {
+            try {
+                const { data, error } = await supabaseClient.from('veiculos').select('*').order('modelo', { ascending: true });
+                if (error) throw error;
+                document.getElementById('fleet-veiculo-id').innerHTML = '<option value="">Selecione um veículo...</option>' + 
+                    (data || []).map(v => `<option value="${v.id}">${v.marca} ${v.modelo} (${v.placa})</option>`).join('');
+            } catch (err) { console.error("Erro ao buscar veículos:", err.message); }
+        }
 
-        // 1. CARREGA DA TABELA CENTRAL ÚNICA DE MEIOS DE PAGAMENTO
+        // 2. BUSCA OS MEIOS DE PAGAMENTO DA TABELA CENTRAL ÚNICA
         async function fetchPaymentMethods() {
             try {
                 const { data, error } = await supabaseClient.from('meios_pagamento').select('*').order('nome', { ascending: true });
@@ -171,19 +169,25 @@
             } catch (err) { console.error(err.message); }
         }
 
+        // 3. BUSCA OS TIPOS DE DESPESA POPULADOS GLOBALMENTE
         async function fetchExpenseTypes() {
             try {
-                const { data, error } = await supabaseClient.from('tipos_despesa_frota').select('*').order('nome', { ascending: true });
-                if (error) throw error;
+                const { data, error } = await supabaseClient.from('types_despesa_frota' /* fallback corrigido */, 'tipos_despesa_frota').select('*').order('nome', { ascending: true });
+                if (error) {
+                    const { data: retry } = await supabaseClient.from('tipos_despesa_frota').select('*').order('nome', { ascending: true });
+                    document.getElementById('fleet-expense-type').innerHTML = (retry || []).map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
+                    return;
+                }
                 document.getElementById('fleet-expense-type').innerHTML = (data || []).map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
             } catch (err) { console.error(err.message); }
         }
 
+        // 4. CONSULTA A SESSÃO DA FROTA COM JUNÇÃO RELACIONAL COMPLETA
         async function fetchFleet() {
             try {
                 const { data, error } = await supabaseClient
                     .from('frota')
-                    .select('*, tipos_despesa_frota(nome), meios_pagamento(nome)')
+                    .select('*, veiculos(*), tipos_despesa_frota(nome), meios_pagamento(nome)')
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
@@ -196,30 +200,32 @@
             const table = document.getElementById('fleet-table-body');
             if (!table) return;
 
-            table.innerHTML = fleetData.map(f => `
-                <tr class="border-b border-zinc-800 hover:bg-zinc-900/30 transition-colors">
-                    <td class="py-3 pr-2 font-medium text-sm">
-                        <span class="text-zinc-400 text-xs block">${f.marca}</span>
-                        <span class="text-zinc-100 font-semibold">${f.modelo}</span>
-                    </td>
-                    <td class="py-3 pr-2 text-center font-mono font-bold text-xs">
-                        <span class="bg-zinc-800/80 px-2 py-1 rounded text-zinc-300 border border-zinc-700/60">${f.placa}</span>
-                    </td>
-                    <td class="py-3 pr-2 text-right font-mono text-zinc-400 text-sm">${formatKM(f.quilometragem || 0)}</td>
-                    <td class="py-3 pr-2 text-right font-mono text-amber-500 font-semibold text-sm">${formatCurrency(f.valor || 0)}</td>
-                    <td class="py-3 pr-2 text-zinc-300 text-xs">
-                        ${getExpenseIcon(f.tipos_despesa_frota ? f.tipos_despesa_frota.nome : '')}
-                        <span>${f.tipos_despesa_frota ? f.tipos_despesa_frota.nome : 'Não informado'}</span>
-                    </td>
-                    <td class="py-3 pr-2 text-zinc-400 text-xs">${f.meios_pagamento ? f.meios_pagamento.nome : 'Não informado'}</td>
-                    <td class="py-3 text-center">
-                        <div class="flex items-center justify-center gap-4">
-                            <button onclick="prepareEdit('${f.id}')" title="Editar" class="p-1 hover:bg-zinc-800 rounded transition-colors">${editIcon}</button>
-                            <button onclick="triggerDeleteModal('${f.id}')" title="Excluir" class="p-1 hover:bg-zinc-800 rounded transition-colors">${trashIcon}</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            table.innerHTML = fleetData.map(f => {
+                const carroInfo = f.veiculos ? `${f.veiculos.marca} ${f.veiculos.modelo}` : 'Não cadastrado';
+                const placaInfo = f.veiculos ? f.veiculos.placa : '------';
+                
+                return `
+                    <tr class="border-b border-zinc-800 hover:bg-zinc-900/30 transition-colors">
+                        <td class="py-3 pr-2 font-semibold text-zinc-100 text-sm">${carroInfo}</td>
+                        <td class="py-3 pr-2 text-center font-mono font-bold text-xs">
+                            <span class="bg-zinc-800/80 px-2 py-1 rounded text-zinc-300 border border-zinc-700/60">${placaInfo}</span>
+                        </td>
+                        <td class="py-3 pr-2 text-right font-mono text-zinc-400 text-sm">${formatKM(f.quilometragem || 0)}</td>
+                        <td class="py-3 pr-2 text-right font-mono text-amber-500 font-semibold text-sm">${formatCurrency(f.valor || 0)}</td>
+                        <td class="py-3 pr-2 text-zinc-300 text-xs">
+                            ${getExpenseIcon(f.tipos_despesa_frota ? f.tipos_despesa_frota.nome : '')}
+                            <span>${f.tipos_despesa_frota ? f.tipos_despesa_frota.nome : 'Não informado'}</span>
+                        </td>
+                        <td class="py-3 pr-2 text-zinc-400 text-xs">${f.meios_pagamento ? f.meios_pagamento.nome : 'Não informado'}</td>
+                        <td class="py-3 text-center">
+                            <div class="flex items-center justify-center gap-4">
+                                <button onclick="prepareEdit('${f.id}')" title="Editar" class="p-1 hover:bg-zinc-800 rounded transition-colors">${editIcon}</button>
+                                <button onclick="triggerDeleteModal('${f.id}')" title="Excluir" class="p-1 hover:bg-zinc-800 rounded transition-colors">${trashIcon}</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function triggerDeleteModal(id) {
@@ -250,9 +256,7 @@
 
             editingId = id;
 
-            document.getElementById('fleet-brand').value = item.marca;
-            document.getElementById('fleet-model').value = item.modelo;
-            document.getElementById('fleet-plate').value = item.placa;
+            document.getElementById('fleet-veiculo-id').value = item.veiculo_id || "";
             document.getElementById('fleet-km').value = item.quilometragem;
             document.getElementById('fleet-value').value = item.valor;
             document.getElementById('fleet-expense-type').value = item.tipo_despesa_id || "";
@@ -268,7 +272,7 @@
         function cancelEdit() {
             editingId = null;
             document.getElementById('form-fleet').reset();
-            document.getElementById('form-title').textContent = "Novo Lançamento / Registro";
+            document.getElementById('form-title').textContent = "Novo Lançamento de Despesa";
             document.getElementById('btn-submit-form').textContent = "Salvar Registro";
             document.getElementById('btn-cancel-edit').classList.add('hidden');
         }
@@ -279,9 +283,7 @@
             e.preventDefault();
 
             const payload = {
-                marca: document.getElementById('fleet-brand').value,
-                modelo: document.getElementById('fleet-model').value,
-                placa: document.getElementById('fleet-plate').value.trim(),
+                veiculo_id: document.getElementById('fleet-veiculo-id').value || null,
                 quilometragem: parseInt(document.getElementById('fleet-km').value),
                 valor: Number(document.getElementById('fleet-value').value),
                 tipo_despesa_id: document.getElementById('fleet-expense-type').value || null,
@@ -303,6 +305,7 @@
         });
 
         async function init() {
+            await fetchVeiculos();
             await fetchPaymentMethods();
             await fetchExpenseTypes();
             await fetchFleet();
