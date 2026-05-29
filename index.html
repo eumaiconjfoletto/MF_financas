@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -352,212 +353,17 @@
         </section>
 
         <!-- ASSINATURAS -->
-        <script>
-
-    // =========================================
-    // STATE
-    // =========================================
-
-    if (!state.subscriptions)
-        state.subscriptions = [];
-
-    // =========================================
-    // LOAD SUBSCRIPTIONS
-    // =========================================
-
-    async function loadSubscriptions() {
-
-        try {
-
-            const { data, error } =
-                await supabaseClient
-                    .from('subscriptions')
-                    .select('*')
-                    .order('name');
-
-            if (error)
-                throw error;
-
-            state.subscriptions = data || [];
-
-        } catch (err) {
-
-            console.error('Erro ao carregar assinaturas:', err);
-            state.subscriptions = [];
-
-        }
-
-    }
-
-    // =========================================
-    // RENDER SUBSCRIPTIONS
-    // =========================================
-
-    function renderSubscriptions() {
-
-        const paymentSelect =
-            document.getElementById('subscription-payment');
-
-        const subscriptionsList =
-            document.getElementById('subscriptions-list');
-
-        if (!paymentSelect || !subscriptionsList)
-            return;
-
-        // =====================================
-        // POPULA SELECT DE PAGAMENTO
-        // =====================================
-
-        let options = '';
-
-        if (state.wallets && state.wallets.length > 0) {
-
-            options += state.wallets.map(wallet => `
-
-                <option value="wallet-${wallet.id}">
-                    Conta: ${wallet.name}
-                </option>
-
-            `).join('');
-
-        }
-
-        if (state.cards && state.cards.length > 0) {
-
-            options += state.cards.map(card => `
-
-                <option value="card-${card.id}">
-                    Cartão: ${card.name}
-                </option>
-
-            `).join('');
-
-        }
-
-        paymentSelect.innerHTML = options;
-
-        // =====================================
-        // LISTA ASSINATURAS
-        // =====================================
-
-        if (!state.subscriptions.length) {
-
-            subscriptionsList.innerHTML = `
-
-                <div class="text-sm text-gray-500 italic">
-                    Nenhuma assinatura cadastrada.
-                </div>
-
-            `;
-
-            return;
-
-        }
-
-        subscriptionsList.innerHTML =
-            state.subscriptions.map(subscription => {
-
-                return `
-
-                    <div class="bg-[#121214] border border-gray-800 rounded-lg p-4 flex items-center justify-between">
-
-                        <div>
-
-                            <h4 class="font-bold text-white">
-                                ${subscription.name || ''}
-                            </h4>
-
-                            <p class="text-xs text-gray-500 mt-1">
-                                Renovação dia ${subscription.renewal_day || '-'}
-                            </p>
-
-                            <p class="text-xs text-orange-400 mt-1">
-                                ${subscription.payment_type || ''}
-                            </p>
-
-                        </div>
-
-                        <div class="text-right">
-
-                            <p class="font-bold text-orange-400">
-                                ${formatCurrency(subscription.amount || 0)}
-                            </p>
-
-                            <button
-                                onclick="deleteItem('subscriptions','id','${subscription.id}')"
-                                class="text-rose-400 text-xs mt-2 hover:text-rose-300">
-
-                                Excluir
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            }).join('');
-
-    }
-
-    // =========================================
-    // FORM SUBSCRIPTION
-    // =========================================
-
-    document
-        .getElementById('form-subscription')
-        .addEventListener('submit', async e => {
-
-            e.preventDefault();
-
-            try {
-
-                const payload = {
-
-                    id: uid('sub'),
-
-                    name:
-                        document.getElementById('subscription-name').value,
-
-                    amount:
-                        Number(document.getElementById('subscription-amount').value),
-
-                    renewal_day:
-                        Number(document.getElementById('subscription-day').value),
-
-                    payment_type:
-                        document.getElementById('subscription-payment').value
-
-                };
-
-                console.log('Salvando assinatura:', payload);
-
-                const { error } =
-                    await supabaseClient
-                        .from('subscriptions')
-                        .insert(payload);
-
-                if (error)
-                    throw error;
-
-                e.target.reset();
-
-                await loadSubscriptions();
-
-                renderSubscriptions();
-
-            } catch (err) {
-
-                console.error('Erro ao salvar assinatura:', err);
-
-                alert(err.message);
-
-            }
-
-        });
-
-</script>
+        <section id="tab-subscriptions" class="tab-content">
+            <div class="bg-[#1a1a1e] border border-gray-800 rounded-xl p-4">
+                <h2 class="font-bold">
+                    Módulo de Assinaturas carregado.
+                </h2>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
 
         // =========================================
         // SUPABASE
@@ -1183,3 +989,4 @@
 
 </body>
 </html>
+```
