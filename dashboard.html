@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Principal - Gestão</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0c0c0e] text-gray-100 min-h-screen flex flex-col">
+
+    <header class="bg-[#16161a] border-b border-zinc-800 px-6 py-4 flex justify-between items-center shadow-md">
+        <div class="flex items-center space-x-3">
+            <h1 class="text-lg font-bold text-[#d4af37] tracking-wide">Sistema Corp</h1>
+            <span class="text-zinc-600">|</span>
+            <p class="text-xs text-zinc-400">Olá, <span id="user-display-name" class="text-zinc-200 font-medium">Usuário</span></p>
+        </div>
+        <button id="btn-logout" class="text-xs bg-zinc-800/80 hover:bg-rose-950 hover:text-rose-400 px-3 py-1.5 rounded-lg transition-all border border-zinc-700/60 hover:border-rose-900 text-zinc-300">
+            Sair do Sistema
+        </button>
+    </header>
+
+    <main class="flex-1 p-6 max-w-6xl w-full mx-auto space-y-6">
+        <div>
+            <h2 class="text-xl font-bold text-zinc-100">Painel de Controle</h2>
+            <p class="text-xs text-gray-400 mt-0.5">Escolha o módulo operacional que deseja gerenciar hoje.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            
+            <a href="veiculos.html" class="bg-[#16161a] border border-zinc-800/80 hover:border-[#d4af37] p-5 rounded-xl block transition-all shadow-md group hover:-translate-y-0.5">
+                <div class="text-[#d4af37] font-bold text-lg group-hover:underline flex items-center justify-between">
+                    <span>Frota e Veículos</span>
+                    <span class="text-xs font-normal text-zinc-500 group-hover:text-[#d4af37]">Acessar →</span>
+                </div>
+                <p class="text-xs text-gray-400 mt-2 leading-relaxed">Controle completo de veículos, marcas, quilometragem atual e acompanhamento de valor de patrimônio.</p>
+            </a>
+
+            <a href="assinaturas.html" class="bg-[#16161a] border border-zinc-800/80 hover:border-[#d4af37] p-5 rounded-xl block transition-all shadow-md group hover:-translate-y-0.5">
+                <div class="text-[#d4af37] font-bold text-lg group-hover:underline flex items-center justify-between">
+                    <span>Assinaturas e Recorrências</span>
+                    <span class="text-xs font-normal text-zinc-500 group-hover:text-[#d4af37]">Acessar →</span>
+                </div>
+                <p class="text-xs text-gray-400 mt-2 leading-relaxed">Gerencie mensalidades, plataformas contratadas, formas de pagamento utilizadas e os dias exatos de vencimento.</p>
+            </a>
+
+            <a href="fornecedores.html" class="bg-[#16161a] border border-zinc-800/80 hover:border-[#d4af37] p-5 rounded-xl block transition-all shadow-md group hover:-translate-y-0.5">
+                <div class="text-[#d4af37] font-bold text-lg group-hover:underline flex items-center justify-between">
+                    <span>Estruturas e Fornecedores</span>
+                    <span class="text-xs font-normal text-zinc-500 group-hover:text-[#d4af37]">Acessar →</span>
+                </div>
+                <p class="text-xs text-gray-400 mt-2 leading-relaxed">Centralize o catálogo de fornecedores parceiros, prestadores de serviços estruturais e insumos de suporte.</p>
+            </a>
+
+        </div>
+    </main>
+
+    <script>
+        // CONFIGURAÇÃO DO SUPABASE (Substitua com as suas credenciais oficiais)
+        const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co/rest/v1/";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // GUARDA DE ROTA EXCLUSIVO: Executa antes de carregar o visual
+        const sessionData = localStorage.getItem('user_session');
+        if (!sessionData) {
+            // Se tentar burlar digitando a URL direta, expulsa para o login
+            window.location.href = 'index.html';
+        }
+
+        // Transforma a String em Objeto manipulável
+        const session = JSON.parse(sessionData);
+
+        // Insere o nome do usuário ativo na barra superior
+        document.getElementById('user-display-name').textContent = session.nome;
+
+        // Processo de Logout Seguro
+        document.getElementById('btn-logout').addEventListener('click', async () => {
+            try {
+                // Remove o registro do token ativo na tabela 'sessoes' do banco, invalidando o acesso
+                await supabaseClient
+                    .from('sessoes')
+                    .delete()
+                    .eq('token', session.token);
+            } catch (e) {
+                console.warn("Sessão já havia expirado no banco.");
+            }
+
+            // Apaga as chaves locais do navegador
+            localStorage.removeItem('user_session');
+            
+            // Retorna à tela inicial
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
