@@ -610,19 +610,20 @@
 
         // RENDER: ASSINATURAS
         function renderSubscriptions() {
-            const table = document.getElementById('subscriptions-table');
-            if(!table) return;
-            table.innerHTML = state.subscriptions.map(s => `
-                <tr class="border-b border-zinc-800 hover:bg-zinc-900/40 transition-colors">
-                    <td class="py-2.5 font-medium">${s.name}</td>
-                    <td class="py-2.5 text-center text-sm text-amber-500 font-mono">Todo dia ${s.due_day}</td>
-                    <td class="py-2.5 text-right font-semibold text-gray-100">${formatCurrency(s.amount)}</td>
-                    <td class="py-2.5 text-center">
-                        <button onclick="deleteItem('subscriptions','id','${s.id}')" class="text-rose-400 hover:underline text-xs">Cancelar</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
+    const table = document.getElementById('subscriptions-table');
+    if(!table) return;
+    table.innerHTML = state.subscriptions.map(s => `
+        <tr class="border-b border-zinc-800 hover:bg-zinc-900/40 transition-colors">
+            <td class="py-2.5 font-medium">${s.name}</td>
+            <td class="py-2.5 text-xs text-gray-400">${s.payment_type || 'Não informado'}</td>
+            <td class="py-2.5 text-center text-sm text-amber-500 font-mono">Todo dia ${s.renewal_day || '-'}</td>
+            <td class="py-2.5 text-right font-semibold text-gray-100">${formatCurrency(s.amount)}</td>
+            <td class="py-2.5 text-center">
+                <button onclick="deleteItem('subscriptions','id','${s.id}')" class="text-rose-400 hover:underline text-xs">Cancelar</button>
+            </td>
+        </tr>
+    `).join('');
+}
 
         // RENDER: FORNECEDORES
         function renderSuppliers() {
