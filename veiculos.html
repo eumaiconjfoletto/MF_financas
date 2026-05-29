@@ -29,41 +29,49 @@
         <form id="form-fleet" class="bg-[#16161a] border border-zinc-800 rounded-xl p-5 shadow-lg space-y-4">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
                 <h3 id="form-title" class="font-bold text-[#d4af37] text-sm tracking-wide uppercase">Novo Lançamento / Registro</h3>
-                <span class="text-[10px] text-zinc-500">Insira as informações operacionais do veículo</span>
+                <span class="text-[10px] text-zinc-500">Insira as informações operacionais e financeiras do veículo</span>
             </div>
             
             <div class="flex flex-wrap lg:flex-nowrap gap-4">
-                <div class="flex-1 min-w-[140px]">
+                <div class="flex-1 min-w-[130px]">
                     <label class="text-xs text-gray-400 block mb-1">Marca</label>
-                    <input type="text" id="fleet-brand" placeholder="Ex: Chevrolet, Volkswagen" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
+                    <input type="text" id="fleet-brand" placeholder="Ex: Chevrolet" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
                 </div>
 
-                <div class="flex-1 min-w-[160px]">
+                <div class="flex-1 min-w-[140px]">
                     <label class="text-xs text-gray-400 block mb-1">Modelo</label>
-                    <input type="text" id="fleet-model" placeholder="Ex: Onix Plus, Gol Trend" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
+                    <input type="text" id="fleet-model" placeholder="Ex: Onix Plus" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
                 </div>
 
-                <div class="w-full sm:w-32">
+                <div class="w-full sm:w-28">
                     <label class="text-xs text-gray-400 block mb-1">Placa</label>
                     <input type="text" id="fleet-plate" placeholder="ABC1D23" maxlength="7" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none text-center font-mono font-bold uppercase tracking-wider" required />
                 </div>
 
-                <div class="w-full sm:w-36">
+                <div class="w-full sm:w-32">
                     <label class="text-xs text-gray-400 block mb-1">Quilometragem</label>
                     <div class="relative">
-                        <input type="number" id="fleet-km" placeholder="0" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg py-2 pl-3 pr-9 text-sm focus:border-[#d4af37] outline-none font-mono text-right font-semibold text-zinc-200" required />
-                        <span class="absolute right-2.5 top-2 text-[10px] text-zinc-500 font-bold uppercase">KM</span>
+                        <input type="number" id="fleet-km" placeholder="0" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg py-2 pl-2 pr-8 text-sm focus:border-[#d4af37] outline-none font-mono text-right font-semibold text-zinc-200" required />
+                        <span class="absolute right-2 top-2 text-[9px] text-zinc-500 font-bold uppercase">KM</span>
                     </div>
                 </div>
 
-                <div class="w-full sm:w-52">
+                <div class="w-full sm:w-32">
+                    <label class="text-xs text-gray-400 block mb-1">Valor</label>
+                    <div class="relative">
+                        <span class="absolute left-2 top-2 text-xs text-zinc-500 font-mono">R$</span>
+                        <input type="number" step="0.01" id="fleet-value" placeholder="0,00" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg py-2 pl-7 pr-2 text-sm focus:border-[#d4af37] outline-none font-mono text-amber-500 font-semibold text-right" required />
+                    </div>
+                </div>
+
+                <div class="w-full sm:w-44">
                     <label class="text-xs text-gray-400 block mb-1">Tipo de Despesa</label>
                     <select id="fleet-expense-type" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors text-zinc-300" required>
                         <option value="">Carregando tipos...</option>
                     </select>
                 </div>
 
-                <div class="w-full sm:w-52">
+                <div class="w-full sm:w-44">
                     <label class="text-xs text-gray-400 block mb-1">Meio de Pagamento</label>
                     <select id="fleet-payment-method" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors text-zinc-300" required>
                         <option value="">Carregando contas...</option>
@@ -90,6 +98,7 @@
                             <th class="py-3 pr-2">Veículo</th>
                             <th class="py-3 pr-2 text-center">Placa</th>
                             <th class="py-3 pr-2 text-right">Quilometragem</th>
+                            <th class="py-3 pr-2 text-right">Valor Pago</th>
                             <th class="py-3 pr-2">Tipo Despesa</th>
                             <th class="py-3 pr-2">Pago Via</th>
                             <th class="py-3 text-center">Ações</th>
@@ -147,12 +156,13 @@
         const editIcon = `<svg class="w-4 h-4 text-amber-400 hover:text-amber-300 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>`;
 
         const formatKM = v => new Intl.NumberFormat('pt-BR').format(v) + " Km";
+        const formatCurrency = v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
         document.getElementById('fleet-plate').addEventListener('input', e => {
             e.target.value = e.target.value.toUpperCase();
         });
 
-        // 1. BUSCA DIRETAMENTE DA TABELA MEIOS_PAGAMENTO QUE VOCÊ JÁ POSSUI
+        // 1. CARREGA DA TABELA CENTRAL ÚNICA DE MEIOS DE PAGAMENTO
         async function fetchPaymentMethods() {
             try {
                 const { data, error } = await supabaseClient.from('meios_pagamento').select('*').order('nome', { ascending: true });
@@ -163,13 +173,8 @@
 
         async function fetchExpenseTypes() {
             try {
-                const { data, error } = await supabaseClient.from('tipos_despay_frota' /* ou tipos_despesa_frota */).select('*').order('nome', { ascending: true });
-                if (!data, error) {
-                    // Fallback de segurança caso mude o nome da tabela
-                    const { data: retryData } = await supabaseClient.from('tipos_despesa_frota').select('*').order('nome', { ascending: true });
-                    document.getElementById('fleet-expense-type').innerHTML = (retryData || []).map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
-                    return;
-                }
+                const { data, error } = await supabaseClient.from('tipos_despesa_frota').select('*').order('nome', { ascending: true });
+                if (error) throw error;
                 document.getElementById('fleet-expense-type').innerHTML = (data || []).map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
             } catch (err) { console.error(err.message); }
         }
@@ -200,7 +205,8 @@
                     <td class="py-3 pr-2 text-center font-mono font-bold text-xs">
                         <span class="bg-zinc-800/80 px-2 py-1 rounded text-zinc-300 border border-zinc-700/60">${f.placa}</span>
                     </td>
-                    <td class="py-3 pr-2 text-right font-mono text-zinc-300 text-sm font-medium">${formatKM(f.quilometragem || 0)}</td>
+                    <td class="py-3 pr-2 text-right font-mono text-zinc-400 text-sm">${formatKM(f.quilometragem || 0)}</td>
+                    <td class="py-3 pr-2 text-right font-mono text-amber-500 font-semibold text-sm">${formatCurrency(f.valor || 0)}</td>
                     <td class="py-3 pr-2 text-zinc-300 text-xs">
                         ${getExpenseIcon(f.tipos_despesa_frota ? f.tipos_despesa_frota.nome : '')}
                         <span>${f.tipos_despesa_frota ? f.tipos_despesa_frota.nome : 'Não informado'}</span>
@@ -248,6 +254,7 @@
             document.getElementById('fleet-model').value = item.modelo;
             document.getElementById('fleet-plate').value = item.placa;
             document.getElementById('fleet-km').value = item.quilometragem;
+            document.getElementById('fleet-value').value = item.valor;
             document.getElementById('fleet-expense-type').value = item.tipo_despesa_id || "";
             document.getElementById('fleet-payment-method').value = item.meio_pagamento_id || "";
 
@@ -276,6 +283,7 @@
                 modelo: document.getElementById('fleet-model').value,
                 placa: document.getElementById('fleet-plate').value.trim(),
                 quilometragem: parseInt(document.getElementById('fleet-km').value),
+                valor: Number(document.getElementById('fleet-value').value),
                 tipo_despesa_id: document.getElementById('fleet-expense-type').value || null,
                 meio_pagamento_id: document.getElementById('fleet-payment-method').value || null
             };
