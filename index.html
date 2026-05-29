@@ -750,22 +750,23 @@
         });
 
         // Form: Assinatura (Módulo Recorrência)
-        document.getElementById('form-subscription').addEventListener('submit', async e => {
-            e.preventDefault();
-            try {
-                const result = await supabaseClient.from('subscriptions').insert({
-                    id: uid('sb'),
-                    name: document.getElementById('sub-name').value,
-                    amount: Number(document.getElementById('sub-amount').value),
-                    due_day: Number(document.getElementById('sub-due-day').value)
-                });
-                if (result.error) throw result.error;
-                e.target.reset();
-                await loadAllData();
-            } catch (err) {
-                alert("Erro ao salvar assinatura: " + err.message);
-            }
+document.getElementById('form-subscription').addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+        const result = await supabaseClient.from('subscriptions').insert({
+            id: uid('sb'),
+            name: document.getElementById('sub-name').value,
+            payment_type: document.getElementById('sub-payment-type').value,
+            amount: Number(document.getElementById('sub-amount').value),
+            renewal_day: Number(document.getElementById('sub-renewal-day').value)
         });
+        if (result.error) throw result.error;
+        e.target.reset();
+        await loadAllData();
+    } catch (err) {
+        alert("Erro ao salvar assinatura: " + err.message);
+    }
+});
 
         // Form: Fornecedor (Cadastro Extra)
         document.getElementById('form-supplier').addEventListener('submit', async e => {
