@@ -262,66 +262,70 @@
 
         </section>
 
-        <section id="tab-fleet" class="tab-content space-y-6">
+       <section id="tab-vehicles" class="tab-content space-y-6">
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <form id="form-vehicle" class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 space-y-4 shadow-md">
+            <h3 class="font-bold text-[#d4af37] border-b border-zinc-800 pb-2">Novo Veículo</h3>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                <form id="form-vehicle" class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 space-y-3 shadow-md">
-                    <h3 class="font-bold text-[#d4af37] border-b border-zinc-800 pb-2">Cadastrar Veículo</h3>
-                    
-                    <div>
-                        <label class="text-xs text-gray-400">Modelo do Veículo</label>
-                        <input type="text" id="fleet-model" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none" required />
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-xs text-gray-400">Marca</label>
-                            <input type="text" id="fleet-brand" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none" required />
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-400">Placa</label>
-                            <input type="text" id="fleet-plate" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none uppercase" required />
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-xs text-gray-400">Ano</label>
-                            <input type="number" id="fleet-year" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none" required />
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-400">Valor de Compra</label>
-                            <input type="number" step="0.01" id="fleet-value" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none" required />
-                        </div>
-                    </div>
-                    
-                    <button class="w-full bg-[#d4af37] text-black hover:bg-[#b8860b] py-2 rounded font-bold text-sm transition-colors mt-2">
-                        Salvar Veículo
-                    </button>
-                </form>
-
-                <div class="md:col-span-2 bg-[#16161a] border border-zinc-800 rounded-xl p-4 shadow-md">
-                    <h3 class="font-bold text-[#d4af37] mb-4 border-b border-zinc-800 pb-2">Controle de Frota cadastrada</h3>
-                    <div class="overflow-auto max-h-[400px]">
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr class="border-b border-zinc-800 text-gray-400 text-left">
-                                    <th class="py-2 pr-2">Modelo/Marca</th>
-                                    <th class="py-2 pr-2">Placa</th>
-                                    <th class="py-2 pr-2 text-center">Ano</th>
-                                    <th class="py-2 text-right">Valor Avaliado</th>
-                                    <th class="py-2 text-center">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="fleet-table"></tbody>
-                        </table>
-                    </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs text-gray-400">Marca</label>
+                    <input type="text" id="veh-brand" placeholder="Ex: Toyota" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none" required />
                 </div>
-
+                <div>
+                    <label class="text-xs text-gray-400">Modelo</label>
+                    <input type="text" id="veh-model" placeholder="Ex: Corolla" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none" required />
+                </div>
             </div>
 
-        </section>
+            <div class="flex flex-wrap md:flex-nowrap gap-3">
+                <div class="flex-1 min-w-[110px]">
+                    <label class="text-xs text-gray-400">Placa</label>
+                    <input type="text" id="veh-plate" placeholder="Ex: ABC1Y34" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none" required />
+                </div>
+                <div class="w-full md:w-20">
+                    <label class="text-xs text-gray-400">Ano</label>
+                    <input type="number" id="veh-year" placeholder="2024" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none" required />
+                </div>
+                <div class="w-full md:w-24">
+                    <label class="text-xs text-gray-400">KM Atual</label>
+                    <input type="number" id="veh-km" placeholder="Ex: 45000" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none" required />
+                </div>
+                <div class="w-full md:w-28">
+                    <label class="text-xs text-gray-400">Valor Est.</label>
+                    <input type="number" step="0.01" id="veh-value" placeholder="0,00" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none" required />
+                </div>
+            </div>
+
+            <button class="w-full bg-[#d4af37] text-black hover:bg-[#b8860b] py-2 rounded font-bold text-sm transition-colors mt-2">
+                Salvar Veículo
+            </button>
+        </form>
+
+        <div class="md:col-span-2 bg-[#16161a] border border-zinc-800 rounded-xl p-4 shadow-md">
+            <h3 class="font-bold text-[#d4af37] mb-4 border-b border-zinc-800 pb-2">Frota Cadastrada</h3>
+            <div class="overflow-auto max-h-[400px]">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-zinc-800 text-gray-400 text-left">
+                            <th class="py-2 pr-2">Veículo</th>
+                            <th class="py-2 pr-2">Placa</th>
+                            <th class="py-2 pr-2 text-center">Ano</th>
+                            <th class="py-2 pr-2 text-center">KM</th>
+                            <th class="py-2 text-right">Valor FIPE/Est.</th>
+                            <th class="py-2 text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vehicles-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</section>
 
         <!-- ASSINATURAS -->
 <section id="tab-subscriptions" class="tab-content space-y-6">
@@ -592,21 +596,22 @@
         }
 
         // RENDER: FROTA (VEÍCULOS)
-        function renderVehicles() {
-            const table = document.getElementById('fleet-table');
-            if(!table) return;
-            table.innerHTML = state.vehicles.map(v => `
-                <tr class="border-b border-zinc-800 hover:bg-zinc-900/40 transition-colors">
-                    <td class="py-2.5 font-medium">${v.model} <span class="text-xs text-gray-400">(${v.brand})</span></td>
-                    <td class="py-2.5 text-xs uppercase text-amber-400 font-mono tracking-wider">${v.plate}</td>
-                    <td class="py-2.5 text-center text-sm">${v.year}</td>
-                    <td class="py-2.5 text-right font-semibold text-gray-200">${formatCurrency(v.value)}</td>
-                    <td class="py-2.5 text-center">
-                        <button onclick="deleteItem('vehicles','id','${v.id}')" class="text-rose-400 hover:underline text-xs">Remover</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
+function renderVehicles() {
+    const table = document.getElementById('vehicles-table');
+    if(!table) return;
+    table.innerHTML = state.vehicles.map(v => `
+        <tr class="border-b border-zinc-800 hover:bg-zinc-900/40 transition-colors">
+            <td class="py-2.5 font-medium">${v.brand || ''} ${v.model}</td>
+            <td class="py-2.5 text-xs text-zinc-400 font-mono">${v.plate.toUpperCase()}</td>
+            <td class="py-2.5 text-center text-sm">${v.year || '-'}</td>
+            <td class="py-2.5 text-center text-sm text-zinc-300 font-mono">${v.km ? Number(v.km).toLocaleString('pt-BR') + ' km' : '-'}</td>
+            <td class="py-2.5 text-right font-semibold text-amber-500">${formatCurrency(v.value || 0)}</td>
+            <td class="py-2.5 text-center">
+                <button onclick="deleteItem('vehicles','id','${v.id}')" class="text-rose-400 hover:underline text-xs">Excluir</button>
+            </td>
+        </tr>
+    `).join('');
+}
 
         // RENDER: ASSINATURAS
         function renderSubscriptions() {
@@ -730,25 +735,25 @@
         });
 
         // Form: Veículo (Módulo Frota)
-        document.getElementById('form-vehicle').addEventListener('submit', async e => {
-            e.preventDefault();
-            try {
-                const result = await supabaseClient.from('vehicles').insert({
-                    id: uid('vh'),
-                    model: document.getElementById('fleet-model').value,
-                    brand: document.getElementById('fleet-brand').value,
-                    plate: document.getElementById('fleet-plate').value.toUpperCase(),
-                    year: Number(document.getElementById('fleet-year').value),
-                    value: Number(document.getElementById('fleet-value').value)
-                });
-                if (result.error) throw result.error;
-                e.target.reset();
-                await loadAllData();
-            } catch (err) {
-                alert("Erro ao salvar veículo: " + err.message);
-            }
+document.getElementById('form-vehicle').addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+        const result = await supabaseClient.from('vehicles').insert({
+            id: uid('vh'),
+            brand: document.getElementById('veh-brand').value,
+            model: document.getElementById('veh-model').value,
+            plate: document.getElementById('veh-plate').value,
+            year: Number(document.getElementById('veh-year').value),
+            km: Number(document.getElementById('veh-km').value),
+            value: Number(document.getElementById('veh-value').value)
         });
-
+        if (result.error) throw result.error;
+        e.target.reset();
+        await loadAllData();
+    } catch (err) {
+        alert("Erro ao salvar veículo: " + err.message);
+    }
+});
         // Form: Assinatura (Módulo Recorrência)
 document.getElementById('form-subscription').addEventListener('submit', async e => {
     e.preventDefault();
