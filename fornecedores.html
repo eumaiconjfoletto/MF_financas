@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações Globais e Cadastros Fixo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0c0c0e] text-gray-100 min-h-screen p-6 space-y-6">
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-zinc-800 pb-4 max-w-7xl mx-auto w-full gap-4">
+        <div class="flex items-center space-x-3">
+            <a href="dashboard.html" class="flex items-center space-x-2 text-xs bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 hover:text-[#d4af37] px-3 py-2 rounded-lg border border-zinc-800 hover:border-[#d4af37]/40 transition-all font-medium group">
+                <svg class="w-3.5 h-3.5 transform group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+                <span>Voltar ao Painel</span>
+            </a>
+            <span class="text-zinc-700 hidden sm:inline">|</span>
+            <h1 class="text-xl font-bold tracking-tight">Gerenciador de Dados Estruturais</h1>
+        </div>
+        <p class="text-xs text-zinc-500 font-mono">Gerenciamento de tabelas fixas e não variáveis</p>
+    </div>
+
+    <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 flex flex-col justify-between space-y-4">
+            <div>
+                <div class="border-b border-zinc-800 pb-2 mb-3 flex justify-between items-center">
+                    <h3 id="title-pay" class="font-bold text-[#d4af37] text-xs uppercase tracking-wider">Meios de Pagamento</h3>
+                    <span class="text-[10px] text-zinc-500">Cartões, Contas e Pix</span>
+                </div>
+                <form id="form-pay" class="flex gap-2 mb-3">
+                    <input type="text" id="input-pay-name" placeholder="Ex: Itaú Uniclass ou Visa Final 44" class="flex-1 bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none" required />
+                    <button type="submit" id="btn-pay" class="bg-[#d4af37] text-black px-4 rounded-lg font-bold text-xs uppercase transition-colors hover:bg-[#b8860b]">Salvar</button>
+                    <button type="button" id="cancel-pay" class="hidden bg-zinc-800 text-zinc-400 px-2 rounded-lg text-xs" onclick="resetPayForm()">X</button>
+                </form>
+                <div class="overflow-y-auto max-h-40 border border-zinc-800/60 rounded-lg bg-[#0c0c0e]/50">
+                    <table class="w-full text-xs text-left">
+                        <tbody id="table-pay"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 flex flex-col justify-between space-y-4">
+            <div>
+                <div class="border-b border-zinc-800 pb-2 mb-3 flex justify-between items-center">
+                    <h3 id="title-seg" class="font-bold text-[#d4af37] text-xs uppercase tracking-wider">Segmentos de Assinaturas</h3>
+                    <span class="text-[10px] text-zinc-500">Categorização de ferramentas</span>
+                </div>
+                <form id="form-seg" class="flex gap-2 mb-3">
+                    <input type="text" id="input-seg-name" placeholder="Ex: Servidores, CRM, Marketing" class="flex-1 bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none" required />
+                    <button type="submit" id="btn-seg" class="bg-[#d4af37] text-black px-4 rounded-lg font-bold text-xs uppercase transition-colors hover:bg-[#b8860b]">Salvar</button>
+                    <button type="button" id="cancel-seg" class="hidden bg-zinc-800 text-zinc-400 px-2 rounded-lg text-xs" onclick="resetSegForm()">X</button>
+                </form>
+                <div class="overflow-y-auto max-h-40 border border-zinc-800/60 rounded-lg bg-[#0c0c0e]/50">
+                    <table class="w-full text-xs text-left">
+                        <tbody id="table-seg"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 flex flex-col justify-between space-y-4">
+            <div>
+                <div class="border-b border-zinc-800 pb-2 mb-3 flex justify-between items-center">
+                    <h3 id="title-cat" class="font-bold text-[#d4af37] text-xs uppercase tracking-wider">Categorias de Fornecedores</h3>
+                    <span class="text-[10px] text-zinc-500">Água, Luz, Internet, etc.</span>
+                </div>
+                <form id="form-cat" class="flex gap-2 mb-3">
+                    <input type="text" id="input-cat-name" placeholder="Ex: Utilidades Públicas" class="flex-1 bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none" required />
+                    <button type="submit" id="btn-cat" class="bg-[#d4af37] text-black px-4 rounded-lg font-bold text-xs uppercase transition-colors hover:bg-[#b8860b]">Salvar</button>
+                    <button type="button" id="cancel-cat" class="hidden bg-zinc-800 text-zinc-400 px-2 rounded-lg text-xs" onclick="resetCatForm()">X</button>
+                </form>
+                <div class="overflow-y-auto max-h-40 border border-zinc-800/60 rounded-lg bg-[#0c0c0e]/50">
+                    <table class="w-full text-xs text-left">
+                        <tbody id="table-cat"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 flex flex-col justify-between space-y-4">
+            <div>
+                <div class="border-b border-zinc-800 pb-2 mb-3 flex justify-between items-center">
+                    <h3 id="title-forn" class="font-bold text-[#d4af37] text-xs uppercase tracking-wider">Fornecedores</h3>
+                    <span class="text-[10px] text-zinc-500">Empresas e Prestadores</span>
+                </div>
+                <form id="form-forn" class="flex flex-wrap sm:flex-nowrap gap-2 mb-3">
+                    <input type="text" id="input-forn-name" placeholder="Nome do Fornecedor" class="flex-1 min-w-[140px] bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none" required />
+                    <select id="select-forn-cat" class="w-full sm:w-44 bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none text-zinc-300" required>
+                        <option value="">Categoria...</option>
+                    </select>
+                    <button type="submit" id="btn-forn" class="w-full sm:w-auto bg-[#d4af37] text-black px-4 py-2 rounded-lg font-bold text-xs uppercase transition-colors hover:bg-[#b8860b]">Salvar</button>
+                    <button type="button" id="cancel-forn" class="hidden bg-zinc-800 text-zinc-400 px-2 rounded-lg text-xs" onclick="resetFornForm()">X</button>
+                </form>
+                <div class="overflow-y-auto max-h-40 border border-zinc-800/60 rounded-lg bg-[#0c0c0e]/50">
+                    <table class="w-full text-xs text-left">
+                        <tbody id="table-forn"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 flex flex-col justify-between space-y-4">
+            <div>
+                <div class="border-b border-zinc-800 pb-2 mb-3 flex justify-between items-center">
+                    <h3 id="title-veic" class="font-bold text-[#d4af37] text-xs uppercase tracking-wider">Cadastro de Veículos</h3>
+                    <span class="text-[10px] text-zinc-500">Frota Física da Empresa</span>
+                </div>
+                <form id="form-veic" class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+                    <input type="text" id="input-veic-brand" placeholder="Marca" class="bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-xs focus:border-[#d4af37] outline-none" required />
+                    <input type="text" id="input-veic-model" placeholder="Modelo" class="bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-xs focus:border-[#d4af37] outline-none" required />
+                    <input type="text" id="input-veic-plate" placeholder="Placa" maxlength="7" class="bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-xs focus:border-[#d4af37] outline-none text-center font-mono font-bold uppercase tracking-wider" required />
+                    <div class="sm:col-span-3 flex justify-end gap-2 pt-1">
+                        <button type="button" id="cancel-veic" class="hidden bg-zinc-800 text-zinc-400 px-3 py-1.5 rounded-lg text-xs font-bold" onclick="resetVeicForm()">Cancelar</button>
+                        <button type="submit" id="btn-veic" class="bg-[#d4af37] text-black px-5 py-1.5 rounded-lg font-bold text-xs uppercase transition-colors hover:bg-[#b8860b]">Salvar Veículo</button>
+                    </div>
+                </form>
+                <div class="overflow-y-auto max-h-40 border border-zinc-800/60 rounded-lg bg-[#0c0c0e]/50">
+                    <table class="w-full text-xs text-left">
+                        <tbody id="table-veic"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 flex flex-col justify-between space-y-4">
+            <div>
+                <div class="border-b border-zinc-800 pb-2 mb-3 flex justify-between items-center">
+                    <h3 id="title-tip" class="font-bold text-[#d4af37] text-xs uppercase tracking-wider">Tipos de Despesa (Frota)</h3>
+                    <span class="text-[10px] text-zinc-500">Combustível, Pedágio, etc.</span>
+                </div>
+                <form id="form-tip" class="flex gap-2 mb-3">
+                    <input type="text" id="input-tip-name" placeholder="Ex: Troca de Óleo" class="flex-1 bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none" required />
+                    <button type="submit" id="btn-tip" class="bg-[#d4af37] text-black px-4 rounded-lg font-bold text-xs uppercase transition-colors hover:bg-[#b8860b]">Salvar</button>
+                    <button type="button" id="cancel-tip" class="hidden bg-zinc-800 text-zinc-400 px-2 rounded-lg text-xs" onclick="resetTipForm()">X</button>
+                </form>
+                <div class="overflow-y-auto max-h-40 border border-zinc-800/60 rounded-lg bg-[#0c0c0e]/50">
+                    <table class="w-full text-xs text-left">
+                        <tbody id="table-tip"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="delete-modal" class="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-[#1c1c1f] border border-zinc-800 rounded-2xl p-6 max-w-sm w-full text-center space-y-5 shadow-2xl">
+            <p class="text-[#d4af37] font-bold text-lg tracking-wide uppercase">Confirmar Exclusão?</p>
+            <p class="text-zinc-400 text-xs">Atenção: Se este item estiver vinculado a algum lançamento ativo, a operação poderá falhar.</p>
+            <div class="flex justify-center gap-4 pt-1">
+                <button id="modal-confirm" class="bg-[#d4af37] hover:bg-[#b8860b] text-black font-bold px-6 py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all w-28 shadow-md">Sim</button>
+                <button id="modal-cancel" class="bg-zinc-850 border border-zinc-700 text-zinc-300 font-bold px-6 py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all w-28">Não</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co".replace(/\/$/, "");
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+        // Estados Locais de Dados
+        let listPay = [], listSeg = [], listCat = [], listForn = [], listVeic = [], listTip = [];
+        
+        // IDs de Edição e Controle de Exclusão
+        let editPayId = null, editSegId = null, editCatId = null, editFornId = null, editVeicId = null, editTipId = null;
+        let deleteTarget = { table: '', id: '' };
+
+        // Ícones Globais Reutilizáveis
+        const trashIcon = `<svg class="w-3.5 h-3.5 text-rose-400 hover:text-rose-300 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>`;
+        const editIcon = `<svg class="w-3.5 h-3.5 text-amber-400 hover:text-amber-300 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>`;
+
+        // Bloqueia minúsculas no campo de placa em tempo real
+        document.getElementById('input-veic-plate').addEventListener('input', e => e.target.value = e.target.value.toUpperCase());
+
+        // Modal de Exclusão Único
+        function openDeleteModal(table, id) {
+            deleteTarget = { table, id };
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+        document.getElementById('modal-cancel').addEventListener('click', closeDeleteModal);
+        document.getElementById('modal-confirm').addEventListener('click', async () => {
+            if(deleteTarget.id) {
+                try {
+                    const { error } = await supabaseClient.from(deleteTarget.table).delete().eq('id', deleteTarget.id);
+                    if (error) throw error;
+                    closeDeleteModal();
+                    refreshAll();
+                } catch (e) { alert("Erro ao deletar: Item possui vínculos ativos no sistema."); }
+            }
+        });
+
+        // --- 1. MEIOS DE PAGAMENTO ---
+        async function loadPay() {
+            const { data } = await supabaseClient.from('meios_pagamento').select('*').order('nome');
+            listPay = data || [];
+            document.getElementById('table-pay').innerHTML = listPay.map(i => `
+                <tr class="border-b border-zinc-900 hover:bg-zinc-900/40"><td class="py-2 px-3">${i.nome}</td>
+                <td class="py-2 px-3 text-right space-x-2"><button onclick="prepEditPay('${i.id}')" class="inline-block">${editIcon}</button>
+                <button onclick="openDeleteModal('meios_pagamento','${i.id}')" class="inline-block">${trashIcon}</button></td></tr>`).join('');
+        }
+        function prepEditPay(id) {
+            const item = listPay.find(x => x.id === id);
+            editPayId = id;
+            document.getElementById('input-pay-name').value = item.nome;
+            document.getElementById('title-pay').textContent = "Editar Meio de Pagto";
+            document.getElementById('cancel-pay').classList.remove('hidden');
+        }
+        function resetPayForm() {
+            editPayId = null; document.getElementById('form-pay').reset();
+            document.getElementById('title-pay').textContent = "Meios de Pagamento";
+            document.getElementById('cancel-pay').classList.add('hidden');
+        }
+        document.getElementById('form-pay').addEventListener('submit', async e => {
+            e.preventDefault();
+            const nome = document.getElementById('input-pay-name').value;
+            if(editPayId) await supabaseClient.from('meios_pagamento').update({ nome }).eq('id', editPayId);
+            else await supabaseClient.from('meios_pagamento').insert({ nome });
+            resetPayForm(); loadPay();
+        });
+
+        // --- 2. SEGMENTOS ASSINATURAS ---
+        async function loadSeg() {
+            const { data } = await supabaseClient.from('segmentos_assinaturas').select('*').order('nome');
+            listSeg = data || [];
+            document.getElementById('table-seg').innerHTML = listSeg.map(i => `
+                <tr class="border-b border-zinc-900 hover:bg-zinc-900/40"><td class="py-2 px-3">${i.nome}</td>
+                <td class="py-2 px-3 text-right space-x-2"><button onclick="prepEditSeg('${i.id}')" class="inline-block">${editIcon}</button>
+                <button onclick="openDeleteModal('segmentos_assinaturas','${i.id}')" class="inline-block">${trashIcon}</button></td></tr>`).join('');
+        }
+        function prepEditSeg(id) {
+            const item = listSeg.find(x => x.id === id);
+            editSegId = id;
+            document.getElementById('input-seg-name').value = item.nome;
+            document.getElementById('title-seg').textContent = "Editar Segmento";
+            document.getElementById('cancel-seg').classList.remove('hidden');
+        }
+        function resetSegForm() {
+            editSegId = null; document.getElementById('form-seg').reset();
+            document.getElementById('title-seg').textContent = "Segmentos de Assinaturas";
+            document.getElementById('cancel-seg').classList.add('hidden');
+        }
+        document.getElementById('form-seg').addEventListener('submit', async e => {
+            e.preventDefault();
+            const nome = document.getElementById('input-seg-name').value;
+            if(editSegId) await supabaseClient.from('segmentos_assinaturas').update({ nome }).eq('id', editSegId);
+            else await supabaseClient.from('segmentos_assinaturas').insert({ nome });
+            resetSegForm(); loadSeg();
+        });
+
+        // --- 3. CATEGORIAS FORNECEDORES ---
+        async function loadCat() {
+            const { data } = await supabaseClient.from('categorias_fornecedores').select('*').order('nome');
+            listCat = data || [];
+            document.getElementById('select-forn-cat').innerHTML = '<option value="">Categoria...</option>' + listCat.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+            document.getElementById('table-cat').innerHTML = listCat.map(i => `
+                <tr class="border-b border-zinc-900 hover:bg-zinc-900/40"><td class="py-2 px-3">${i.nome}</td>
+                <td class="py-2 px-3 text-right space-x-2"><button onclick="prepEditCat('${i.id}')" class="inline-block">${editIcon}</button>
+                <button onclick="openDeleteModal('categorias_fornecedores','${i.id}')" class="inline-block">${trashIcon}</button></td></tr>`).join('');
+        }
+        function prepEditCat(id) {
+            const item = listCat.find(x => x.id === id);
+            editCatId = id;
+            document.getElementById('input-cat-name').value = item.nome;
+            document.getElementById('title-cat').textContent = "Editar Categoria";
+            document.getElementById('cancel-cat').classList.remove('hidden');
+        }
+        function resetCatForm() {
+            editCatId = null; document.getElementById('form-cat').reset();
+            document.getElementById('title-cat').textContent = "Categorias de Fornecedores";
+            document.getElementById('cancel-cat').classList.add('hidden');
+        }
+        document.getElementById('form-cat').addEventListener('submit', async e => {
+            e.preventDefault();
+            const nome = document.getElementById('input-cat-name').value;
+            if(editCatId) await supabaseClient.from('categorias_fornecedores').update({ nome }).eq('id', editCatId);
+            else await supabaseClient.from('categorias_fornecedores').insert({ nome });
+            resetCatForm(); loadCat(); loadForn();
+        });
+
+        // --- 4. FORNECEDORES ---
+        async function loadForn() {
+            const { data } = await supabaseClient.from('fornecedores').select('*, categorias_fornecedores(nome)').order('nome');
+            listForn = data || [];
+            document.getElementById('table-forn').innerHTML = listForn.map(i => `
+                <tr class="border-b border-zinc-900 hover:bg-zinc-900/40"><td class="py-2 px-3 font-semibold">${i.nome} <span class="text-[10px] font-normal text-zinc-500 block">${i.categorias_fornecedores ? i.categorias_fornecedores.nome : 'Sem Cat.'}</span></td>
+                <td class="py-2 px-3 text-right space-x-2"><button onclick="prepEditForn('${i.id}')" class="inline-block">${editIcon}</button>
+                <button onclick="openDeleteModal('fornecedores','${i.id}')" class="inline-block">${trashIcon}</button></td></tr>`).join('');
+        }
+        function prepEditForn(id) {
+            const item = listForn.find(x => x.id === id);
+            editFornId = id;
+            document.getElementById('input-forn-name').value = item.nome;
+            document.getElementById('select-forn-cat').value = item.categoria_id || "";
+            document.getElementById('title-forn').textContent = "Editar Fornecedor";
+            document.getElementById('cancel-forn').classList.remove('hidden');
+        }
+        function resetFornForm() {
+            editFornId = null; document.getElementById('form-forn').reset();
+            document.getElementById('title-forn').textContent = "Fornecedores";
+            document.getElementById('cancel-forn').classList.add('hidden');
+        }
+        document.getElementById('form-forn').addEventListener('submit', async e => {
+            e.preventDefault();
+            const nome = document.getElementById('input-forn-name').value;
+            const categoria_id = document.getElementById('select-forn-cat').value || null;
+            if(editFornId) await supabaseClient.from('fornecedores').update({ nome, categoria_id }).eq('id', editFornId);
+            else await supabaseClient.from('fornecedores').insert({ nome, categoria_id });
+            resetFornForm(); loadForn();
+        });
+
+        // --- 5. VEÍCULOS ---
+        async function loadVeic() {
+            const { data } = await supabaseClient.from('veiculos').select('*').order('created_at', {ascending: false});
+            listVeic = data || [];
+            document.getElementById('table-veic').innerHTML = listVeic.map(i => `
+                <tr class="border-b border-zinc-900 hover:bg-zinc-900/40"><td class="py-2 px-3 font-medium text-zinc-300">${i.marca} <span class="text-zinc-100 font-semibold">${i.modelo}</span></td>
+                <td class="py-2 px-3 text-center"><span class="bg-zinc-800 font-mono px-2 py-0.5 rounded font-bold border border-zinc-700/50 text-[10px] tracking-wider">${i.placa}</span></td>
+                <td class="py-2 px-3 text-right space-x-2"><button onclick="prepEditVeic('${i.id}')" class="inline-block">${editIcon}</button>
+                <button onclick="openDeleteModal('veiculos','${i.id}')" class="inline-block">${trashIcon}</button></td></tr>`).join('');
+        }
+        function prepEditVeic(id) {
+            const item = listVeic.find(x => x.id === id);
+            editVeicId = id;
+            document.getElementById('input-veic-brand').value = item.marca;
+            document.getElementById('input-veic-model').value = item.modelo;
+            document.getElementById('input-veic-plate').value = item.placa;
+            document.getElementById('title-veic').textContent = "Editar Dados do Veículo";
+            document.getElementById('cancel-veic').classList.remove('hidden');
+        }
+        function resetVeicForm() {
+            editVeicId = null; document.getElementById('form-veic').reset();
+            document.getElementById('title-veic').textContent = "Cadastro de Veículos";
+            document.getElementById('cancel-veic').classList.add('hidden');
+        }
+        document.getElementById('form-veic').addEventListener('submit', async e => {
+            e.preventDefault();
+            const payload = {
+                marca: document.getElementById('input-veic-brand').value,
+                modelo: document.getElementById('input-veic-model').value,
+                placa: document.getElementById('input-veic-plate').value.trim().toUpperCase()
+            };
+            if(editVeicId) await supabaseClient.from('veiculos').update(payload).eq('id', editVeicId);
+            else await supabaseClient.from('veiculos').insert(payload);
+            resetVeicForm(); loadVeic();
+        });
+
+        // --- 6. TIPOS DE DESPESAS DA FROTA ---
+        async function loadTip() {
+            const { data } = await supabaseClient.from('tipos_despesa_frota').select('*').order('nome');
+            listTip = data || [];
+            document.getElementById('table-tip').innerHTML = listTip.map(i => `
+                <tr class="border-b border-zinc-900 hover:bg-zinc-900/40"><td class="py-2 px-3">${i.nome}</td>
+                <td class="py-2 px-3 text-right space-x-2"><button onclick="prepEditTip('${i.id}')" class="inline-block">${editIcon}</button>
+                <button onclick="openDeleteModal('tipos_despesa_frota','${i.id}')" class="inline-block">${trashIcon}</button></td></tr>`).join('');
+        }
+        function prepEditTip(id) {
+            const item = listTip.find(x => x.id === id);
+            editTipId = id;
+            document.getElementById('input-tip-name').value = item.nome;
+            document.getElementById('title-tip').textContent = "Editar Tipo Despesa";
+            document.getElementById('cancel-tip').classList.remove('hidden');
+        }
+        function resetTipForm() {
+            editTipId = null; document.getElementById('form-tip').reset();
+            document.getElementById('title-tip').textContent = "Tipos de Despesa (Frota)";
+            document.getElementById('cancel-tip').classList.add('hidden');
+        }
+        document.getElementById('form-tip').addEventListener('submit', async e => {
+            e.preventDefault();
+            const nome = document.getElementById('input-tip-name').value;
+            if(editTipId) await supabaseClient.from('tipos_despesa_frota').update({ nome }).eq('id', editTipId);
+            else await supabaseClient.from('tipos_despesa_frota').insert({ nome });
+            resetTipForm(); loadTip();
+        });
+
+        // Execução Inicial
+        function refreshAll() {
+            loadPay(); loadSeg(); loadCat(); loadForn(); loadVeic(); loadTip();
+        }
+        refreshAll();
+    </script>
+</body>
+</html>
