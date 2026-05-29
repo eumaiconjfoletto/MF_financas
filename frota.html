@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo Frota e Veículos - Gestão</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0c0c0e] text-gray-100 min-h-screen p-6 space-y-6">
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-zinc-800 pb-4 max-w-6xl mx-auto w-full gap-4">
+        <div class="flex items-center space-x-3">
+            <a href="dashboard.html" class="flex items-center space-x-2 text-xs bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 hover:text-[#d4af37] px-3 py-2 rounded-lg border border-zinc-800 hover:border-[#d4af37]/40 transition-all font-medium group">
+                <svg class="w-3.5 h-3.5 transform group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+                <span>Voltar ao Painel</span>
+            </a>
+            <span class="text-zinc-700 hidden sm:inline">|</span>
+            <div class="flex items-center space-x-2">
+                <h1 class="text-xl font-bold tracking-tight">Controle de Frota e Veículos</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto w-full space-y-6">
+        
+        <form id="form-fleet" class="bg-[#16161a] border border-zinc-800 rounded-xl p-5 shadow-lg space-y-4">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                <h3 id="form-title" class="font-bold text-[#d4af37] text-sm tracking-wide uppercase">Novo Lançamento / Registro</h3>
+                <span class="text-[10px] text-zinc-500">Insira as informações operacionais do veículo</span>
+            </div>
+            
+            <div class="flex flex-wrap lg:flex-nowrap gap-4">
+                <div class="flex-1 min-w-[140px]">
+                    <label class="text-xs text-gray-400 block mb-1">Marca</label>
+                    <input type="text" id="fleet-brand" placeholder="Ex: Chevrolet, Volkswagen" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
+                </div>
+
+                <div class="flex-1 min-w-[160px]">
+                    <label class="text-xs text-gray-400 block mb-1">Modelo</label>
+                    <input type="text" id="fleet-model" placeholder="Ex: Onix Plus, Gol Trend" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
+                </div>
+
+                <div class="w-full sm:w-32">
+                    <label class="text-xs text-gray-400 block mb-1">Placa</label>
+                    <input type="text" id="fleet-plate" placeholder="ABC1D23" maxlength="7" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none text-center font-mono font-bold uppercase tracking-wider" required />
+                </div>
+
+                <div class="w-full sm:w-36">
+                    <label class="text-xs text-gray-400 block mb-1">Quilometragem</label>
+                    <div class="relative">
+                        <input type="number" id="fleet-km" placeholder="0" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg py-2 pl-3 pr-9 text-sm focus:border-[#d4af37] outline-none font-mono text-right font-semibold text-zinc-200" required />
+                        <span class="absolute right-2.5 top-2 text-[10px] text-zinc-500 font-bold uppercase">KM</span>
+                    </div>
+                </div>
+
+                <div class="w-full sm:w-52">
+                    <label class="text-xs text-gray-400 block mb-1">Tipo de Despesa</label>
+                    <select id="fleet-expense-type" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors text-zinc-300" required>
+                        <option value="">Carregando tipos...</option>
+                    </select>
+                </div>
+
+                <div class="w-full sm:w-52">
+                    <label class="text-xs text-gray-400 block mb-1">Meio de Pagamento</label>
+                    <select id="fleet-payment-method" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors text-zinc-300" required>
+                        <option value="">Carregando contas...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" id="btn-cancel-edit" class="hidden w-full sm:w-32 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2.5 rounded-lg font-bold text-sm transition-all border border-zinc-700">
+                    Cancelar
+                </button>
+                <button type="submit" id="btn-submit-form" class="w-full sm:w-48 bg-[#d4af37] text-black hover:bg-[#b8860b] py-2.5 rounded-lg font-bold text-sm transition-all shadow-md">
+                    Salvar Registro
+                </button>
+            </div>
+        </form>
+
+        <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-5 shadow-lg">
+            <h3 class="font-bold text-[#d4af37] mb-4 border-b border-zinc-800 pb-2 text-sm tracking-wide uppercase">Frota e Despesas Registradas</h3>
+            <div class="overflow-auto max-h-[500px]">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-zinc-800 text-gray-400 text-left text-xs uppercase tracking-wider">
+                            <th class="py-3 pr-2">Veículo</th>
+                            <th class="py-3 pr-2 text-center">Placa</th>
+                            <th class="py-3 pr-2 text-right">Quilometragem</th>
+                            <th class="py-3 pr-2">Tipo Despesa</th>
+                            <th class="py-3 pr-2">Pago Via</th>
+                            <th class="py-3 text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fleet-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-200">
+        <div class="bg-[#1c1c1f] border border-zinc-800 rounded-2xl p-6 max-w-sm w-full text-center space-y-5 shadow-2xl">
+            <p class="text-[#d4af37] font-bold text-lg tracking-wide uppercase">deseja excluir?</p>
+            <div class="flex justify-center gap-4 pt-1">
+                <button id="modal-confirm-btn" class="bg-[#d4af37] hover:bg-[#b8860b] text-black font-bold px-6 py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all w-28 shadow-md">
+                    Sim
+                </button>
+                <button id="modal-cancel-btn" class="bg-[#d4af37] hover:bg-[#b8860b] text-black font-bold px-6 py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all w-28 shadow-md">
+                    Não
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co".replace(/\/$/, "");
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+        let fleetData = [];
+        let editingId = null;
+        let idParaExcluir = null;
+
+        if (!localStorage.getItem('user_session')) {
+            window.location.href = 'index.html';
+        }
+
+        function getExpenseIcon(tipoNome) {
+            const nome = tipoNome ? tipoNome.toLowerCase() : '';
+            if (nome.includes('gasolina') || nome.includes('combustível')) {
+                return `<svg class="w-4 h-4 text-amber-500 inline-block mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.656 48.656 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3M3 12h16.5M10.5 18v-3m0 3h3m-3 0H6" /></svg>`;
+            }
+            if (nome.includes('manutenção')) {
+                return `<svg class="w-4 h-4 text-blue-400 inline-block mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11.42 15.17L17.25 21A2.67 2.67 0 1113.5 17.25l-5.83-5.83m3.75 3.75a3.75 3.75 0 11-5.3-5.3m4.7 4.7l3-3m0 0l-3-3m3 3H9" /></svg>`;
+            }
+            if (nome.includes('pedágio')) {
+                return `<svg class="w-4 h-4 text-emerald-400 inline-block mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>`;
+            }
+            return `<svg class="w-4 h-4 text-zinc-400 inline-block mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.25 18.75a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0zM18.75 18.75a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0zM3.75 12h16.5M4.5 12l1.35-4.05A1.5 1.5 0 017.275 7h9.45a1.5 1.5 0 011.425 1.05L19.5 12m-15 0v5.25a.75.75 0 00.75.75h14.25a.75.75 0 00.75-.75V12" /></svg>`;
+        }
+
+        const trashIcon = `<svg class="w-4 h-4 text-rose-400 hover:text-rose-300 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>`;
+        const editIcon = `<svg class="w-4 h-4 text-amber-400 hover:text-amber-300 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>`;
+
+        const formatKM = v => new Intl.NumberFormat('pt-BR').format(v) + " Km";
+
+        document.getElementById('fleet-plate').addEventListener('input', e => {
+            e.target.value = e.target.value.toUpperCase();
+        });
+
+        // 1. BUSCA DIRETAMENTE DA TABELA MEIOS_PAGAMENTO QUE VOCÊ JÁ POSSUI
+        async function fetchPaymentMethods() {
+            try {
+                const { data, error } = await supabaseClient.from('meios_pagamento').select('*').order('nome', { ascending: true });
+                if (error) throw error;
+                document.getElementById('fleet-payment-method').innerHTML = (data || []).map(m => `<option value="${m.id}">${m.nome}</option>`).join('');
+            } catch (err) { console.error(err.message); }
+        }
+
+        async function fetchExpenseTypes() {
+            try {
+                const { data, error } = await supabaseClient.from('tipos_despay_frota' /* ou tipos_despesa_frota */).select('*').order('nome', { ascending: true });
+                if (!data, error) {
+                    // Fallback de segurança caso mude o nome da tabela
+                    const { data: retryData } = await supabaseClient.from('tipos_despesa_frota').select('*').order('nome', { ascending: true });
+                    document.getElementById('fleet-expense-type').innerHTML = (retryData || []).map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
+                    return;
+                }
+                document.getElementById('fleet-expense-type').innerHTML = (data || []).map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
+            } catch (err) { console.error(err.message); }
+        }
+
+        async function fetchFleet() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('frota')
+                    .select('*, tipos_despesa_frota(nome), meios_pagamento(nome)')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                fleetData = data || [];
+                renderFleet();
+            } catch (err) { console.error(err.message); }
+        }
+
+        function renderFleet() {
+            const table = document.getElementById('fleet-table-body');
+            if (!table) return;
+
+            table.innerHTML = fleetData.map(f => `
+                <tr class="border-b border-zinc-800 hover:bg-zinc-900/30 transition-colors">
+                    <td class="py-3 pr-2 font-medium text-sm">
+                        <span class="text-zinc-400 text-xs block">${f.marca}</span>
+                        <span class="text-zinc-100 font-semibold">${f.modelo}</span>
+                    </td>
+                    <td class="py-3 pr-2 text-center font-mono font-bold text-xs">
+                        <span class="bg-zinc-800/80 px-2 py-1 rounded text-zinc-300 border border-zinc-700/60">${f.placa}</span>
+                    </td>
+                    <td class="py-3 pr-2 text-right font-mono text-zinc-300 text-sm font-medium">${formatKM(f.quilometragem || 0)}</td>
+                    <td class="py-3 pr-2 text-zinc-300 text-xs">
+                        ${getExpenseIcon(f.tipos_despesa_frota ? f.tipos_despesa_frota.nome : '')}
+                        <span>${f.tipos_despesa_frota ? f.tipos_despesa_frota.nome : 'Não informado'}</span>
+                    </td>
+                    <td class="py-3 pr-2 text-zinc-400 text-xs">${f.meios_pagamento ? f.meios_pagamento.nome : 'Não informado'}</td>
+                    <td class="py-3 text-center">
+                        <div class="flex items-center justify-center gap-4">
+                            <button onclick="prepareEdit('${f.id}')" title="Editar" class="p-1 hover:bg-zinc-800 rounded transition-colors">${editIcon}</button>
+                            <button onclick="triggerDeleteModal('${f.id}')" title="Excluir" class="p-1 hover:bg-zinc-800 rounded transition-colors">${trashIcon}</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function triggerDeleteModal(id) {
+            idParaExcluir = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            idParaExcluir = null;
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        document.getElementById('modal-cancel-btn').addEventListener('click', closeDeleteModal);
+        document.getElementById('modal-confirm-btn').addEventListener('click', async () => {
+            if(idParaExcluir) {
+                try {
+                    const { error } = await supabaseClient.from('frota').delete().eq('id', idParaExcluir);
+                    if (error) throw error;
+                    closeDeleteModal();
+                    await fetchFleet();
+                } catch(err) { alert("Erro ao deletar: " + err.message); }
+            }
+        });
+
+        function prepareEdit(id) {
+            const item = fleetData.find(f => f.id === id);
+            if (!item) return;
+
+            editingId = id;
+
+            document.getElementById('fleet-brand').value = item.marca;
+            document.getElementById('fleet-model').value = item.modelo;
+            document.getElementById('fleet-plate').value = item.placa;
+            document.getElementById('fleet-km').value = item.quilometragem;
+            document.getElementById('fleet-expense-type').value = item.tipo_despesa_id || "";
+            document.getElementById('fleet-payment-method').value = item.meio_pagamento_id || "";
+
+            document.getElementById('form-title').textContent = "Editar Registro de Frota";
+            document.getElementById('btn-submit-form').textContent = "Atualizar Registro";
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
+
+            document.getElementById('form-fleet').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            editingId = null;
+            document.getElementById('form-fleet').reset();
+            document.getElementById('form-title').textContent = "Novo Lançamento / Registro";
+            document.getElementById('btn-submit-form').textContent = "Salvar Registro";
+            document.getElementById('btn-cancel-edit').classList.add('hidden');
+        }
+
+        document.getElementById('btn-cancel-edit').addEventListener('click', cancelEdit);
+
+        document.getElementById('form-fleet').addEventListener('submit', async e => {
+            e.preventDefault();
+
+            const payload = {
+                marca: document.getElementById('fleet-brand').value,
+                modelo: document.getElementById('fleet-model').value,
+                placa: document.getElementById('fleet-plate').value.trim(),
+                quilometragem: parseInt(document.getElementById('fleet-km').value),
+                tipo_despesa_id: document.getElementById('fleet-expense-type').value || null,
+                meio_pagamento_id: document.getElementById('fleet-payment-method').value || null
+            };
+
+            try {
+                if (editingId) {
+                    const { error } = await supabaseClient.from('frota').update(payload).eq('id', editingId);
+                    if (error) throw error;
+                    cancelEdit();
+                } else {
+                    const { error } = await supabaseClient.from('frota').insert(payload);
+                    if (error) throw error;
+                    e.target.reset();
+                }
+                await fetchFleet();
+            } catch (err) { alert("Erro ao salvar operação: " + err.message); }
+        });
+
+        async function init() {
+            await fetchPaymentMethods();
+            await fetchExpenseTypes();
+            await fetchFleet();
+        }
+        init();
+    </script>
+</body>
+</html>
