@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo Assinaturas - Gestão</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0c0c0e] text-gray-100 min-h-screen p-6 space-y-6">
+
+    <div class="flex justify-between items-center border-b border-zinc-800 pb-4 max-w-6xl mx-auto w-full">
+        <div class="flex items-center space-x-4">
+            <div>
+                <a href="dashboard.html" class="text-xs text-[#d4af37] hover:underline">← Voltar ao Painel</a>
+                <div class="flex items-center space-x-2 mt-1">
+                    <h1 class="text-xl font-bold">Assinaturas e Recorrências</h1>
+                    <span id="header-segment-icon" class="text-[#d4af37]"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <form id="form-subscription" class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 space-y-4 shadow-md h-fit">
+            <h3 class="font-bold text-[#d4af37] border-b border-zinc-800 pb-2">Nova Assinatura</h3>
+            
+            <div class="flex flex-wrap md:flex-nowrap gap-3">
+                <div class="flex-1 min-w-[180px]">
+                    <label class="text-xs text-gray-400">Nome da Assinatura</label>
+                    <input type="text" id="sub-name" placeholder="Ex: Netflix, Spotify, Claro" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
+                </div>
+                <div class="w-full md:w-44">
+                    <label class="text-xs text-gray-400">Segmento</label>
+                    <select id="sub-segment" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none transition-colors text-zinc-300" required>
+                        <option value="musica">🎧 Música</option>
+                        <option value="internet">🌐 Internet</option>
+                        <option value="entretenimento">🎭 Entretenimento</option>
+                        <option value="filmes">🎬 Filmes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap md:flex-nowrap gap-3">
+                <div class="w-full md:w-28">
+                    <label class="text-xs text-gray-400">Valor Pago</label>
+                    <input type="number" step="0.01" id="sub-value" placeholder="0,00" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none text-right font-mono" required />
+                </div>
+                <div class="w-full md:w-36">
+                    <label class="text-xs text-gray-400">Data de Pagamento</label>
+                    <input type="date" id="sub-date" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none text-zinc-300" required />
+                </div>
+                <div class="flex-1 min-w-[140px]">
+                    <label class="text-xs text-gray-400">Forma de Pagamento</label>
+                    <select id="sub-method" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2 text-sm focus:border-[#d4af37] outline-none transition-colors text-zinc-300" required>
+                        <option value="Cartão de Crédito">Cartão de Crédito</option>
+                        <option value="Débito em Conta">Débito em Conta</option>
+                        <option value="PIX">PIX</option>
+                        <option value="Boleto Bancário">Boleto Bancário</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="w-full bg-[#d4af37] text-black hover:bg-[#b8860b] py-2 rounded font-bold text-sm transition-colors mt-2 shadow-lg shadow-[#d4af37]/5">
+                Salvar Assinatura
+            </button>
+        </form>
+
+        <div class="md:col-span-2 bg-[#16161a] border border-zinc-800 rounded-xl p-4 shadow-md">
+            <h3 class="font-bold text-[#d4af37] mb-4 border-b border-zinc-800 pb-2">Planos e Recorrências Ativas</h3>
+            <div class="overflow-auto max-h-[500px]">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-zinc-800 text-gray-400 text-left">
+                            <th class="py-2 pr-2">Assinatura</th>
+                            <th class="py-2 pr-2 text-right">Valor</th>
+                            <th class="py-2 pr-2 text-center">Vencimento/Pgto</th>
+                            <th class="py-2 pr-2">Forma de Pagamento</th>
+                            <th class="py-2 text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subscriptions-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // CONFIGURAÇÃO DO SUPABASE
+        const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co".replace(/\/$/, "");
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let subscriptionsData = [];
+
+        // GUARDA DE ROTA: Expulsa se não estiver logado por tabela
+        if (!localStorage.getItem('user_session')) {
+            window.location.href = 'index.html';
+        }
+
+        // DICIONÁRIO DE ÍCONES (Retorna o SVG correspondente ao segmento)
+        function getSegmentIcon(segmento) {
+            const icons = {
+                musica: `<svg class="w-4 h-4 inline-block mr-1.5 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 10l12-2M9 21a3 3 0 1 1-6-3 3 3 0 0 1 6 0Zm12-2a3 3 0 1 1-6-3 3 3 0 0 1 6 0Z"/></svg>`,
+                internet: `<svg class="w-4 h-4 inline-block mr-1.5 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 0c-2.5 0-4.5 4.5-4.5 10s2 10 4.5 10 4.5-4.5 4.5-10S14.5 2 12 2ZM2 12h20"/></svg>`,
+                entretenimento: `<svg class="w-4 h-4 inline-block mr-1.5 text-pink-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16.5 7.5h.01M13.5 10.5h.01M3 10.5c0-3.5 2.5-6 6-6h6c3.5 0 6 2.5 6 6v3c0 3.5-2.5 6-6 6H9c-3.5 0-6-2.5-6-6v-3Zm3 0h3m-1.5-1.5v3"/></svg>`,
+                filmes: `<svg class="w-4 h-4 inline-block mr-1.5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 4v16M17 4v16M3 8h4M3 16h4M17 8h4M17 16h4M3 4h18M3 20h18M7 12h10"/></svg>`
+            };
+            return icons[segmento] || '';
+        }
+
+        // FUNÇÕES UTILITÁRIAS
+        const formatCurrency = v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+        
+        function formatDate(dateStr) {
+            if(!dateStr) return '-';
+            // Força UTC para evitar que a data mude de dia devido ao fuso horário local
+            const d = new Date(dateStr);
+            return new Date(d.getTime() + d.getTimezoneOffset() * 60000).toLocaleDateString('pt-BR');
+        }
+
+        // CARREGAR DADOS DO BANCO
+        async function fetchSubscriptions() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('assinaturas')
+                    .select('*')
+                    .order('data_pagamento', { ascending: true });
+
+                if (error) throw error;
+                subscriptionsData = data || [];
+                renderSubscriptions();
+            } catch (err) {
+                console.error("Erro ao carregar dados:", err.message);
+            }
+        }
+
+        // RENDERIZAR TABELA DENTRO DO HTML
+        function renderSubscriptions() {
+            const table = document.getElementById('subscriptions-table');
+            if (!table) return;
+
+            table.innerHTML = subscriptionsData.map(s => `
+                <tr class="border-b border-zinc-800 hover:bg-zinc-900/40 transition-colors">
+                    <td class="py-3 pr-2 font-medium flex items-center">
+                        ${getSegmentIcon(s.segmento)}
+                        <span>${s.nome}</span>
+                    </td>
+                    <td class="py-3 pr-2 text-right font-mono text-amber-500 font-semibold">${formatCurrency(s.valor || 0)}</td>
+                    <td class="py-3 pr-2 text-center text-zinc-300 font-mono text-xs">${formatDate(s.data_pagamento)}</td>
+                    <td class="py-3 pr-2 text-zinc-400 text-xs">${s.forma_pagamento}</td>
+                    <td class="py-3 text-center">
+                        <button onclick="deleteSubscription('${s.id}')" class="text-rose-400 hover:underline text-xs">Excluir</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // EVENTO: ENVIAR FORMULÁRIO DE CADASTRO
+        document.getElementById('form-subscription').addEventListener('submit', async e => {
+            e.preventDefault();
+            
+            const segInput = document.getElementById('sub-segment').value;
+
+            try {
+                const { error } = await supabaseClient.from('assinaturas').insert({
+                    nome: document.getElementById('sub-name').value,
+                    segmento: segInput,
+                    valor: Number(document.getElementById('sub-value').value),
+                    data_pagamento: document.getElementById('sub-date').value,
+                    forma_pagamento: document.getElementById('sub-method').value
+                });
+
+                if (error) throw error;
+                
+                // Atualiza dinamicamente o ícone superior ao lado do título para indicar o último segmento salvo
+                document.getElementById('header-segment-icon').innerHTML = getSegmentIcon(segInput);
+
+                e.target.reset();
+                await fetchSubscriptions();
+            } catch (err) {
+                alert("Erro ao salvar assinatura: " + err.message);
+            }
+        });
+
+        // EVENTO: DELETAR ASSINATURA
+        async function deleteSubscription(id) {
+            if(confirm("Deseja realmente remover esta assinatura?")) {
+                try {
+                    const { error } = await supabaseClient.from('assinaturas').delete().eq('id', id);
+                    if (error) throw error;
+                    await fetchSubscriptions();
+                } catch (err) {
+                    alert("Erro ao excluir: " + err.message);
+                }
+            }
+        }
+
+        // EXECUÇÃO INICIAL AO CARREGAR A PÁGINA
+        fetchSubscriptions();
+    </script>
+</body>
+</html>
