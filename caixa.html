@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erro 2110 - Página em construção</title>
+    <!-- CDN do Tailwind CSS para manter o padrão -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0c0c0e] text-gray-100 min-h-screen flex items-center justify-center p-6 font-sans select-none">
+
+    <!-- CONTAINER CENTRALIZADO -->
+    <div class="bg-[#16161a] border border-zinc-800 rounded-2xl p-8 max-w-md w-full text-center shadow-2xl relative overflow-hidden group">
+        
+        <!-- Detalhe sutil de luz ao fundo -->
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-[#d4af37]/5 rounded-full blur-3xl group-hover:bg-[#d4af37]/10 transition-colors duration-500"></div>
+
+        <!-- ÍCONE VISUAL DE ALERTA -->
+        <div class="mx-auto w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center text-[#d4af37] mb-6 shadow-md">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+        </div>
+
+        <!-- CÓDIGO DO ERRO -->
+        <h1 class="text-7xl font-black tracking-tighter text-zinc-800 font-mono select-none leading-none mb-2">
+            404
+        </h1>
+
+        <!-- MENSAGEM PRINCIPAL -->
+        <h2 class="text-xl font-bold tracking-tight text-zinc-200 uppercase">
+            Ops! Página em construção.
+        </h2>
+        
+        <!-- DESCRIÇÃO COMPLEMENTAR -->
+        <p class="text-xs text-zinc-400 font-medium max-w-xs mx-auto mt-2 leading-relaxed">
+            Vish parece que esta página ainda não está pronta. Em breve aqui haverão mais informações.
+        </p>
+
+        <!-- DIVISOR SUTIL -->
+        <div class="border-t border-zinc-800/60 my-6 w-full"></div>
+
+        <!-- BOTÕES DE AÇÃO -->
+        <div class="space-y-3">
+            <!-- Botão Principal: Voltar ao Início -->
+            <a href="dashboard.html" class="block w-full bg-[#d4af37] hover:bg-[#bfa032] text-black font-black text-xs uppercase tracking-widest py-3 px-4 rounded-xl transition-all active:scale-[0.98] shadow-lg shadow-[#d4af37]/10">
+                Voltar para o Painel
+            </a>
+
+            <!-- Botão Secundário: Histórico Anterior -->
+            <button onclick="window.history.back()" class="block w-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 font-bold text-xs uppercase tracking-wider py-3 px-4 rounded-xl transition-all">
+                Retornar à página anterior
+            </button>
+        </div>
+
+        <!-- RODAPÉ DA PÁGINA DE ERRO -->
+        <div class="mt-8">
+            <span class="text-[10px] font-mono text-zinc-600 uppercase tracking-widest block">
+                SISTEMA INTEGRADO • ERRO AUTOMÁTICO
+            </span>
+        </div>
+
+    </div>
+
+</body>
+</html>
