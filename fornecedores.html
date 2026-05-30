@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurações Globais e Cadastros Fixo</title>
+    <title>Configurações Globais e Dados Estruturais</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -20,11 +20,46 @@
             <span class="text-zinc-700 hidden sm:inline">|</span>
             <h1 class="text-xl font-bold tracking-tight">Gerenciador de Dados Estruturais</h1>
         </div>
-        <p class="text-xs text-zinc-500 font-mono">Gerenciamento de tabelas fixas e não variáveis</p>
+        <p class="text-xs text-zinc-500 font-mono">Configuração de parâmetros fixos e credenciais</p>
     </div>
 
     <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
         
+        <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 flex flex-col justify-between space-y-4 lg:col-span-2">
+            <div>
+                <div class="border-b border-zinc-800 pb-2 mb-3 flex justify-between items-center">
+                    <h3 id="title-user" class="font-bold text-[#d4af37] text-xs uppercase tracking-wider">Controle de Usuários do Sistema</h3>
+                    <span class="text-[10px] text-zinc-500">Operadores e Administradores</span>
+                </div>
+                <form id="form-user" class="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-3">
+                    <input type="text" id="input-user-name" placeholder="Nome Completo" class="sm:col-span-1 bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none" required />
+                    <input type="email" id="input-user-email" placeholder="E-mail de Acesso" class="sm:col-span-2 bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none" required />
+                    <select id="select-user-role" class="bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none text-zinc-300" required>
+                        <option value="Operador">Operador</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Gerente">Gerente</option>
+                    </select>
+                    <div class="sm:col-span-4 flex justify-end gap-2 pt-1">
+                        <button type="button" id="cancel-user" class="hidden bg-zinc-800 text-zinc-400 px-3 py-1.5 rounded-lg text-xs font-bold" onclick="resetUserForm()">Cancelar</button>
+                        <button type="submit" id="btn-user" class="bg-[#d4af37] text-black px-5 py-1.5 rounded-lg font-bold text-xs uppercase transition-colors hover:bg-[#b8860b]">Salvar Usuário</button>
+                    </div>
+                </form>
+                <div class="overflow-y-auto max-h-48 border border-zinc-800/60 rounded-lg bg-[#0c0c0e]/50">
+                    <table class="w-full text-xs text-left">
+                        <thead>
+                            <tr class="bg-zinc-900/50 text-zinc-400 border-b border-zinc-800 text-[10px] uppercase">
+                                <th class="py-2 px-3">Nome</th>
+                                <th class="py-2 px-3">E-mail</th>
+                                <th class="py-2 px-3 text-center">Nível</th>
+                                <th class="py-2 px-3 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-user"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 flex flex-col justify-between space-y-4">
             <div>
                 <div class="border-b border-zinc-800 pb-2 mb-3 flex justify-between items-center">
@@ -166,10 +201,10 @@
 
 
         // Estados Locais de Dados
-        let listPay = [], listSeg = [], listCat = [], listForn = [], listVeic = [], listTip = [];
+        let listUser = [], listPay = [], listSeg = [], listCat = [], listForn = [], listVeic = [], listTip = [];
         
         // IDs de Edição e Controle de Exclusão
-        let editPayId = null, editSegId = null, editCatId = null, editFornId = null, editVeicId = null, editTipId = null;
+        let editUserId = null, editPayId = null, editSegId = null, editCatId = null, editFornId = null, editVeicId = null, editTipId = null;
         let deleteTarget = { table: '', id: '' };
 
         // Ícones Globais Reutilizáveis
@@ -195,11 +230,52 @@
                     if (error) throw error;
                     closeDeleteModal();
                     refreshAll();
-                } catch (e) { alert("Erro ao deletar: Item possui vínculos ativos no sistema."); }
+                } catch (e) { alert("Erro ao deletar: O item possui registros vinculados ou restrições."); }
             }
         });
 
-        // --- 1. MEIOS DE PAGAMENTO ---
+        // --- 1. CONTROLE DE USUÁRIOS ---
+        async function loadUser() {
+            const { data } = await supabaseClient.from('usuarios').select('*').order('nome');
+            listUser = data || [];
+            document.getElementById('table-user').innerHTML = listUser.map(i => `
+                <tr class="border-b border-zinc-900 hover:bg-zinc-900/40">
+                    <td class="py-2 px-3 font-semibold text-zinc-200">${i.nome}</td>
+                    <td class="py-2 px-3 font-mono text-zinc-400 text-xs">${i.email}</td>
+                    <td class="py-2 px-3 text-center"><span class="bg-zinc-800 px-2 py-0.5 rounded text-zinc-300 font-medium text-[11px] border border-zinc-700/40">${i.nivel_acesso}</span></td>
+                    <td class="py-2 px-3 text-center space-x-2">
+                        <button onclick="prepEditUser('${i.id}')" class="inline-block">${editIcon}</button>
+                        <button onclick="openDeleteModal('usuarios','${i.id}')" class="inline-block">${trashIcon}</button>
+                    </td>
+                </tr>`).join('');
+        }
+        function prepEditUser(id) {
+            const item = listUser.find(x => x.id === id);
+            editUserId = id;
+            document.getElementById('input-user-name').value = item.nome;
+            document.getElementById('input-user-email').value = item.email;
+            document.getElementById('select-user-role').value = item.nivel_acesso;
+            document.getElementById('title-user').textContent = "Editar Dados do Usuário";
+            document.getElementById('cancel-user').classList.remove('hidden');
+        }
+        function resetUserForm() {
+            editUserId = null; document.getElementById('form-user').reset();
+            document.getElementById('title-user').textContent = "Controle de Usuários do Sistema";
+            document.getElementById('cancel-user').classList.add('hidden');
+        }
+        document.getElementById('form-user').addEventListener('submit', async e => {
+            e.preventDefault();
+            const payload = {
+                nome: document.getElementById('input-user-name').value.trim(),
+                email: document.getElementById('input-user-email').value.trim(),
+                nivel_acesso: document.getElementById('select-user-role').value
+            };
+            if(editUserId) await supabaseClient.from('usuarios').update(payload).eq('id', editUserId);
+            else await supabaseClient.from('usuarios').insert(payload);
+            resetUserForm(); loadUser();
+        });
+
+        // --- 2. MEIOS DE PAGAMENTO ---
         async function loadPay() {
             const { data } = await supabaseClient.from('meios_pagamento').select('*').order('nome');
             listPay = data || [];
@@ -228,7 +304,7 @@
             resetPayForm(); loadPay();
         });
 
-        // --- 2. SEGMENTOS ASSINATURAS ---
+        // --- 3. SEGMENTOS ASSINATURAS ---
         async function loadSeg() {
             const { data } = await supabaseClient.from('segmentos_assinaturas').select('*').order('nome');
             listSeg = data || [];
@@ -257,7 +333,7 @@
             resetSegForm(); loadSeg();
         });
 
-        // --- 3. CATEGORIAS FORNECEDORES ---
+        // --- 4. CATEGORIAS FORNECEDORES ---
         async function loadCat() {
             const { data } = await supabaseClient.from('categorias_fornecedores').select('*').order('nome');
             listCat = data || [];
@@ -287,7 +363,7 @@
             resetCatForm(); loadCat(); loadForn();
         });
 
-        // --- 4. FORNECEDORES ---
+        // --- 5. FORNECEDORES ---
         async function loadForn() {
             const { data } = await supabaseClient.from('fornecedores').select('*, categorias_fornecedores(nome)').order('nome');
             listForn = data || [];
@@ -318,7 +394,7 @@
             resetFornForm(); loadForn();
         });
 
-        // --- 5. VEÍCULOS ---
+        // --- 6. VEÍCULOS ---
         async function loadVeic() {
             const { data } = await supabaseClient.from('veiculos').select('*').order('created_at', {ascending: false});
             listVeic = data || [];
@@ -354,7 +430,7 @@
             resetVeicForm(); loadVeic();
         });
 
-        // --- 6. TIPOS DE DESPESAS DA FROTA ---
+        // --- 7. TIPOS DE DESPESAS DA FROTA ---
         async function loadTip() {
             const { data } = await supabaseClient.from('tipos_despesa_frota').select('*').order('nome');
             listTip = data || [];
@@ -383,9 +459,9 @@
             resetTipForm(); loadTip();
         });
 
-        // Execução Inicial
+        // Execução Inicial Global
         function refreshAll() {
-            loadPay(); loadSeg(); loadCat(); loadForn(); loadVeic(); loadTip();
+            loadUser(); loadPay(); loadSeg(); loadCat(); loadForn(); loadVeic(); loadTip();
         }
         refreshAll();
     </script>
