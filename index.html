@@ -6,6 +6,8 @@
     <title>Login - Sistema de Gestão</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
 </head>
 <body class="bg-[#0c0c0e] text-gray-100 flex items-center justify-center min-h-screen p-4">
 
@@ -44,17 +46,39 @@
 
         // Evento de submissão do formulário
         document.getElementById('form-login').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+    e.preventDefault();
+    
+    // 1. Liga o popup de carregamento imediatamente ao clicar em entrar
+    showLoader();
 
-            try {
-                // Invoca a stored function (RPC) que criamos diretamente no PostgreSQL do Supabase
-                const { data, error } = await supabaseClient.rpc('fazer_login', {
-                    p_email: email,
-                    p_senha: password
-                });
+    // 2. Cria a pausa artificial de 1.5 segundos ("Pensa um pouquinho")
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Captura os dados dos campos do formulário
+    const email = document.getElementById('input-email').value.trim();
+    const senha = document.getElementById('input-password').value.trim();
+
+    try {
+        // 3. Executa a validação real no Supabase
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: senha
+        });
+
+        if (error) throw error;
+
+        // Se o login deu certo, salva a sessão e joga para o painel
+        localStorage.setItem('user_session', JSON.stringify(data.session));
+        window.location.href = 'dashboard.html';
+
+    } catch (err) {
+        // 4. Se a senha estiver errada ou der erro, desliga o loader para o usuário tentar de novo
+        hideLoader();
+        
+        console.error("Erro de autenticação:", err.message);
+        alert("Falha no login: E-mail ou senha incorretos.");
+    }
+});
 
                 if (error) throw error;
 
