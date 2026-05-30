@@ -3,96 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Principal - Gestão</title>
+    <title>Painel de Controle & BI</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-[#0c0c0e] text-gray-100 min-h-screen flex flex-col">
+<body class="bg-[#0c0c0e] text-gray-100 min-h-screen p-6 space-y-6">
 
-    <header class="bg-[#16161a] border-b border-zinc-800 px-6 py-4 flex justify-between items-center shadow-md">
-        <div class="flex items-center space-x-3">
-            <h1 class="text-lg font-bold text-[#d4af37] tracking-wide">Sistema Corp</h1>
-            <span class="text-zinc-600">|</span>
-            <p class="text-xs text-zinc-400">Olá, <span id="user-display-name" class="text-zinc-200 font-medium">Usuário</span></p>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-zinc-800 pb-4 max-w-7xl mx-auto w-full gap-4">
+        <div>
+            <h1 class="text-2xl font-black tracking-tight text-zinc-100">SISTEMA INTEGRADO</h1>
+            <p class="text-xs text-zinc-400 font-mono">Bem-vindo de volta, <span id="user-display" class="text-[#d4af37] font-bold">Administrador</span></p>
         </div>
-        <button id="btn-logout" class="text-xs bg-zinc-800/80 hover:bg-rose-950 hover:text-rose-400 px-3 py-1.5 rounded-lg transition-all border border-zinc-700/60 hover:border-rose-900 text-zinc-300">
+        <button onclick="logout()" class="self-start sm:self-center bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-rose-900/50 text-zinc-400 hover:text-rose-400 px-4 py-2 rounded-lg text-xs font-bold transition-all uppercase tracking-wider">
             Sair do Sistema
         </button>
-    </header>
+    </div>
 
-    <main class="flex-1 p-6 max-w-6xl w-full mx-auto space-y-6">
-        <div>
-            <h2 class="text-xl font-bold text-zinc-100">Painel de Controle</h2>
-            <p class="text-xs text-gray-400 mt-0.5">Escolha o módulo operacional que deseja gerenciar hoje.</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <div class="max-w-7xl mx-auto w-full">
+        <p class="text-[10px] uppercase font-bold text-zinc-500 tracking-widest mb-3">Módulos do Sistema</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
             
-            <a href="veiculos.html" class="bg-[#16161a] border border-zinc-800/80 hover:border-[#d4af37] p-5 rounded-xl block transition-all shadow-md group hover:-translate-y-0.5">
-                <div class="text-[#d4af37] font-bold text-lg group-hover:underline flex items-center justify-between">
-                    <span>Frota e Veículos</span>
-                    <span class="text-xs font-normal text-zinc-500 group-hover:text-[#d4af37]">Acessar →</span>
+            <a href="assinaturas.html" class="bg-[#16161a] border border-zinc-800 hover:border-[#d4af37]/60 rounded-xl p-4 flex flex-col items-center justify-center text-center group transition-all hover:-translate-y-0.5 shadow-md">
+                <div class="p-3 bg-zinc-900 rounded-lg text-[#d4af37] group-hover:bg-[#d4af37] group-hover:text-black transition-colors mb-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                 </div>
-                <p class="text-xs text-gray-400 mt-2 leading-relaxed">Controle completo de veículos, marcas, quilometragem atual e acompanhamento de valor de patrimônio.</p>
+                <span class="text-xs font-bold tracking-wide text-zinc-300 group-hover:text-zinc-100">Assinaturas</span>
             </a>
 
-            <a href="assinaturas.html" class="bg-[#16161a] border border-zinc-800/80 hover:border-[#d4af37] p-5 rounded-xl block transition-all shadow-md group hover:-translate-y-0.5">
-                <div class="text-[#d4af37] font-bold text-lg group-hover:underline flex items-center justify-between">
-                    <span>Assinaturas e Recorrências</span>
-                    <span class="text-xs font-normal text-zinc-500 group-hover:text-[#d4af37]">Acessar →</span>
+            <a href="fornecedores.html" class="bg-[#16161a] border border-zinc-800 hover:border-[#d4af37]/60 rounded-xl p-4 flex flex-col items-center justify-center text-center group transition-all hover:-translate-y-0.5 shadow-md">
+                <div class="p-3 bg-zinc-900 rounded-lg text-[#d4af37] group-hover:bg-[#d4af37] group-hover:text-black transition-colors mb-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
                 </div>
-                <p class="text-xs text-gray-400 mt-2 leading-relaxed">Gerencie mensalidades, plataformas contratadas, formas de pagamento utilizadas e os dias exatos de vencimento.</p>
+                <span class="text-xs font-bold tracking-wide text-zinc-300 group-hover:text-zinc-100">Configurações</span>
             </a>
 
-            <a href="fornecedores.html" class="bg-[#16161a] border border-zinc-800/80 hover:border-[#d4af37] p-5 rounded-xl block transition-all shadow-md group hover:-translate-y-0.5">
-                <div class="text-[#d4af37] font-bold text-lg group-hover:underline flex items-center justify-between">
-                    <span>Estruturas e Fornecedores</span>
-                    <span class="text-xs font-normal text-zinc-500 group-hover:text-[#d4af37]">Acessar →</span>
+            <a href="caixa.html" class="bg-[#16161a] border border-zinc-800 hover:border-[#d4af37]/60 rounded-xl p-4 flex flex-col items-center justify-center text-center group transition-all hover:-translate-y-0.5 shadow-md opacity-60 hover:opacity-100">
+                <div class="p-3 bg-zinc-900 rounded-lg text-zinc-500 group-hover:bg-[#d4af37] group-hover:text-black transition-colors mb-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                 </div>
-                <p class="text-xs text-gray-400 mt-2 leading-relaxed">Centralize o catálogo de fornecedores parceiros, prestadores de serviços estruturais e insumos de suporte.</p>
+                <span class="text-xs font-bold tracking-wide text-zinc-400 group-hover:text-zinc-100">Financeiro</span>
+            </a>
+
+            <a href="frota.html" class="bg-[#16161a] border border-zinc-800 hover:border-[#d4af37]/60 rounded-xl p-4 flex flex-col items-center justify-center text-center group transition-all hover:-translate-y-0.5 shadow-md opacity-60 hover:opacity-100">
+                <div class="p-3 bg-zinc-900 rounded-lg text-zinc-500 group-hover:bg-[#d4af37] group-hover:text-black transition-colors mb-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                    </svg>
+                </div>
+                <span class="text-xs font-bold tracking-wide text-zinc-400 group-hover:text-zinc-100">Frota</span>
             </a>
 
         </div>
-    </main>
+    </div>
+
+    <div class="max-w-7xl mx-auto w-full space-y-6">
+        <p class="text-[10px] uppercase font-bold text-zinc-500 tracking-widest -mb-2">Métricas e Business Intelligence (BI)</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 flex flex-col justify-between">
+                <span class="text-xs text-zinc-400 font-medium">Custo Mensal Assinaturas</span>
+                <span id="kpi-sub-total" class="text-xl font-bold text-amber-500 font-mono mt-2">R$ 0,00</span>
+            </div>
+            <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 flex flex-col justify-between">
+                <span class="text-xs text-zinc-400 font-medium">Contratos Ativos</span>
+                <span id="kpi-sub-count" class="text-xl font-bold text-zinc-100 font-mono mt-2">0</span>
+            </div>
+            <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 flex flex-col justify-between">
+                <span class="text-xs text-zinc-400 font-medium">Veículos Cadastrados</span>
+                <span id="kpi-fleet-count" class="text-xl font-bold text-zinc-100 font-mono mt-2">0</span>
+            </div>
+            <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-4 flex flex-col justify-between">
+                <span class="text-xs text-zinc-400 font-medium">Usuários Operantes</span>
+                <span id="kpi-user-count" class="text-xl font-bold text-zinc-100 font-mono mt-2">0</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-5 shadow-lg flex flex-col justify-between">
+                <div class="border-b border-zinc-800 pb-2 mb-4">
+                    <h3 class="font-bold text-[#d4af37] text-xs uppercase tracking-wider">Volume de Custos por Segmento</h3>
+                </div>
+                <div class="relative w-full h-64 flex items-center justify-center">
+                    <canvas id="chart-segments"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-5 shadow-lg flex flex-col justify-between">
+                <div class="border-b border-zinc-800 pb-2 mb-4">
+                    <h3 class="font-bold text-[#d4af37] text-xs uppercase tracking-wider">Comprometimento por Meio de Pagamento</h3>
+                </div>
+                <div class="relative w-full h-64 flex items-center justify-center">
+                    <canvas id="chart-payments"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
     <script>
-        // CONFIGURAÇÃO DO SUPABASE (Substitua com as suas credenciais oficiais)
+        // CONFIGURAÇÕES DO SUPABASE
         const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co".replace(/\/$/, "");
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 
-        // GUARDA DE ROTA EXCLUSIVO: Executa antes de carregar o visual
-        const sessionData = localStorage.getItem('user_session');
-        if (!sessionData) {
-            // Se tentar burlar digitando a URL direta, expulsa para o login
+        // Verificação de Segurança Simples
+        if (!localStorage.getItem('user_session')) {
             window.location.href = 'index.html';
         }
 
-        // Transforma a String em Objeto manipulável
-        const session = JSON.parse(sessionData);
-
-        // Insere o nome do usuário ativo na barra superior
-        document.getElementById('user-display-name').textContent = session.nome;
-
-        // Processo de Logout Seguro
-        document.getElementById('btn-logout').addEventListener('click', async () => {
-            try {
-                // Remove o registro do token ativo na tabela 'sessoes' do banco, invalidando o acesso
-                await supabaseClient
-                    .from('sessoes')
-                    .delete()
-                    .eq('token', session.token);
-            } catch (e) {
-                console.warn("Sessão já havia expirado no banco.");
-            }
-
-            // Apaga as chaves locais do navegador
+        function logout() {
             localStorage.removeItem('user_session');
-            
-            // Retorna à tela inicial
             window.location.href = 'index.html';
-        });
+        }
+
+        // Formatação de Moeda
+        const formatBRL = v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+
+        // Instâncias Globais dos Gráficos para podermos destruí-los/recriá-los
+        let chartSegmentsInstance = null;
+        let chartPaymentsInstance = null;
+
+        // INICIALIZADOR DE DADOS DO BI
+        async function runBusinessIntelligence() {
+            try {
+                // 1. Coleta Assinaturas com Relacionamentos Globais
+                const { data: assinaturas, error: errSub } = await supabaseClient
+                    .from('assinaturas')
+                    .select('*, segmentos_assinaturas(nome), meios_pagamento(nome)');
+                
+                if (errSub) throw errSub;
+                const listaSubs = assinaturas || [];
+
+                // 2. Coleta Contagens dos outros Módulos Estruturais
+                const { count: userCount } = await supabaseClient.from('usuarios').select('*', { count: 'exact', head: true });
+                const { count: fleetCount } = await supabaseClient.from('veiculos').select('*', { count: 'exact', head: true });
+
+                // --- PROCESSAMENTO DE DADOS (MÉTRICAS) ---
+                const subsAtivas = listaSubs.filter(s => s.status === 'Ativa');
+                const totalCustoMensal = subsAtivas.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+
+                // Preenche os Flash Cards na Tela
+                document.getElementById('kpi-sub-total').textContent = formatBRL(totalCustoMensal);
+                document.getElementById('kpi-sub-count').textContent = subsAtivas.length;
+                document.getElementById('kpi-fleet-count').textContent = fleetCount || 0;
+                document.getElementById('kpi-user-count').textContent = userCount || 0;
+
+                // --- PROCESSAMENTO PARA OS GRÁFICOS ---
+                
+                // Gráfico 1: Acumulado por Segmento
+                const mapSegmentos = {};
+                subsAtivas.forEach(s => {
+                    const nomeSeg = s.segmentos_assinaturas ? s.segmentos_assinaturas.nome : 'Geral / Não Def.';
+                    mapSegmentos[nomeSeg] = (mapSegmentos[nomeSeg] || 0) + Number(s.valor || 0);
+                });
+
+                // Gráfico 2: Acumulado por Meio de Pagamento
+                const mapPagamentos = {};
+                subsAtivas.forEach(s => {
+                    const nomePay = s.meios_pagamento ? s.meios_pagamento.nome : 'Não Informado';
+                    mapPagamentos[nomePay] = (mapPagamentos[nomePay] || 0) + Number(s.valor || 0);
+                });
+
+                // Renderiza os Gráficos Visuais
+                renderSegmentChart(Object.keys(mapSegmentos), Object.values(mapSegmentos));
+                renderPaymentChart(Object.keys(mapPagamentos), Object.values(mapPagamentos));
+
+            } catch (err) {
+                console.error("Erro no carregamento do BI:", err.message);
+            }
+        }
+
+        // RENDERIZADOR: GRÁFICO DE SEGMENTOS (Barras Horizontais)
+        function renderSegmentChart(labels, data) {
+            const ctx = document.getElementById('chart-segments').getContext('2d');
+            if (chartSegmentsInstance) chartSegmentsInstance.destroy();
+
+            chartSegmentsInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Gasto Mensal (R$)',
+                        data: data,
+                        backgroundColor: '#d4af37', // Dourado/Âmbar
+                        borderRadius: 6,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Inverte para barra horizontal
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { grid: { color: '#27272a' }, ticks: { color: '#a1a1aa', font: { family: 'monospace' } } },
+                        y: { grid: { display: false }, ticks: { color: '#e4e4e7', font: { weight: 'bold' } } }
+                    }
+                }
+            });
+        }
+
+        // RENDERIZADOR: GRÁFICO DE MEIOS DE PAGAMENTO (Rosca / Doughnut)
+        function renderPaymentChart(labels, data) {
+            const ctx = document.getElementById('chart-payments').getContext('2d');
+            if (chartPaymentsInstance) chartPaymentsInstance.destroy();
+
+            chartPaymentsInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: ['#d4af37', '#f59e0b', '#71717a', '#27272a', '#a1a1aa'], // Paleta Escura/Âmbar
+                        borderWidth: 2,
+                        borderColor: '#16161a'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#e4e4e7', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Execução ao iniciar
+        runBusinessIntelligence();
     </script>
 </body>
 </html>
