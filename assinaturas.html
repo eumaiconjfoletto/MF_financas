@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Módulo Assinaturas - Gestão</title>
+    <title>Gestão de Assinaturas e Licenças</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -18,60 +18,65 @@
                 <span>Voltar ao Painel</span>
             </a>
             <span class="text-zinc-700 hidden sm:inline">|</span>
-            <div class="flex items-center space-x-2">
-                <h1 class="text-xl font-bold tracking-tight">Assinaturas e Recorrências</h1>
-                <span id="header-segment-icon" class="text-[#d4af37]"></span>
-            </div>
+            <h1 class="text-xl font-bold tracking-tight">Controle de Assinaturas & Ferramentas</h1>
         </div>
     </div>
 
     <div class="max-w-6xl mx-auto w-full space-y-6">
         
-        <form id="form-subscription" class="bg-[#16161a] border border-zinc-800 rounded-xl p-5 shadow-lg space-y-4">
+        <form id="form-sub" class="bg-[#16161a] border border-zinc-800 rounded-xl p-5 shadow-lg space-y-4">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-                <h3 id="form-title" class="font-bold text-[#d4af37] text-sm tracking-wide uppercase">Nova Assinatura</h3>
-                <span class="text-[10px] text-zinc-500">Insira ou modifique os dados operacionais</span>
+                <h3 id="form-title" class="font-bold text-[#d4af37] text-sm tracking-wide uppercase">Nova Assinatura / Licença</h3>
+                <span class="text-[10px] text-zinc-500">Monitore softwares, recorrências e ferramentas recorrentes</span>
             </div>
             
             <div class="flex flex-wrap lg:flex-nowrap gap-4">
-                <div class="flex-1 min-w-[240px]">
-                    <label class="text-xs text-gray-400 block mb-1">Nome da Assinatura</label>
-                    <input type="text" id="sub-name" placeholder="Ex: Netflix, Spotify, Claro Internet" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
+                <div class="flex-1 min-w-[180px]">
+                    <label class="text-xs text-gray-400 block mb-1">Nome do Serviço / Software</label>
+                    <input type="text" id="sub-name" placeholder="Ex: AWS Cloud, ChatGPT Plus, Adobe" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
                 </div>
 
-                <div class="w-full sm:w-48">
+                <div class="w-full sm:w-52">
                     <label class="text-xs text-gray-400 block mb-1">Segmento</label>
-                    <select id="sub-segment" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors text-zinc-300" required>
-                        <option value="musica">🎧 Música</option>
-                        <option value="internet">🌐 Internet</option>
-                        <option value="entretenimento">🎭 Entretenimento</option>
-                        <option value="filmes">🎬 Filmes</option>
+                    <select id="sub-segment-id" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none text-zinc-300" required>
+                        <option value="">Carregando segmentos...</option>
                     </select>
                 </div>
 
-                <div class="w-full sm:w-36">
-                    <label class="text-xs text-gray-400 block mb-1">Valor Pago</label>
+                <div class="w-full sm:w-32">
+                    <label class="text-xs text-gray-400 block mb-1">Valor Recorrente</label>
                     <div class="relative">
-                        <span class="absolute left-2.5 top-2 text-xs text-zinc-500 font-mono">R$</span>
-                        <input type="number" step="0.01" id="sub-value" placeholder="0,00" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg py-2 pl-8 pr-2 text-sm focus:border-[#d4af37] outline-none font-mono text-amber-500 font-semibold" required />
+                        <span class="absolute left-2 top-2 text-xs text-zinc-500 font-mono">R$</span>
+                        <input type="number" step="0.01" id="sub-value" placeholder="0,00" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg py-2 pl-7 pr-2 text-sm focus:border-[#d4af37] outline-none font-mono text-amber-500 font-semibold text-right" required />
                     </div>
                 </div>
 
-                <div class="w-full sm:w-32">
-                    <label class="text-xs text-gray-400 block mb-1">Dia Vencimento</label>
-                    <input type="number" id="sub-day" min="1" max="31" placeholder="Ex: 10" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none text-zinc-300 font-mono text-center font-bold" required />
+                <div class="w-full sm:w-24">
+                    <label class="text-xs text-gray-400 block mb-1">Vencimento</label>
+                    <div class="relative">
+                        <input type="number" id="sub-due-day" min="1" max="31" placeholder="10" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg py-2 pl-2 pr-7 text-sm focus:border-[#d4af37] outline-none font-mono text-center font-semibold text-zinc-200" required />
+                        <span class="absolute right-2 top-2 text-[10px] text-zinc-500 font-bold">DIA</span>
+                    </div>
                 </div>
 
-                <div class="w-full sm:flex-1 sm:min-w-[200px]">
-                    <label class="text-xs text-gray-400 block mb-1">Meio de Pagamento</label>
-                    <select id="sub-method" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none transition-colors text-zinc-300" required>
-                        <option value="">Carregando opções...</option>
+                <div class="w-full sm:w-48">
+                    <label class="text-xs text-gray-400 block mb-1">Pago via</label>
+                    <select id="sub-payment-method" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none text-zinc-300" required>
+                        <option value="">Carregando contas...</option>
+                    </select>
+                </div>
+
+                <div class="w-full sm:w-28">
+                    <label class="text-xs text-gray-400 block mb-1">Status</label>
+                    <select id="sub-status" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-lg p-2 text-sm focus:border-[#d4af37] outline-none text-zinc-300 font-medium" required>
+                        <option value="Ativa" class="text-emerald-400">Ativa</option>
+                        <option value="Suspensa" class="text-rose-400">Suspensa</option>
                     </select>
                 </div>
             </div>
 
             <div class="flex justify-end gap-3 pt-2">
-                <button type="button" id="btn-cancel-edit" class="hidden w-full sm:w-32 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2.5 rounded-lg font-bold text-sm transition-all border border-zinc-700">
+                <button type="button" id="btn-cancel-edit" class="hidden w-full sm:w-32 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2.5 rounded-lg font-bold text-sm border border-zinc-700" onclick="cancelEdit()">
                     Cancelar
                 </button>
                 <button type="submit" id="btn-submit-form" class="w-full sm:w-48 bg-[#d4af37] text-black hover:bg-[#b8860b] py-2.5 rounded-lg font-bold text-sm transition-all shadow-md">
@@ -81,34 +86,32 @@
         </form>
 
         <div class="bg-[#16161a] border border-zinc-800 rounded-xl p-5 shadow-lg">
-            <h3 class="font-bold text-[#d4af37] mb-4 border-b border-zinc-800 pb-2 text-sm tracking-wide uppercase">Planos e Recorrências Ativas</h3>
+            <h3 class="font-bold text-[#d4af37] mb-4 border-b border-zinc-800 pb-2 text-sm tracking-wide uppercase">Contratos e Licenças Ativas</h3>
             <div class="overflow-auto max-h-[500px]">
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="border-b border-zinc-800 text-gray-400 text-left text-xs uppercase tracking-wider">
-                            <th class="py-3 pr-2">Assinatura</th>
-                            <th class="py-3 pr-2 text-right">Valor</th>
-                            <th class="py-3 pr-2 text-center">Dia de Vencimento</th>
-                            <th class="py-3 pr-2">Meio de Pagamento</th>
+                            <th class="py-3 pr-2">Serviço / Plataforma</th>
+                            <th class="py-3 pr-2">Segmento</th>
+                            <th class="py-3 pr-2 text-center">Vencimento</th>
+                            <th class="py-3 pr-2 text-right">Custo Mensal</th>
+                            <th class="py-3 pr-2">Forma de Pagamento</th>
+                            <th class="py-3 pr-2 text-center">Status</th>
                             <th class="py-3 text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="subscriptions-table"></tbody>
+                    <tbody id="sub-table-body"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <div id="delete-modal" class="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4 hidden transition-opacity duration-200">
-        <div class="bg-[#1c1c1f] border border-zinc-800 rounded-2xl p-6 max-w-sm w-full text-center space-y-5 shadow-2xl transform scale-100 transition-transform">
-            <p class="text-[#d4af37] font-bold text-lg tracking-wide uppercase">deseja excluir?</p>
+    <div id="delete-modal" class="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-[#1c1c1f] border border-zinc-800 rounded-2xl p-6 max-w-sm w-full text-center space-y-5 shadow-2xl">
+            <p class="text-[#d4af37] font-bold text-lg tracking-wide uppercase">Remover Assinatura?</p>
             <div class="flex justify-center gap-4 pt-1">
-                <button id="modal-confirm-btn" class="bg-[#d4af37] hover:bg-[#b8860b] text-black font-bold px-6 py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all w-28 shadow-md">
-                    Sim
-                </button>
-                <button id="modal-cancel-btn" class="bg-[#d4af37] hover:bg-[#b8860b] text-black font-bold px-6 py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all w-28 shadow-md">
-                    Não
-                </button>
+                <button id="modal-confirm-btn" class="bg-[#d4af37] hover:bg-[#b8860b] text-black font-bold px-6 py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all w-28 shadow-md">Sim</button>
+                <button id="modal-cancel-btn" class="bg-zinc-800 text-zinc-300 font-bold px-6 py-2.5 rounded-lg text-xs uppercase tracking-wider w-28" onclick="closeDeleteModal()">Não</button>
             </div>
         </div>
     </div>
@@ -119,173 +122,151 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 
-        let subscriptionsData = [];
-        let editingId = null;  // Controla se o form está editando ou criando
-        let idParaExcluir = null; // Guarda temporariamente o ID escolhido na listagem
+        let subscriptionList = [];
+        let editingId = null;
+        let idParaExcluir = null;
 
         if (!localStorage.getItem('user_session')) {
             window.location.href = 'index.html';
         }
 
-        // ÍCONES DE SEGMENTO
-        function getSegmentIcon(segmento) {
-            const icons = {
-                musica: `<svg class="w-4 h-4 inline-block mr-2 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 10l12-2M9 21a3 3 0 1 1-6-3 3 3 0 0 1 6 0Zm12-2a3 3 0 1 1-6-3 3 3 0 0 1 6 0Z"/></svg>`,
-                internet: `<svg class="w-4 h-4 inline-block mr-2 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 0c-2.5 0-4.5 4.5-4.5 10s2 10 4.5 10 4.5-4.5 4.5-10S14.5 2 12 2ZM2 12h20"/></svg>`,
-                entretenimento: `<svg class="w-4 h-4 inline-block mr-2 text-pink-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16.5 7.5h.01M13.5 10.5h.01M3 10.5c0-3.5 2.5-6 6-6h6c3.5 0 6 2.5 6 6v3c0 3.5-2.5 6-6 6H9c-3.5 0-6-2.5-6-6v-3Zm3 0h3m-1.5-1.5v3"/></svg>`,
-                filmes: `<svg class="w-4 h-4 inline-block mr-2 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 4v16M17 4v16M3 8h4M3 16h4M17 8h4M17 16h4M3 4h18M3 20h18M7 12h10"/></svg>`
-            };
-            return icons[segmento] || '';
-        }
-
-        // ICONES DE AÇÃO (LIXEIRA E LÁPIS EM SVG)
-        const trashIcon = `<svg class="w-4 h-4 text-rose-400 hover:text-rose-300 transition-colors pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>`;
-        const editIcon = `<svg class="w-4 h-4 text-amber-400 hover:text-amber-300 transition-colors pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>`;
+        const trashIcon = `<svg class="w-4 h-4 text-rose-400 hover:text-rose-300 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>`;
+        const editIcon = `<svg class="w-4 h-4 text-amber-400 hover:text-amber-300 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>`;
 
         const formatCurrency = v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
-        // CARREGAR MEIOS DE PAGAMENTO DO DROPDOWN
-        async function fetchPaymentMethods() {
-            try {
-                const { data, error } = await supabaseClient.from('meios_pagamento').select('*').order('nome', { ascending: true });
-                if (error) throw error;
-                const selectElement = document.getElementById('sub-method');
-                selectElement.innerHTML = (data || []).map(m => `<option value="${m.id}">${m.nome}</option>`).join('');
-            } catch (err) {
-                console.error("Erro nos meios de pagamento:", err.message);
-            }
+        // 1. CARREGA OS SEGMENTOS DE ASSINATURAS (Alimentados na página fornecedores.html)
+        async function fetchSegments() {
+            const { data } = await supabaseClient.from('segmentos_assinaturas').select('*').order('nome');
+            document.getElementById('sub-segment-id').innerHTML = '<option value="">Selecione...</option>' + 
+                (data || []).map(s => `<option value="${s.id}">${s.nome}</option>`).join('');
         }
 
-        // CARREGAR ASSINATURAS DO BANCO
+        // 2. CARREGA OS MEIOS DE PAGAMENTO (Alimentados na página fornecedores.html)
+        async function fetchPaymentMethods() {
+            const { data } = await supabaseClient.from('meios_pagamento').select('*').order('nome');
+            document.getElementById('sub-payment-method').innerHTML = '<option value="">Selecione...</option>' + 
+                (data || []).map(m => `<option value="${m.id}">${m.nome}</option>`).join('');
+        }
+
+        // 3. BUSCA HISTÓRICO DE ASSINATURAS FAZENDO JUNÇÃO RELACIONAL
         async function fetchSubscriptions() {
             try {
-                const { data, error } = await supabaseClient.from('assinaturas').select('*, meios_pagamento(nome)').order('dia_vencimento', { ascending: true });
+                const { data, error } = await supabaseClient
+                    .from('assinaturas')
+                    .select('*, segmentos_assinaturas(nome), meios_pagamento(nome)')
+                    .order('dia_vencimento', { ascending: true });
+
                 if (error) throw error;
-                subscriptionsData = data || [];
+                subscriptionList = data || [];
                 renderSubscriptions();
-            } catch (err) {
-                console.error("Erro nas assinaturas:", err.message);
-            }
+            } catch (err) { console.error(err.message); }
         }
 
-        // RENDERIZAR ASSINATURAS NA TABELA
         function renderSubscriptions() {
-            const table = document.getElementById('subscriptions-table');
+            const table = document.getElementById('sub-table-body');
             if (!table) return;
 
-            table.innerHTML = subscriptionsData.map(s => `
-                <tr class="border-b border-zinc-800 hover:bg-zinc-900/30 transition-colors">
-                    <td class="py-3 pr-2 font-medium flex items-center text-sm">
-                        ${getSegmentIcon(s.segmento)}
-                        <span>${s.nome}</span>
-                    </td>
-                    <td class="py-3 pr-2 text-right font-mono text-amber-500 font-semibold text-sm">${formatCurrency(s.valor || 0)}</td>
-                    <td class="py-3 pr-2 text-center text-zinc-300 font-mono font-bold text-xs">Todo dia ${String(s.dia_vencimento).padStart(2, '0')}</td>
-                    <td class="py-3 pr-2 text-zinc-400 text-xs">${s.meios_pagamento ? s.meios_pagamento.nome : 'Não informado'}</td>
-                    <td class="py-3 text-center">
-                        <div class="flex items-center justify-center gap-4">
-                            <button onclick="prepareEdit('${s.id}')" title="Editar Registro" class="p-1 hover:bg-zinc-800 rounded transition-colors">${editIcon}</button>
-                            <button onclick="triggerDeleteModal('${s.id}')" title="Excluir Registro" class="p-1 hover:bg-zinc-800 rounded transition-colors">${trashIcon}</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            table.innerHTML = subscriptionList.map(s => {
+                const statusBadge = s.status === 'Ativa' 
+                    ? `<span class="bg-emerald-950/60 text-emerald-400 border border-emerald-800/60 px-2 py-0.5 text-[11px] rounded font-medium">Ativa</span>`
+                    : `<span class="bg-rose-950/60 text-rose-400 border border-rose-800/60 px-2 py-0.5 text-[11px] rounded font-medium">Suspensa</span>`;
+
+                return `
+                    <tr class="border-b border-zinc-800 hover:bg-zinc-900/30 transition-colors">
+                        <td class="py-3 pr-2 font-bold text-zinc-100">${s.nome}</td>
+                        <td class="py-3 pr-2 text-zinc-300 text-xs">${s.segmentos_assinaturas ? s.segmentos_assinaturas.nome : 'Geral / Não def.'}</td>
+                        <td class="py-3 pr-2 text-center font-mono font-bold text-zinc-400 text-xs">Todo dia ${s.dia_vencimento}</td>
+                        <td class="py-3 pr-2 text-right font-mono text-amber-500 font-semibold text-sm">${formatCurrency(s.valor || 0)}</td>
+                        <td class="py-3 pr-2 text-zinc-400 text-xs">${s.meios_pagamento ? s.meios_pagamento.nome : 'Não informado'}</td>
+                        <td class="py-3 pr-2 text-center">${statusBadge}</td>
+                        <td class="py-3 text-center">
+                            <div class="flex items-center justify-center gap-3">
+                                <button onclick="prepareEdit('${s.id}')" title="Editar" class="p-1 hover:bg-zinc-800 rounded transition-colors">${editIcon}</button>
+                                <button onclick="triggerDeleteModal('${s.id}')" title="Excluir" class="p-1 hover:bg-zinc-800 rounded transition-colors">${trashIcon}</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        // FLUXO DE EXCLUSÃO CUSTOMIZADA (POPUP)
+        // CONTROLE DO POPUP DE EXCLUSÃO
         function triggerDeleteModal(id) {
             idParaExcluir = id;
             document.getElementById('delete-modal').classList.remove('hidden');
         }
-
         function closeDeleteModal() {
             idParaExcluir = null;
             document.getElementById('delete-modal').classList.add('hidden');
         }
-
-        document.getElementById('modal-cancel-btn').addEventListener('click', closeDeleteModal);
-        
         document.getElementById('modal-confirm-btn').addEventListener('click', async () => {
             if (idParaExcluir) {
-                try {
-                    const { error } = await supabaseClient.from('assinaturas').delete().eq('id', idParaExcluir);
-                    if (error) throw error;
-                    closeDeleteModal();
-                    await fetchSubscriptions();
-                } catch (err) {
-                    alert("Erro ao remover registro: " + err.message);
-                }
+                await supabaseClient.from('assinaturas').delete().eq('id', idParaExcluir);
+                closeDeleteModal();
+                await fetchSubscriptions();
             }
         });
 
-        // FLUXO DE EDIÇÃO (PREPARAR FORMULÁRIO)
+        // REGRAS DE EDIÇÃO
         function prepareEdit(id) {
-            const sub = subscriptionsData.find(item => item.id === id);
-            if (!sub) return;
+            const item = subscriptionList.find(s => s.id === id);
+            if (!item) return;
 
             editingId = id;
 
-            // Injeta os dados da linha nos inputs correspondentes
-            document.getElementById('sub-name').value = sub.nome;
-            document.getElementById('sub-segment').value = sub.segmento;
-            document.getElementById('sub-value').value = sub.valor;
-            document.getElementById('sub-day').value = sub.dia_vencimento;
-            document.getElementById('sub-method').value = sub.meio_pagamento_id || "";
+            document.getElementById('sub-name').value = item.nome;
+            document.getElementById('sub-segment-id').value = item.segmento_id || "";
+            document.getElementById('sub-value').value = item.valor;
+            document.getElementById('sub-due-day').value = item.dia_vencimento;
+            document.getElementById('sub-payment-method').value = item.meio_pagamento_id || "";
+            document.getElementById('sub-status').value = item.status;
 
-            // Modifica o estado visual do formulário para Edição
-            document.getElementById('form-title').textContent = "Editar Assinatura";
-            document.getElementById('btn-submit-form').textContent = "Atualizar Assinatura";
+            document.getElementById('form-title').textContent = "Editar Assinatura / Contrato";
+            document.getElementById('btn-submit-form').textContent = "Atualizar Contrato";
             document.getElementById('btn-cancel-edit').classList.remove('hidden');
 
-            // Move a tela suavemente até o formulário no topo
-            document.getElementById('form-subscription').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('form-sub').scrollIntoView({ behavior: 'smooth' });
         }
 
         function cancelEdit() {
             editingId = null;
-            document.getElementById('form-subscription').reset();
-            document.getElementById('form-title').textContent = "Nova Assinatura";
+            document.getElementById('form-sub').reset();
+            document.getElementById('form-title').textContent = "Nova Assinatura / Licença";
             document.getElementById('btn-submit-form').textContent = "Salvar Assinatura";
             document.getElementById('btn-cancel-edit').classList.add('hidden');
         }
 
-        document.getElementById('btn-cancel-edit').addEventListener('click', cancelEdit);
-
-        // ENVIAR FORMULÁRIO (SALVAR OU ATUALIZAR)
-        document.getElementById('form-subscription').addEventListener('submit', async e => {
+        // SALVAMENTO / ENVIO
+        document.getElementById('form-sub').addEventListener('submit', async e => {
             e.preventDefault();
 
-            const segInput = document.getElementById('sub-segment').value;
             const payload = {
-                nome: document.getElementById('sub-name').value,
-                segmento: segInput,
+                nome: document.getElementById('sub-name').value.trim(),
+                segmento_id: document.getElementById('sub-segment-id').value || null,
                 valor: Number(document.getElementById('sub-value').value),
-                dia_vencimento: parseInt(document.getElementById('sub-day').value),
-                meio_pagamento_id: document.getElementById('sub-method').value || null
+                dia_vencimento: parseInt(document.getElementById('sub-due-day').value),
+                meio_pagamento_id: document.getElementById('sub-payment-method').value || null,
+                status: document.getElementById('sub-status').value
             };
 
             try {
                 if (editingId) {
-                    // Modo Edição: Atualiza a linha existente
                     const { error } = await supabaseClient.from('assinaturas').update(payload).eq('id', editingId);
                     if (error) throw error;
                     cancelEdit();
                 } else {
-                    // Modo Inserção: Cria um novo registro
                     const { error } = await supabaseClient.from('assinaturas').insert(payload);
                     if (error) throw error;
                     e.target.reset();
                 }
-
-                document.getElementById('header-segment-icon').innerHTML = getSegmentIcon(segInput);
                 await fetchSubscriptions();
-            } catch (err) {
-                alert("Erro ao processar requisição: " + err.message);
-            }
+            } catch (err) { alert("Erro ao salvar assinatura: " + err.message); }
         });
 
-        // INICIALIZAÇÃO
+        // INICIALIZAÇÃO DA PÁGINA
         async function init() {
+            await fetchSegments();
             await fetchPaymentMethods();
             await fetchSubscriptions();
         }
