@@ -1,282 +1,174 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Dashboard | MF Finanças</title>
+<title>MF Finanças - Dashboard</title>
 
 <link rel="stylesheet" href="assets/css/variables.css">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/dashboard.css">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="assets/js/supabase.js"></script>
-<script src="assets/js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
 <body>
 
-<div class="app">
+<div class="dashboard">
 
     <!-- SIDEBAR -->
-
     <aside class="sidebar">
 
-        <div>
-
-            <div class="logo">
-
-                <div class="logo-icon">
-                    MF
-                </div>
-
-                <div>
-                    <div class="logo-title">
-                        MF Finanças
-                    </div>
-
-                    <div class="logo-subtitle">
-                        Sistema Integrado
-                    </div>
-                </div>
-
-            </div>
-
-            <nav class="menu">
-
-                <a href="dashboard.html" class="menu-link active">
-                    Dashboard
-                </a>
-
-                <a href="assinaturas.html" class="menu-link">
-                    Assinaturas
-                </a>
-
-                <a href="fornecedores.html" class="menu-link">
-                    Fornecedores
-                </a>
-
-                <a href="veiculos.html" class="menu-link">
-                    Veículos
-                </a>
-
-                <a href="frota.html" class="menu-link">
-                    Despesas de Frota
-                </a>
-
-            </nav>
-
+        <div class="sidebar-logo">
+            <h1>MF <span>Finanças</span></h1>
         </div>
 
-        <button
-            class="btn btn-danger"
-            onclick="logout()">
+        <div class="sidebar-user">
+            <div class="sidebar-user-name" id="userName">Administrador</div>
+            <div class="sidebar-user-role">Painel de controle</div>
+        </div>
 
-            Sair
+        <nav class="sidebar-menu">
 
-        </button>
+            <div class="menu-title">Menu</div>
+
+            <a class="menu-link active" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M3 12l9-9 9 9"></path>
+                    <path d="M9 21V9h6v12"></path>
+                </svg>
+                Dashboard
+            </a>
+
+            <a class="menu-link" href="assinaturas.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 1v22"></path>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                Assinaturas
+            </a>
+
+            <a class="menu-link" href="veiculos.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M3 13h18"></path>
+                    <path d="M5 13l2-6h10l2 6"></path>
+                    <circle cx="7" cy="18" r="2"></circle>
+                    <circle cx="17" cy="18" r="2"></circle>
+                </svg>
+                Frota
+            </a>
+
+            <a class="menu-link" href="lancamentos.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 5v14"></path>
+                    <path d="M5 12h14"></path>
+                </svg>
+                Lançamentos
+            </a>
+
+            <a class="menu-link" href="fornecedores.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M20 7H4"></path>
+                    <path d="M4 7l2-3h12l2 3"></path>
+                    <path d="M6 7v14h12V7"></path>
+                </svg>
+                Fornecedores
+            </a>
+
+        </nav>
+
+        <!-- FOOTER -->
+        <div class="sidebar-footer">
+
+            <button class="menu-link logout-btn" onclick="logout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <path d="M16 17l5-5-5-5"></path>
+                    <path d="M21 12H9"></path>
+                </svg>
+                Sair
+            </button>
+
+            <a class="menu-link" href="configuracoes.html" style="margin-top:10px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 7.04 4.3l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.08a1.65 1.65 0 0 0 1.82-.33l.06-.06A2 2 0 1 1 19.7 7.04l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c0 .69.28 1.32.73 1.77.45.45 1.08.73 1.77.73a2 2 0 0 1 0 4h-.09z"/>
+                </svg>
+                Configurações
+            </a>
+
+        </div>
 
     </aside>
 
-    <!-- CONTEÚDO -->
+    <!-- MAIN -->
+    <main class="main-content">
 
-    <main class="content">
+        <!-- TOPBAR -->
+        <header class="topbar">
 
-        <!-- TOPO -->
-
-        <div class="page-header">
-
-            <div>
-
-                <h1 class="page-title">
-                    Dashboard
-                </h1>
-
-                <p class="page-subtitle">
-                    Bem-vindo,
-                    <span id="nomeUsuario">
-                        Usuário
-                    </span>
-                </p>
-
+            <div class="topbar-title">
+                <h2>Sistema Financeiro</h2>
+                <span>Dashboard analítico</span>
             </div>
 
-        </div>
+        </header>
 
-        <!-- KPIS -->
+        <!-- CONTENT -->
+        <section class="content">
 
-        <div class="kpi-grid">
+            <!-- KPIs -->
+            <div class="kpi-grid">
 
-            <div class="kpi-card">
-
-                <span class="kpi-label">
-                    Assinaturas
-                </span>
-
-                <span
-                    id="kpiAssinaturas"
-                    class="kpi-value">
-                    0
-                </span>
-
-            </div>
-
-            <div class="kpi-card">
-
-                <span class="kpi-label">
-                    Valor Mensal
-                </span>
-
-                <span
-                    id="kpiValor"
-                    class="kpi-value">
-                    R$ 0,00
-                </span>
-
-            </div>
-
-            <div class="kpi-card">
-
-                <span class="kpi-label">
-                    Veículos
-                </span>
-
-                <span
-                    id="kpiVeiculos"
-                    class="kpi-value">
-                    0
-                </span>
-
-            </div>
-
-            <div class="kpi-card">
-
-                <span class="kpi-label">
-                    Fornecedores
-                </span>
-
-                <span
-                    id="kpiFornecedores"
-                    class="kpi-value">
-                    0
-                </span>
-
-            </div>
-
-        </div>
-
-        <!-- GRÁFICOS -->
-
-        <div class="dashboard-grid">
-
-            <div class="card">
-
-                <div class="card-header">
-
-                    <h3>
-                        Assinaturas por Segmento
-                    </h3>
-
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Assinaturas</div>
+                    <div class="kpi-value" id="kpi-assinaturas">0</div>
                 </div>
 
-                <div class="chart-container">
+                <div class="kpi-card">
+                    <div class="kpi-label">Custo Mensal</div>
+                    <div class="kpi-value" id="kpi-custo">R$ 0</div>
+                </div>
 
-                    <canvas id="graficoSegmentos"></canvas>
+                <div class="kpi-card">
+                    <div class="kpi-label">Frota</div>
+                    <div class="kpi-value" id="kpi-frota">0</div>
+                </div>
 
+                <div class="kpi-card">
+                    <div class="kpi-label">Usuários</div>
+                    <div class="kpi-value" id="kpi-usuarios">0</div>
                 </div>
 
             </div>
 
-            <div class="card">
+            <!-- GRÁFICOS -->
+            <div class="chart-grid">
 
-                <div class="card-header">
-
-                    <h3>
-                        Meios de Pagamento
-                    </h3>
-
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Custos por Segmento</div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="chartSegmento"></canvas>
+                    </div>
                 </div>
 
-                <div class="chart-container">
-
-                    <canvas id="graficoPagamentos"></canvas>
-
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Meios de Pagamento</div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="chartPagamento"></canvas>
+                    </div>
                 </div>
 
             </div>
 
-        </div>
-
-        <!-- TABELAS -->
-
-        <div class="dashboard-grid">
-
-            <div class="card">
-
-                <div class="card-header">
-
-                    <h3>
-                        Últimas Assinaturas
-                    </h3>
-
-                </div>
-
-                <table class="table">
-
-                    <thead>
-
-                        <tr>
-                            <th>Nome</th>
-                            <th>Valor</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="ultimasAssinaturas">
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-header">
-
-                    <h3>
-                        Veículos Cadastrados
-                    </h3>
-
-                </div>
-
-                <table class="table">
-
-                    <thead>
-
-                        <tr>
-                            <th>Marca</th>
-                            <th>Modelo</th>
-                            <th>Placa</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="listaVeiculos">
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
+        </section>
 
     </main>
 
@@ -284,253 +176,72 @@
 
 <script>
 
-const usuario =
-JSON.parse(
-    localStorage.getItem('mf_usuario')
-);
+const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co";
+const SUPABASE_KEY = "SUA_KEY";
 
-if(!usuario){
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    location.href = "index.html";
-
-}
-
-document.getElementById(
-    "nomeUsuario"
-).innerText = usuario.nome;
-
+// logout
 function logout(){
-
     localStorage.clear();
-
-    location.href = "index.html";
-
+    window.location.href = "index.html";
 }
 
-async function carregarDashboard(){
-
-    try{
-
-        const [
-            assinaturasResult,
-            veiculosResult,
-            fornecedoresResult
-        ] = await Promise.all([
-
-            supabaseClient
-                .from('assinaturas')
-                .select('*'),
-
-            supabaseClient
-                .from('veiculos')
-                .select('*'),
-
-            supabaseClient
-                .from('fornecedores')
-                .select('*')
-
-        ]);
-
-        const assinaturas =
-            assinaturasResult.data || [];
-
-        const veiculos =
-            veiculosResult.data || [];
-
-        const fornecedores =
-            fornecedoresResult.data || [];
-
-        const totalAssinaturas =
-            assinaturas.length;
-
-        const totalValor =
-            assinaturas.reduce(
-                (s,a)=>
-                s + Number(a.valor || 0),
-                0
-            );
-
-        document.getElementById(
-            'kpiAssinaturas'
-        ).innerText =
-            totalAssinaturas;
-
-        document.getElementById(
-            'kpiValor'
-        ).innerText =
-            totalValor.toLocaleString(
-                'pt-BR',
-                {
-                    style:'currency',
-                    currency:'BRL'
-                }
-            );
-
-        document.getElementById(
-            'kpiVeiculos'
-        ).innerText =
-            veiculos.length;
-
-        document.getElementById(
-            'kpiFornecedores'
-        ).innerText =
-            fornecedores.length;
-
-        carregarTabelaAssinaturas(
-            assinaturas
-        );
-
-        carregarTabelaVeiculos(
-            veiculos
-        );
-
-        gerarGraficoSegmentos(
-            assinaturas
-        );
-
-        gerarGraficoPagamentos(
-            assinaturas
-        );
-
-    }
-    catch(err){
-
-        console.error(err);
-
-    }
-
+// moeda
+function brl(v){
+    return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v);
 }
 
-function carregarTabelaAssinaturas(lista){
+// BI
+async function load(){
 
-    const tbody =
-        document.getElementById(
-            'ultimasAssinaturas'
-        );
+    const { data: assinaturas } = await supabaseClient
+        .from("assinaturas")
+        .select("*");
 
-    tbody.innerHTML = '';
+    const { count: frota } = await supabaseClient
+        .from("veiculos")
+        .select("*",{count:"exact",head:true});
 
-    lista.slice(0,10).forEach(item=>{
+    const { count: usuarios } = await supabaseClient
+        .from("usuarios")
+        .select("*",{count:"exact",head:true});
 
-        tbody.innerHTML += `
-        <tr>
-            <td>${item.nome}</td>
-            <td>
-                ${Number(item.valor).toLocaleString(
-                    'pt-BR',
-                    {
-                        style:'currency',
-                        currency:'BRL'
-                    }
-                )}
-            </td>
-        </tr>
-        `;
+    document.getElementById("kpi-assinaturas").innerText = assinaturas.length;
+    document.getElementById("kpi-frota").innerText = frota || 0;
+    document.getElementById("kpi-usuarios").innerText = usuarios || 0;
 
+    let total = 0;
+
+    const seg = {};
+
+    assinaturas.forEach(a=>{
+        total += Number(a.valor || 0);
+        const k = a.segmento_id || "outros";
+        seg[k] = (seg[k]||0)+Number(a.valor||0);
     });
 
-}
+    document.getElementById("kpi-custo").innerText = brl(total);
 
-function carregarTabelaVeiculos(lista){
-
-    const tbody =
-        document.getElementById(
-            'listaVeiculos'
-        );
-
-    tbody.innerHTML = '';
-
-    lista.slice(0,10).forEach(v=>{
-
-        tbody.innerHTML += `
-        <tr>
-            <td>${v.marca}</td>
-            <td>${v.modelo}</td>
-            <td>${v.placa}</td>
-        </tr>
-        `;
-
-    });
-
-}
-
-function gerarGraficoSegmentos(lista){
-
-    const mapa = {};
-
-    lista.forEach(item=>{
-
-        const chave =
-            item.segmento_id ||
-            'Sem Segmento';
-
-        mapa[chave] =
-            (mapa[chave] || 0)
-            + Number(item.valor || 0);
-
-    });
-
-    new Chart(
-
-        document.getElementById(
-            'graficoSegmentos'
-        ),
-
-        {
-            type:'bar',
-
-            data:{
-                labels:Object.keys(mapa),
-
-                datasets:[{
-                    data:Object.values(mapa)
-                }]
-            }
+    new Chart(document.getElementById("chartSegmento"),{
+        type:"bar",
+        data:{
+            labels:Object.keys(seg),
+            datasets:[{data:Object.values(seg)}]
         }
-
-    );
-
-}
-
-function gerarGraficoPagamentos(lista){
-
-    const mapa = {};
-
-    lista.forEach(item=>{
-
-        const chave =
-            item.meio_pagamento_id ||
-            'Não informado';
-
-        mapa[chave] =
-            (mapa[chave] || 0)
-            + Number(item.valor || 0);
-
     });
 
-    new Chart(
-
-        document.getElementById(
-            'graficoPagamentos'
-        ),
-
-        {
-            type:'doughnut',
-
-            data:{
-                labels:Object.keys(mapa),
-
-                datasets:[{
-                    data:Object.values(mapa)
-                }]
-            }
+    new Chart(document.getElementById("chartPagamento"),{
+        type:"doughnut",
+        data:{
+            labels:["Geral"],
+            datasets:[{data:[total]}]
         }
-
-    );
+    });
 
 }
 
-carregarDashboard();
+load();
 
 </script>
 
