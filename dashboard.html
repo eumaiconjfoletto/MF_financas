@@ -6,10 +6,12 @@
 
 <title>MF Finanças - Dashboard</title>
 
+<!-- CSS -->
 <link rel="stylesheet" href="assets/css/variables.css">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/dashboard.css">
 
+<!-- LIBS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -35,7 +37,7 @@
 
             <div class="menu-title">Menu</div>
 
-            <a class="menu-link active" href="#">
+            <a class="menu-link active" href="dashboard.html">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M3 12l9-9 9 9"></path>
                     <path d="M9 21V9h6v12"></path>
@@ -92,7 +94,7 @@
                 Sair
             </button>
 
-            <a class="menu-link" href="configuracoes.html" style="margin-top:10px;">
+            <a class="menu-link" href="configuracoes.html">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <circle cx="12" cy="12" r="3"></circle>
                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 7.04 4.3l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.08a1.65 1.65 0 0 0 1.82-.33l.06-.06A2 2 0 1 1 19.7 7.04l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c0 .69.28 1.32.73 1.77.45.45 1.08.73 1.77.73a2 2 0 0 1 0 4h-.09z"/>
@@ -107,7 +109,6 @@
     <!-- MAIN -->
     <main class="main-content">
 
-        <!-- TOPBAR -->
         <header class="topbar">
 
             <div class="topbar-title">
@@ -117,14 +118,13 @@
 
         </header>
 
-        <!-- CONTENT -->
         <section class="content">
 
             <!-- KPIs -->
             <div class="kpi-grid">
 
                 <div class="kpi-card">
-                    <div class="kpi-label">Total Assinaturas</div>
+                    <div class="kpi-label">Assinaturas</div>
                     <div class="kpi-value" id="kpi-assinaturas">0</div>
                 </div>
 
@@ -174,76 +174,9 @@
 
 </div>
 
-<script>
-
-const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co";
-const SUPABASE_KEY = "SUA_KEY";
-
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// logout
-function logout(){
-    localStorage.clear();
-    window.location.href = "index.html";
-}
-
-// moeda
-function brl(v){
-    return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v);
-}
-
-// BI
-async function load(){
-
-    const { data: assinaturas } = await supabaseClient
-        .from("assinaturas")
-        .select("*");
-
-    const { count: frota } = await supabaseClient
-        .from("veiculos")
-        .select("*",{count:"exact",head:true});
-
-    const { count: usuarios } = await supabaseClient
-        .from("usuarios")
-        .select("*",{count:"exact",head:true});
-
-    document.getElementById("kpi-assinaturas").innerText = assinaturas.length;
-    document.getElementById("kpi-frota").innerText = frota || 0;
-    document.getElementById("kpi-usuarios").innerText = usuarios || 0;
-
-    let total = 0;
-
-    const seg = {};
-
-    assinaturas.forEach(a=>{
-        total += Number(a.valor || 0);
-        const k = a.segmento_id || "outros";
-        seg[k] = (seg[k]||0)+Number(a.valor||0);
-    });
-
-    document.getElementById("kpi-custo").innerText = brl(total);
-
-    new Chart(document.getElementById("chartSegmento"),{
-        type:"bar",
-        data:{
-            labels:Object.keys(seg),
-            datasets:[{data:Object.values(seg)}]
-        }
-    });
-
-    new Chart(document.getElementById("chartPagamento"),{
-        type:"doughnut",
-        data:{
-            labels:["Geral"],
-            datasets:[{data:[total]}]
-        }
-    });
-
-}
-
-load();
-
-</script>
+<!-- SCRIPTS -->
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/dashboard.js"></script>
 
 </body>
 </html>
