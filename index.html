@@ -1,152 +1,138 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>MF Finanças</title>
+    <title>MF Finanças</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
 
-<style>
-
-body{
-    background:#09090b;
-}
-
-.glass{
-    background:rgba(24,24,27,.75);
-    backdrop-filter:blur(18px);
-}
-
-</style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 </head>
 
-<body class="min-h-screen text-white">
+<body>
 
-<div class="min-h-screen flex flex-col lg:flex-row">
+    <div class="login-page">
 
-    <!-- ESQUERDA -->
+        <!-- LADO ESQUERDO -->
 
-    <div class="flex-1 flex items-center justify-center p-10">
+        <div class="login-hero">
 
-        <div class="max-w-xl">
+            <div class="login-brand">
 
-            <div class="mb-6">
-
-                <div class="w-16 h-16 rounded-2xl bg-amber-500 flex items-center justify-center text-black text-3xl font-black">
+                <div class="brand-logo">
                     MF
                 </div>
 
+                <h1>
+                    MF Finanças
+                </h1>
+
+                <p>
+                    Plataforma integrada para controle financeiro,
+                    assinaturas, fornecedores e gestão de frota.
+                </p>
+
             </div>
 
-            <h1 class="text-5xl font-black mb-4">
-                MF Finanças
-            </h1>
+            <div class="hero-cards">
 
-            <p class="text-zinc-400 text-lg leading-relaxed mb-8">
-                Plataforma completa para gestão financeira,
-                assinaturas, fornecedores e controle de frota.
-            </p>
+                <div class="hero-card">
 
-            <div class="grid gap-4">
+                    <h3>Assinaturas</h3>
 
-                <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-                    <h3 class="font-semibold text-amber-400">
-                        Gestão de Assinaturas
-                    </h3>
-                    <p class="text-zinc-400 text-sm mt-1">
-                        Controle recorrências e vencimentos.
+                    <p>
+                        Controle recorrências, vencimentos e custos mensais.
                     </p>
+
                 </div>
 
-                <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-                    <h3 class="font-semibold text-amber-400">
-                        Controle de Frota
-                    </h3>
-                    <p class="text-zinc-400 text-sm mt-1">
-                        Registre despesas e histórico dos veículos.
+                <div class="hero-card">
+
+                    <h3>Fornecedores</h3>
+
+                    <p>
+                        Organize parceiros, categorias e contratos.
                     </p>
+
                 </div>
 
-                <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-                    <h3 class="font-semibold text-amber-400">
-                        Dashboard Inteligente
-                    </h3>
-                    <p class="text-zinc-400 text-sm mt-1">
-                        Visualize indicadores em tempo real.
+                <div class="hero-card">
+
+                    <h3>Frota</h3>
+
+                    <p>
+                        Gerencie veículos, abastecimentos e despesas.
                     </p>
+
                 </div>
 
             </div>
 
         </div>
 
-    </div>
+        <!-- LADO DIREITO -->
 
-    <!-- DIREITA -->
+        <div class="login-container">
 
-    <div class="w-full lg:w-[480px] flex items-center justify-center p-8">
+            <div class="login-card">
 
-        <div class="glass border border-zinc-800 rounded-3xl p-8 w-full max-w-md shadow-2xl">
+                <div class="login-header">
 
-            <div class="mb-8">
+                    <h2>
+                        Acesso ao Sistema
+                    </h2>
 
-                <h2 class="text-3xl font-bold">
-                    Entrar
-                </h2>
-
-                <p class="text-zinc-400 mt-2">
-                    Informe suas credenciais.
-                </p>
-
-            </div>
-
-            <div class="space-y-5">
-
-                <div>
-
-                    <label class="block text-sm mb-2 text-zinc-300">
-                        E-mail
-                    </label>
-
-                    <input
-                        id="email"
-                        type="email"
-                        class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 outline-none focus:border-amber-500"
-                        placeholder="seuemail@exemplo.com">
-
-                </div>
-
-                <div>
-
-                    <label class="block text-sm mb-2 text-zinc-300">
-                        Senha
-                    </label>
-
-                    <input
-                        id="senha"
-                        type="password"
-                        class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 outline-none focus:border-amber-500"
-                        placeholder="••••••••">
+                    <p>
+                        Informe seu e-mail e senha para continuar.
+                    </p>
 
                 </div>
 
                 <div
                     id="erro"
-                    class="hidden bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-3 text-sm">
+                    class="alert alert-danger hidden">
+                </div>
+
+                <div class="form-group">
+
+                    <label class="label">
+                        E-mail
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        class="input"
+                        placeholder="Digite seu e-mail">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label class="label">
+                        Senha
+                    </label>
+
+                    <input
+                        type="password"
+                        id="senha"
+                        class="input"
+                        placeholder="Digite sua senha">
+
                 </div>
 
                 <button
                     id="btnLogin"
-                    onclick="entrar()"
-                    class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-3 rounded-xl transition">
+                    class="btn btn-primary btn-full"
+                    onclick="entrar()">
 
-                    Entrar no Sistema
+                    Entrar
 
                 </button>
 
@@ -156,78 +142,81 @@ body{
 
     </div>
 
-</div>
+    <script src="js/supabase.js"></script>
 
-<script>
+    <script>
 
-const SUPABASE_URL =
-'https://hrdtylxfkcsgyhghhptr.supabase.co';
+        async function entrar() {
 
-const SUPABASE_KEY =
-'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94';
+            const email =
+                document.getElementById('email').value.trim();
 
-const supabaseClient =
-supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+            const senha =
+                document.getElementById('senha').value.trim();
 
-async function entrar(){
+            const erro =
+                document.getElementById('erro');
 
-    const email =
-        document.getElementById('email').value.trim();
+            erro.classList.add('hidden');
 
-    const senha =
-        document.getElementById('senha').value.trim();
+            try {
 
-    const erro =
-        document.getElementById('erro');
+                const { data, error } =
+                    await supabaseClient
+                        .from('usuarios')
+                        .select('*')
+                        .eq('email', email)
+                        .eq('senha_hash', senha)
+                        .eq('ativo', true)
+                        .single();
 
-    erro.classList.add('hidden');
+                if (error || !data) {
 
-    try{
+                    erro.innerHTML =
+                        'Usuário ou senha inválidos';
 
-        const { data, error } =
-            await supabaseClient
-                .from('usuarios')
-                .select('*')
-                .eq('email', email)
-                .eq('senha_hash', senha)
-                .single();
+                    erro.classList.remove('hidden');
 
-        if(error || !data){
+                    return;
+                }
 
-            erro.innerHTML =
-                'Usuário ou senha inválidos';
+                localStorage.setItem(
+                    'mf_usuario',
+                    JSON.stringify(data)
+                );
 
-            erro.classList.remove('hidden');
+                window.location.href =
+                    'dashboard.html';
 
-            return;
+            }
+            catch (e) {
+
+                erro.innerHTML =
+                    'Erro ao conectar com o sistema';
+
+                erro.classList.remove('hidden');
+
+                console.error(e);
+
+            }
+
         }
 
-        localStorage.setItem(
-            'mf_usuario',
-            JSON.stringify(data)
+        document.addEventListener(
+            'keypress',
+            function (e) {
+
+                if (e.key === 'Enter') {
+
+                    entrar();
+
+                }
+
+            }
         );
 
-        window.location.href =
-            'dashboard.html';
-
-    }
-    catch(e){
-
-        erro.innerHTML =
-            'Erro ao conectar ao sistema';
-
-        erro.classList.remove('hidden');
-
-        console.error(e);
-
-    }
-
-}
-
-</script>
+    </script>
 
 </body>
+
 </html>
