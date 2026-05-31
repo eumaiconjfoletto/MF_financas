@@ -1,0 +1,89 @@
+.card{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius);
+
+}
+
+.card:hover{
+
+    border-color:rgba(212,175,55,.4);
+
+}
+
+.btn-primary{
+
+    background:var(--primary);
+
+    color:#000;
+
+    font-weight:700;
+
+    border-radius:14px;
+
+    transition:.2s;
+
+}
+
+.btn-primary:hover{
+
+    background:var(--primary-hover);
+
+}
+
+.input{
+
+    width:100%;
+
+    background:#111114;
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    color:white;
+
+    padding:12px 16px;
+
+}
+
+.input:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+}
+
+.kpi{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    padding:20px;
+
+}
+
+.kpi-title{
+
+    color:var(--text-muted);
+
+    font-size:13px;
+
+}
+
+.kpi-value{
+
+    margin-top:8px;
+
+    font-size:28px;
+
+    font-weight:800;
+
+}
