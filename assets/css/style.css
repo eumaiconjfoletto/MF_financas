@@ -499,3 +499,265 @@ a{
     }
 
 }
+
+/* ==========================================
+   LOGIN
+========================================== */
+
+.login-page{
+
+    min-height:100vh;
+
+    display:grid;
+
+    grid-template-columns:1fr 500px;
+
+    background:var(--bg);
+
+}
+
+.login-hero{
+
+    padding:60px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    gap:40px;
+
+}
+
+.login-brand{
+
+    max-width:650px;
+
+}
+
+.brand-logo{
+
+    width:72px;
+
+    height:72px;
+
+    border-radius:20px;
+
+    background:var(--primary);
+
+    color:#000;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:1.8rem;
+
+    font-weight:900;
+
+    margin-bottom:24px;
+
+}
+
+.login-brand h1{
+
+    font-size:3.5rem;
+
+    font-weight:900;
+
+    margin-bottom:16px;
+
+    line-height:1.1;
+
+}
+
+.login-brand p{
+
+    color:var(--text-muted);
+
+    font-size:1.1rem;
+
+    line-height:1.8;
+
+    max-width:600px;
+
+}
+
+.hero-cards{
+
+    display:grid;
+
+    gap:16px;
+
+    max-width:700px;
+
+}
+
+.hero-card{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:22px;
+
+    transition:var(--transition);
+
+}
+
+.hero-card:hover{
+
+    transform:translateY(-2px);
+
+    border-color:rgba(212,175,55,.30);
+
+}
+
+.hero-card h3{
+
+    font-size:1rem;
+
+    font-weight:700;
+
+    margin-bottom:8px;
+
+}
+
+.hero-card p{
+
+    color:var(--text-muted);
+
+    line-height:1.6;
+
+}
+
+/* ==========================================
+   ÁREA LOGIN
+========================================== */
+
+.login-container{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:40px;
+
+    border-left:1px solid var(--border);
+
+    background:var(--surface);
+
+}
+
+.login-card{
+
+    width:100%;
+
+    max-width:420px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:24px;
+
+    padding:40px;
+
+    box-shadow:var(--shadow-lg);
+
+}
+
+.login-header{
+
+    margin-bottom:30px;
+
+}
+
+.login-header h2{
+
+    font-size:2rem;
+
+    font-weight:800;
+
+    margin-bottom:8px;
+
+}
+
+.login-header p{
+
+    color:var(--text-muted);
+
+    line-height:1.6;
+
+}
+
+/* ==========================================
+   BOTÃO LOGIN
+========================================== */
+
+#btnLogin{
+
+    margin-top:10px;
+
+    height:52px;
+
+    font-size:1rem;
+
+}
+
+/* ==========================================
+   RESPONSIVO
+========================================== */
+
+@media(max-width:1100px){
+
+    .login-page{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .login-hero{
+
+        display:none;
+
+    }
+
+    .login-container{
+
+        border-left:none;
+
+        min-height:100vh;
+
+    }
+
+}
+
+@media(max-width:600px){
+
+    .login-container{
+
+        padding:20px;
+
+    }
+
+    .login-card{
+
+        padding:30px 24px;
+
+    }
+
+    .login-header h2{
+
+        font-size:1.7rem;
+
+    }
+
+}
