@@ -1,0 +1,23 @@
+:root{
+
+    --bg:#09090b;
+    --card:#18181b;
+    --card-hover:#27272a;
+
+    --border:#27272a;
+
+    --primary:#d4af37;
+    --primary-hover:#f0c54a;
+
+    --text:#ffffff;
+    --text-muted:#a1a1aa;
+
+    --success:#22c55e;
+    --danger:#ef4444;
+    --warning:#f59e0b;
+
+    --sidebar-width:260px;
+
+    --radius:18px;
+
+}
