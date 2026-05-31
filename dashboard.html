@@ -143,7 +143,7 @@
                 // 1. Coleta Assinaturas com Relacionamentos Globais
                 const { data, error } = await supabaseClient
     .from('assinaturas')
-    .select('*, segmentos_assinaturas(nome), meios_pagamento!meio_pagamento_id(nome)');
+    .select('*, segmentos_assinaturas(nome), meios_pagamento!meio_pagamento_id(nome)')
                 
                 if (errSub) throw errSub;
                 const listaSubs = assinaturas || [];
