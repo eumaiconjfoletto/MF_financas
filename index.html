@@ -39,21 +39,29 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // CONTROLE DE LOGIN COM TEMPORIZADOR
-    document.getElementById('form-login').addEventListener('submit', async (e) => {
+        document.getElementById('form-login').addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // 1. Liga o popup de carregamento imediatamente
+        // 1. Liga o loader
         showLoader();
 
-        // 2. Pausa artificial de 1.5 segundos ("Pensa um pouquinho")
+        // 2. Pausa de 1.5 segundos
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        const email = document.getElementById('input-email').value.trim();
-        const senha = document.getElementById('input-password').value.trim();
-
         try {
-            // 3. Validação real no Supabase
+            // Tenta buscar pelos IDs padrão ou pelas alternativas comuns (email/senha)
+            const emailField = document.getElementById('input-email') || document.getElementById('email');
+            const senhaField = document.getElementById('input-password') || document.getElementById('senha') || document.getElementById('password');
+
+            // Proteção: Se mesmo assim não achar o elemento no HTML, avisa sem travar a tela
+            if (!emailField || !senhaField) {
+                throw new Error("Erro de Configuração: Os IDs dos campos de e-mail ou senha no HTML não batem com o JavaScript.");
+            }
+
+            const email = emailField.value.trim();
+            const senha = senhaField.value.trim();
+
+            // 3. Autenticação no Supabase
             const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: email,
                 password: senha
@@ -61,15 +69,16 @@
 
             if (error) throw error;
 
-            // Sucesso: Salva a sessão e joga para o painel
+            // Sucesso
             localStorage.setItem('user_session', JSON.stringify(data.session));
             window.location.href = 'dashboard.html';
 
         } catch (err) {
-            // Erro: Desliga o loader para o usuário tentar de novo
+            // 4. QUALQUER ERRO que acontecer aqui dentro agora desliga o loader com segurança
             hideLoader();
-            console.error("Erro de autenticação:", err.message);
-            alert("Falha no login: E-mail ou senha incorretos.");
+            
+            console.error("Erro detectado:", err.message);
+            alert(err.message);
         }
     });
 </script>
