@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lançamentos - MF Finanças</title>
+
+    <link rel="stylesheet" href="assets/css/variaveis.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+            <h1>MF <span>Finanças</span></h1>
+        </div>
+
+        <div class="sidebar-menu">
+
+            <p class="menu-title">Menu</p>
+
+            <a class="menu-link" href="dashboard.html">
+                📊 Dashboard
+            </a>
+
+            <a class="menu-link active" href="lancamentos.html">
+                💰 Lançamentos
+            </a>
+
+            <a class="menu-link" href="veiculos.html">
+                🚗 Frota
+            </a>
+
+        </div>
+
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="menu-link logout-btn">
+                Sair
+            </button>
+        </div>
+
+    </aside>
+
+    <!-- CONTEÚDO -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div class="topbar-title">
+                <h2>Lançamentos</h2>
+                <span>Receitas e despesas do sistema</span>
+            </div>
+
+        </header>
+
+        <section class="content">
+
+            <!-- FORM -->
+            <div class="widget">
+
+                <h3 class="widget-title">Novo lançamento</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+                    <select id="tipo" class="p-3 bg-zinc-900 border border-zinc-700 rounded-xl">
+                        <option value="receita">Receita</option>
+                        <option value="despesa">Despesa</option>
+                    </select>
+
+                    <input id="descricao" placeholder="Descrição"
+                        class="p-3 bg-zinc-900 border border-zinc-700 rounded-xl">
+
+                    <input id="valor" type="number" placeholder="Valor"
+                        class="p-3 bg-zinc-900 border border-zinc-700 rounded-xl">
+
+                    <button onclick="salvarLancamento()"
+                        class="bg-amber-500 text-black font-bold rounded-xl">
+                        Salvar
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- LISTA -->
+            <div class="widget mt-6">
+
+                <h3 class="widget-title">Últimos lançamentos</h3>
+
+                <div id="lista" class="simple-list"></div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/lancamentos.js"></script>
+
+</body>
+</html>
