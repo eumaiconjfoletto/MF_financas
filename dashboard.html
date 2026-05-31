@@ -141,9 +141,9 @@
         async function runBusinessIntelligence() {
             try {
                 // 1. Coleta Assinaturas com Relacionamentos Globais
-                const { data: assinaturas, error: errSub } = await supabaseClient
-                    .from('assinaturas')
-                    .select('*, segmentos_assinaturas(nome), meios_pagamento(nome)');
+                const { data, error } = await supabaseClient
+    .from('assinaturas')
+    .select('*, segmentos_assinaturas(nome), meios_pagamento!meio_pagamento_id(nome)');
                 
                 if (errSub) throw errSub;
                 const listaSubs = assinaturas || [];
