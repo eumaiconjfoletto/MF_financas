@@ -1,101 +1,233 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistema de Gestão</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="app.js"></script>
-</head>
-<body class="bg-[#0c0c0e] text-gray-100 flex items-center justify-center min-h-screen p-4">
 
-    <div class="w-full max-w-md bg-[#16161a] border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-6">
-        <div class="text-center">
-            <h1 class="text-2xl font-black tracking-tight text-[#d4af37]">Sistema Corp</h1>
-            <p class="text-xs text-gray-400 mt-1">Autenticação via Tabela Pública</p>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MF Finanças</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+body{
+    background:#09090b;
+}
+
+.glass{
+    background:rgba(24,24,27,.75);
+    backdrop-filter:blur(18px);
+}
+
+</style>
+
+</head>
+
+<body class="min-h-screen text-white">
+
+<div class="min-h-screen flex flex-col lg:flex-row">
+
+    <!-- ESQUERDA -->
+
+    <div class="flex-1 flex items-center justify-center p-10">
+
+        <div class="max-w-xl">
+
+            <div class="mb-6">
+
+                <div class="w-16 h-16 rounded-2xl bg-amber-500 flex items-center justify-center text-black text-3xl font-black">
+                    MF
+                </div>
+
+            </div>
+
+            <h1 class="text-5xl font-black mb-4">
+                MF Finanças
+            </h1>
+
+            <p class="text-zinc-400 text-lg leading-relaxed mb-8">
+                Plataforma completa para gestão financeira,
+                assinaturas, fornecedores e controle de frota.
+            </p>
+
+            <div class="grid gap-4">
+
+                <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+                    <h3 class="font-semibold text-amber-400">
+                        Gestão de Assinaturas
+                    </h3>
+                    <p class="text-zinc-400 text-sm mt-1">
+                        Controle recorrências e vencimentos.
+                    </p>
+                </div>
+
+                <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+                    <h3 class="font-semibold text-amber-400">
+                        Controle de Frota
+                    </h3>
+                    <p class="text-zinc-400 text-sm mt-1">
+                        Registre despesas e histórico dos veículos.
+                    </p>
+                </div>
+
+                <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+                    <h3 class="font-semibold text-amber-400">
+                        Dashboard Inteligente
+                    </h3>
+                    <p class="text-zinc-400 text-sm mt-1">
+                        Visualize indicadores em tempo real.
+                    </p>
+                </div>
+
+            </div>
+
         </div>
 
-        <form id="form-login" class="space-y-4">
-            <div>
-                <label class="text-xs text-gray-400 block mb-1 font-medium">E-mail de Acesso</label>
-                <input type="email" id="login-email" placeholder="seu@email.com" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-xl p-2.5 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
-            </div>
-            <div>
-                <label class="text-xs text-gray-400 block mb-1 font-medium">Senha</label>
-                <input type="password" id="login-password" placeholder="••••••••" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-xl p-2.5 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
-            </div>
-
-            <button type="submit" class="w-full bg-[#d4af37] text-black hover:bg-[#b8860b] py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all mt-2 shadow-lg shadow-[#d4af37]/10 active:scale-[0.99]">
-                Entrar no Sistema
-            </button>
-        </form>
     </div>
 
-    <script>
-        // CONFIGURAÇÃO DO SUPABASE
-        const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co".replace(/\/$/, "");
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    <!-- DIREITA -->
 
-        document.getElementById('form-login').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // 1. Liga o loader animado do seu app.js
-            showLoader();
+    <div class="w-full lg:w-[480px] flex items-center justify-center p-8">
 
-            // 2. Temporizador de 1.5 segundos ("Pensa um pouquinho")
-            await new Promise(resolve => setTimeout(resolve, 1500));
+        <div class="glass border border-zinc-800 rounded-3xl p-8 w-full max-w-md shadow-2xl">
 
-            try {
-                const emailField = document.getElementById('login-email');
-                const senhaField = document.getElementById('login-password');
+            <div class="mb-8">
 
-                if (!emailField || !senhaField) {
-                    throw new Error("Erro de renderização: Campos não encontrados.");
-                }
+                <h2 class="text-3xl font-bold">
+                    Entrar
+                </h2>
 
-                const email = emailField.value.trim();
-                const senha = senhaField.value.trim();
+                <p class="text-zinc-400 mt-2">
+                    Informe suas credenciais.
+                </p>
 
-                // 3. Busca direta na tabela pública 'usuarios'
-                const { data: usuario, error } = await supabaseClient
-                    .from('usuarios')
-                    .select('id, nome, email')
-                    .eq('email', email)
-                    .eq('senha', senha) // Compara a senha em texto limpo como está na sua imagem
-                    .maybeSingle();    // Retorna o objeto do usuário ou nulo se não achar
+            </div>
 
-                if (error) throw error;
+            <div class="space-y-5">
 
-                // Se o e-mail ou a senha não baterem, o retorno será nulo
-                if (!usuario) {
-                    throw new Error("Invalid login credentials");
-                }
+                <div>
 
-                // Opcional: Atualiza a coluna 'ultimo_login' que você tem na tabela
-                await supabaseClient
-                    .from('usuarios')
-                    .update({ ultimo_login: new Date().toISOString() })
-                    .eq('id', usuario.id);
+                    <label class="block text-sm mb-2 text-zinc-300">
+                        E-mail
+                    </label>
 
-                // 4. Sucesso: Salva os dados do usuário logado na sessão e redireciona
-                localStorage.setItem('user_session', JSON.stringify(usuario));
-                window.location.href = 'dashboard.html';
+                    <input
+                        id="email"
+                        type="email"
+                        class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 outline-none focus:border-amber-500"
+                        placeholder="seuemail@exemplo.com">
 
-            } catch (err) {
-                // 5. Desliga o loader em caso de falha para liberar a tela
-                hideLoader();
-                
-                console.error("Falha na autenticação:", err.message);
-                
-                if (err.message === "Invalid login credentials") {
-                    alert("Falha no login: E-mail ou senha incorretos.");
-                } else {
-                    alert("Erro ao conectar ao banco: " + err.message);
-                }
-            }
-        });
-    </script>
+                </div>
+
+                <div>
+
+                    <label class="block text-sm mb-2 text-zinc-300">
+                        Senha
+                    </label>
+
+                    <input
+                        id="senha"
+                        type="password"
+                        class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 outline-none focus:border-amber-500"
+                        placeholder="••••••••">
+
+                </div>
+
+                <div
+                    id="erro"
+                    class="hidden bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-3 text-sm">
+                </div>
+
+                <button
+                    id="btnLogin"
+                    onclick="entrar()"
+                    class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-3 rounded-xl transition">
+
+                    Entrar no Sistema
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+'https://hrdtylxfkcsgyhghhptr.supabase.co';
+
+const SUPABASE_KEY =
+'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94';
+
+const supabaseClient =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function entrar(){
+
+    const email =
+        document.getElementById('email').value.trim();
+
+    const senha =
+        document.getElementById('senha').value.trim();
+
+    const erro =
+        document.getElementById('erro');
+
+    erro.classList.add('hidden');
+
+    try{
+
+        const { data, error } =
+            await supabaseClient
+                .from('usuarios')
+                .select('*')
+                .eq('email', email)
+                .eq('senha_hash', senha)
+                .single();
+
+        if(error || !data){
+
+            erro.innerHTML =
+                'Usuário ou senha inválidos';
+
+            erro.classList.remove('hidden');
+
+            return;
+        }
+
+        localStorage.setItem(
+            'mf_usuario',
+            JSON.stringify(data)
+        );
+
+        window.location.href =
+            'dashboard.html';
+
+    }
+    catch(e){
+
+        erro.innerHTML =
+            'Erro ao conectar ao sistema';
+
+        erro.classList.remove('hidden');
+
+        console.error(e);
+
+    }
+
+}
+
+</script>
+
 </body>
 </html>
