@@ -761,3 +761,30 @@ a{
     }
 
 }
+
+/* ==========================
+   ANIMAÇÃO PERSONALIZADA
+========================== */
+
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
+}
+
+/* efeito leve de “trabalho vivo” */
+@keyframes floaty {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+}
+
+.animate-floaty {
+    animation: floaty 2s ease-in-out infinite;
+}
