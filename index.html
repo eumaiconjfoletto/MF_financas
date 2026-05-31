@@ -50,8 +50,8 @@
 
         try {
             // Tenta buscar pelos IDs padrão ou pelas alternativas comuns (email/senha)
-            const emailField = document.getElementById('input-email') || document.getElementById('email');
-            const senhaField = document.getElementById('input-password') || document.getElementById('senha') || document.getElementById('password');
+            const emailField = document.getElementById('login-email') || document.getElementById('login-email');
+            const senhaField = document.getElementById('login-password') || document.getElementById('login-password') || document.getElementById('login-password');
 
             // Proteção: Se mesmo assim não achar o elemento no HTML, avisa sem travar a tela
             if (!emailField || !senhaField) {
