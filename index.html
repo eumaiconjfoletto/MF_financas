@@ -6,79 +6,87 @@
     <title>Login - Sistema de Gestão</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js"></script>
+    <script src="app.js"></script>
 </head>
-<body class="bg-[#0c0c0e] text-gray-100 flex items-center justify-center min-h-screen p-4">
+<body class="bg-[#0c0c0e] text-gray-100 flex items-center justify-center min-h-screen p-4 select-none">
 
     <div class="w-full max-w-md bg-[#16161a] border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-6">
         <div class="text-center">
-            <h1 class="text-2xl font-bold text-[#d4af37]">Sistema Corp</h1>
+            <h1 class="text-2xl font-black tracking-tight text-[#d4af37]">Sistema Corp</h1>
             <p class="text-xs text-gray-400 mt-1">Autenticação Segura via Banco de Dados</p>
         </div>
 
         <form id="form-login" class="space-y-4">
             <div>
-                <label class="text-xs text-gray-400 block mb-1">E-mail de Acesso</label>
-                <input type="email" id="login-email" placeholder="seu@email.com" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2.5 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
+                <label class="text-xs text-gray-400 block mb-1 font-medium">E-mail de Acesso</label>
+                <input type="email" id="login-email" placeholder="seu@email.com" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-xl p-2.5 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
             </div>
             <div>
-                <label class="text-xs text-gray-400 block mb-1">Senha</label>
-                <input type="password" id="login-password" placeholder="••••••••" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded p-2.5 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
+                <label class="text-xs text-gray-400 block mb-1 font-medium">Senha</label>
+                <input type="password" id="login-password" placeholder="••••••••" class="w-full bg-[#0c0c0e] border border-zinc-700 rounded-xl p-2.5 text-sm focus:border-[#d4af37] outline-none transition-colors" required />
             </div>
 
-            <button type="submit" class="w-full bg-[#d4af37] text-black hover:bg-[#b8860b] py-2.5 rounded-lg font-bold text-sm transition-colors mt-2 shadow-lg shadow-[#d4af37]/10">
+            <button type="submit" class="w-full bg-[#d4af37] text-black hover:bg-[#b8860b] py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all mt-2 shadow-lg shadow-[#d4af37]/10 active:scale-[0.99]">
                 Entrar no Sistema
             </button>
         </form>
     </div>
 
     <script>
-        // CONFIGURAÇÃO DO SUPABASE (Substitua com as suas credenciais oficiais)
+        // CONFIGURAÇÃO DO SUPABASE
         const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co".replace(/\/$/, "");
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // EVENTO DE SUBMIT PROTEGIDO
         document.getElementById('form-login').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        // 1. Liga o loader
-        showLoader();
-
-        // 2. Pausa de 1.5 segundos
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        try {
-            // Tenta buscar pelos IDs padrão ou pelas alternativas comuns (email/senha)
-            const emailField = document.getElementById('login-email') || document.getElementById('login-email');
-            const senhaField = document.getElementById('login-password') || document.getElementById('login-password') || document.getElementById('login-password');
-
-            // Proteção: Se mesmo assim não achar o elemento no HTML, avisa sem travar a tela
-            if (!emailField || !senhaField) {
-                throw new Error("Erro de Configuração: Os IDs dos campos de e-mail ou senha no HTML não batem com o JavaScript.");
-            }
-
-            const email = emailField.value.trim();
-            const senha = senhaField.value.trim();
-
-            // 3. Autenticação no Supabase
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: senha
-            });
-
-            if (error) throw error;
-
-            // Sucesso
-            localStorage.setItem('user_session', JSON.stringify(data.session));
-            window.location.href = 'dashboard.html';
-
-        } catch (err) {
-            // 4. QUALQUER ERRO que acontecer aqui dentro agora desliga o loader com segurança
-            hideLoader();
+            e.preventDefault();
             
-            console.error("Erro detectado:", err.message);
-            alert(err.message);
-        }
-    });
-</script>
+            // 1. Ativa o loader global do app.js
+            showLoader();
+
+            // 2. Pausa dramática/artificial de 1.5 segundos
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            try {
+                // Captura direta e limpa usando exatamente os IDs declarados no HTML acima
+                const emailField = document.getElementById('login-email');
+                const senhaField = document.getElementById('login-password');
+
+                // Validação de segurança estrutural
+                if (!emailField || !senhaField) {
+                    throw new Error("Erro de renderização: Os campos do formulário não foram mapeados corretamente.");
+                }
+
+                const email = emailField.value.trim();
+                const senha = senhaField.value.trim();
+
+                // 3. Comunicação oficial com a API de Auth do Supabase
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: senha
+                });
+
+                if (error) throw error;
+
+                // Sucesso absoluto: Salva os tokens na sessão e abre o painel principal
+                localStorage.setItem('user_session', JSON.stringify(data.session));
+                window.location.href = 'dashboard.html';
+
+            } catch (err) {
+                // 4. Em caso de falha, desliga o loader imediatamente para liberar a tela
+                hideLoader();
+                
+                console.error("Falha na autenticação:", err.message);
+                
+                // Traduz a mensagem padrão do Supabase para o operador local
+                if (err.message === "Invalid login credentials") {
+                    alert("Falha no login: E-mail ou senha incorretos.");
+                } else {
+                    alert("Erro ao conectar: " + err.message);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
