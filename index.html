@@ -13,7 +13,7 @@
     <div class="w-full max-w-md bg-[#16161a] border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-6">
         <div class="text-center">
             <h1 class="text-2xl font-black tracking-tight text-[#d4af37]">Sistema Corp</h1>
-            <p class="text-xs text-gray-400 mt-1">Autenticação Segura via Banco de Dados</p>
+            <p class="text-xs text-gray-400 mt-1">Autenticação via Tabela Pública</p>
         </div>
 
         <form id="form-login" class="space-y-4">
@@ -38,52 +38,61 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // EVENTO DE SUBMIT PROTEGIDO
         document.getElementById('form-login').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // 1. Ativa o loader global do app.js
+            // 1. Liga o loader animado do seu app.js
             showLoader();
 
-            // 2. Pausa dramática/artificial de 1.5 segundos
+            // 2. Temporizador de 1.5 segundos ("Pensa um pouquinho")
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             try {
-                // Captura direta e limpa usando exatamente os IDs declarados no HTML acima
                 const emailField = document.getElementById('login-email');
                 const senhaField = document.getElementById('login-password');
 
-                // Validação de segurança estrutural
                 if (!emailField || !senhaField) {
-                    throw new Error("Erro de renderização: Os campos do formulário não foram mapeados corretamente.");
+                    throw new Error("Erro de renderização: Campos não encontrados.");
                 }
 
                 const email = emailField.value.trim();
                 const senha = senhaField.value.trim();
 
-                // 3. Comunicação oficial com a API de Auth do Supabase
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: senha
-                });
+                // 3. Busca direta na tabela pública 'usuarios'
+                const { data: usuario, error } = await supabaseClient
+                    .from('usuarios')
+                    .select('id, nome, email')
+                    .eq('email', email)
+                    .eq('senha', senha) // Compara a senha em texto limpo como está na sua imagem
+                    .maybeSingle();    // Retorna o objeto do usuário ou nulo se não achar
 
                 if (error) throw error;
 
-                // Sucesso absoluto: Salva os tokens na sessão e abre o painel principal
-                localStorage.setItem('user_session', JSON.stringify(data.session));
+                // Se o e-mail ou a senha não baterem, o retorno será nulo
+                if (!usuario) {
+                    throw new Error("Invalid login credentials");
+                }
+
+                // Opcional: Atualiza a coluna 'ultimo_login' que você tem na tabela
+                await supabaseClient
+                    .from('usuarios')
+                    .update({ ultimo_login: new Date().toISOString() })
+                    .eq('id', usuario.id);
+
+                // 4. Sucesso: Salva os dados do usuário logado na sessão e redireciona
+                localStorage.setItem('user_session', JSON.stringify(usuario));
                 window.location.href = 'dashboard.html';
 
             } catch (err) {
-                // 4. Em caso de falha, desliga o loader imediatamente para liberar a tela
+                // 5. Desliga o loader em caso de falha para liberar a tela
                 hideLoader();
                 
                 console.error("Falha na autenticação:", err.message);
                 
-                // Traduz a mensagem padrão do Supabase para o operador local
                 if (err.message === "Invalid login credentials") {
                     alert("Falha no login: E-mail ou senha incorretos.");
                 } else {
-                    alert("Erro ao conectar: " + err.message);
+                    alert("Erro ao conectar ao banco: " + err.message);
                 }
             }
         });
