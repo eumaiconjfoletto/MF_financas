@@ -1,107 +1,507 @@
-// ==========================
-// VALIDAÇÃO DE LOGIN
-// ==========================
+let lancamentoEditando = null;
 
-const usuario = JSON.parse(localStorage.getItem("mf_usuario"));
+document.addEventListener(
+    'DOMContentLoaded',
+    iniciarPagina
+);
 
-if (!usuario) {
-    window.location.href = "index.html";
+async function iniciarPagina(){
+
+    carregarUsuario();
+
+    await carregarContas();
+
+    await carregarCategorias();
+
+    await carregarLancamentos();
+
 }
 
-// ==========================
-// LOGOUT
-// ==========================
+function carregarUsuario(){
 
-function logout() {
-    localStorage.removeItem("mf_usuario");
-    localStorage.removeItem("mf_token");
-    window.location.href = "index.html";
-}
+    const usuario =
+        JSON.parse(
+            localStorage.getItem(
+                'mf_usuario'
+            )
+        );
 
-// ==========================
-// SALVAR LANÇAMENTO
-// ==========================
+    if(usuario){
 
-async function salvarLancamento() {
+        const userName =
+            document.getElementById(
+                'userName'
+            );
 
-    const tipo = document.getElementById("tipo").value;
-    const descricao = document.getElementById("descricao").value;
-    const valor = parseFloat(document.getElementById("valor").value);
+        if(userName){
 
-    if (!descricao || !valor) {
-        alert("Preencha todos os campos");
-        return;
+            userName.innerText =
+                usuario.nome;
+
+        }
+
     }
 
-    try {
-
-        const { error } = await supabaseClient
-            .from("lancamentos")
-            .insert([{
-                tipo,
-                descricao,
-                valor,
-                usuario_id: usuario.id,
-                created_at: new Date()
-            }]);
-
-        if (error) throw error;
-
-        document.getElementById("descricao").value = "";
-        document.getElementById("valor").value = "";
-
-        carregarLancamentos();
-
-    } catch (err) {
-        console.error(err);
-        alert("Erro ao salvar lançamento");
-    }
 }
 
-// ==========================
-// LISTAR LANÇAMENTOS
-// ==========================
+async function carregarContas(){
 
-async function carregarLancamentos() {
+    const { data, error } =
+        await supabaseClient
+            .from('contas_financeiras')
+            .select('*')
+            .eq('ativa', true)
+            .order('nome');
 
-    const lista = document.getElementById("lista");
+    if(error){
 
-    const { data, error } = await supabaseClient
-        .from("lancamentos")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(20);
-
-    if (error) {
         console.error(error);
         return;
+
     }
 
-    lista.innerHTML = "";
+    const conta =
+        document.getElementById(
+            'conta'
+        );
+
+    const filtroConta =
+        document.getElementById(
+            'filtroConta'
+        );
+
+    conta.innerHTML = '';
+
+    filtroConta.innerHTML =
+        '<option value="">Todas</option>';
 
     data.forEach(item => {
 
-        const cor = item.tipo === "receita" ? "text-green-400" : "text-red-400";
-
-        lista.innerHTML += `
-            <div class="simple-item">
-                <div>
-                    <strong class="${cor}">
-                        ${item.tipo.toUpperCase()}
-                    </strong>
-                    <div class="text-sm text-zinc-400">
-                        ${item.descricao}
-                    </div>
-                </div>
-
-                <span>
-                    R$ ${Number(item.valor).toFixed(2)}
-                </span>
-            </div>
+        conta.innerHTML += `
+            <option value="${item.id}">
+                ${item.nome}
+            </option>
         `;
+
+        filtroConta.innerHTML += `
+            <option value="${item.id}">
+                ${item.nome}
+            </option>
+        `;
+
     });
 
 }
 
-// inicializa
-carregarLancamentos();
+async function carregarCategorias(){
+
+    const { data, error } =
+        await supabaseClient
+            .from('categorias_lancamentos')
+            .select('*')
+            .order('nome');
+
+    if(error){
+
+        console.error(error);
+        return;
+
+    }
+
+    const categoria =
+        document.getElementById(
+            'categoria'
+        );
+
+    categoria.innerHTML = '';
+
+    data.forEach(item => {
+
+        categoria.innerHTML += `
+            <option value="${item.nome}">
+                ${item.nome}
+            </option>
+        `;
+
+    });
+
+}
+
+async function carregarLancamentos(){
+
+    const { data, error } =
+        await supabaseClient
+            .from('lancamentos')
+            .select('*')
+            .order(
+                'data_lancamento',
+                { ascending:false }
+            );
+
+    if(error){
+
+        console.error(error);
+        return;
+
+    }
+
+    atualizarKPIs(data);
+
+    montarTabela(data);
+
+}
+
+function atualizarKPIs(lancamentos){
+
+    const receitas =
+        lancamentos
+            .filter(
+                l => l.tipo === 'receita'
+            )
+            .reduce(
+                (s,l) => s + Number(l.valor),
+                0
+            );
+
+    const despesas =
+        lancamentos
+            .filter(
+                l => l.tipo === 'despesa'
+            )
+            .reduce(
+                (s,l) => s + Number(l.valor),
+                0
+            );
+
+    const pendentes =
+        lancamentos
+            .filter(
+                l => l.status === 'pendente'
+            )
+            .length;
+
+    document.getElementById(
+        'kpiReceitas'
+    ).innerText =
+    formatarMoeda(receitas);
+
+    document.getElementById(
+        'kpiDespesas'
+    ).innerText =
+    formatarMoeda(despesas);
+
+    document.getElementById(
+        'kpiSaldo'
+    ).innerText =
+    formatarMoeda(
+        receitas - despesas
+    );
+
+    document.getElementById(
+        'kpiPendentes'
+    ).innerText =
+    pendentes;
+
+}
+
+function montarTabela(lancamentos){
+
+    const tbody =
+        document.getElementById(
+            'listaLancamentos'
+        );
+
+    tbody.innerHTML = '';
+
+    lancamentos.forEach(item => {
+
+        tbody.innerHTML += `
+
+        <tr>
+
+            <td>
+                ${
+                    item.data_lancamento
+                    || ''
+                }
+            </td>
+
+            <td>
+                ${
+                    item.descricao
+                }
+            </td>
+
+            <td>
+                ${
+                    item.categoria
+                }
+            </td>
+
+            <td>
+                ${
+                    item.conta_id
+                }
+            </td>
+
+            <td>
+                ${
+                    formatarMoeda(
+                        item.valor
+                    )
+                }
+            </td>
+
+            <td>
+
+                <span class="
+                    badge
+                    ${
+                        item.status === 'pago'
+                        ? 'badge-success'
+                        : 'badge-warning'
+                    }
+                ">
+
+                    ${
+                        item.status
+                    }
+
+                </span>
+
+            </td>
+
+            <td>
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="editarLancamento('${item.id}')">
+
+                    Editar
+
+                </button>
+
+                <button
+                    class="btn btn-danger"
+                    onclick="excluirLancamento('${item.id}')">
+
+                    Excluir
+
+                </button>
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+}
+
+async function salvarLancamento(){
+
+    const registro = {
+
+        tipo:
+            document.getElementById(
+                'tipo'
+            ).value,
+
+        descricao:
+            document.getElementById(
+                'descricao'
+            ).value,
+
+        valor:
+            Number(
+                document.getElementById(
+                    'valor'
+                ).value
+            ),
+
+        categoria:
+            document.getElementById(
+                'categoria'
+            ).value,
+
+        conta_id:
+            document.getElementById(
+                'conta'
+            ).value,
+
+        favorecido:
+            document.getElementById(
+                'favorecido'
+            ).value,
+
+        forma_pagamento:
+            document.getElementById(
+                'formaPagamento'
+            ).value,
+
+        documento:
+            document.getElementById(
+                'documento'
+            ).value,
+
+        data_vencimento:
+            document.getElementById(
+                'dataVencimento'
+            ).value,
+
+        competencia:
+            document.getElementById(
+                'competencia'
+            ).value,
+
+        status:
+            document.getElementById(
+                'status'
+            ).value,
+
+        observacao:
+            document.getElementById(
+                'observacao'
+            ).value,
+
+        data_lancamento:
+            new Date()
+                .toISOString()
+                .split('T')[0]
+
+    };
+
+    if(lancamentoEditando){
+
+        await supabaseClient
+            .from('lancamentos')
+            .update(registro)
+            .eq(
+                'id',
+                lancamentoEditando
+            );
+
+    }else{
+
+        await supabaseClient
+            .from('lancamentos')
+            .insert(registro);
+
+    }
+
+    limparFormulario();
+
+    carregarLancamentos();
+
+}
+
+async function editarLancamento(id){
+
+    const { data } =
+        await supabaseClient
+            .from('lancamentos')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+    lancamentoEditando = id;
+
+    document.getElementById('tipo').value =
+        data.tipo;
+
+    document.getElementById('descricao').value =
+        data.descricao;
+
+    document.getElementById('valor').value =
+        data.valor;
+
+    document.getElementById('categoria').value =
+        data.categoria;
+
+    document.getElementById('conta').value =
+        data.conta_id;
+
+    document.getElementById('favorecido').value =
+        data.favorecido || '';
+
+    document.getElementById('formaPagamento').value =
+        data.forma_pagamento || '';
+
+    document.getElementById('documento').value =
+        data.documento || '';
+
+    document.getElementById('dataVencimento').value =
+        data.data_vencimento || '';
+
+    document.getElementById('competencia').value =
+        data.competencia || '';
+
+    document.getElementById('status').value =
+        data.status || 'pendente';
+
+    document.getElementById('observacao').value =
+        data.observacao || '';
+
+}
+
+async function excluirLancamento(id){
+
+    if(
+        !confirm(
+            'Deseja excluir este lançamento?'
+        )
+    ){
+        return;
+    }
+
+    await supabaseClient
+        .from('lancamentos')
+        .delete()
+        .eq('id', id);
+
+    carregarLancamentos();
+
+}
+
+function limparFormulario(){
+
+    lancamentoEditando = null;
+
+    document
+        .querySelectorAll(
+            '.input, .textarea'
+        )
+        .forEach(campo => {
+
+            campo.value = '';
+
+        });
+
+}
+
+function formatarMoeda(valor){
+
+    return valor.toLocaleString(
+        'pt-BR',
+        {
+            style:'currency',
+            currency:'BRL'
+        }
+    );
+
+}
+
+function logout(){
+
+    localStorage.clear();
+
+    window.location.href =
+        'index.html';
+
+}
+
+window.salvarLancamento = salvarLancamento;
+window.editarLancamento = editarLancamento;
+window.excluirLancamento = excluirLancamento;
+window.logout = logout;
