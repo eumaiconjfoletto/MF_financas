@@ -10,6 +10,7 @@
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
 }
 
+
 /* ==========================
    SIDEBAR
 ========================== */
@@ -275,4 +276,29 @@
     .kpi-grid{
         grid-template-columns:1fr;
     }
+}
+
+/* ==========================
+   CRUD LAYOUT
+========================== */
+
+.crud-layout{
+
+    display:grid;
+
+    grid-template-columns:
+        2fr 1fr;
+
+    gap:24px;
+
+}
+
+@media(max-width:1200px){
+
+    .crud-layout{
+
+        grid-template-columns:1fr;
+
+    }
+
 }
