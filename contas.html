@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Contas Financeiras | MF Finanças</title>
+
+<link rel="stylesheet" href="assets/css/variaveis.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/dashboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body class="dashboard">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+    <div class="sidebar-logo">
+        <h1>MF <span>Finanças</span></h1>
+    </div>
+
+    <nav class="sidebar-menu">
+
+        <div class="menu-title">
+            Principal
+        </div>
+
+        <a href="dashboard.html" class="menu-link">
+            Dashboard
+        </a>
+
+        <div class="menu-title">
+            Financeiro
+        </div>
+
+        <a href="lancamentos.html" class="menu-link">
+            Lançamentos
+        </a>
+
+        <a href="contas.html" class="menu-link active">
+            Contas Financeiras
+        </a>
+
+        <a href="categorias.html" class="menu-link">
+            Categorias
+        </a>
+
+    </nav>
+
+</aside>
+
+<!-- CONTEÚDO -->
+
+<main class="main-content">
+
+    <header class="topbar">
+
+        <div class="topbar-title">
+            <h2>Contas Financeiras</h2>
+            <span>Gerencie suas contas bancárias e caixas</span>
+        </div>
+
+    </header>
+
+    <div class="content">
+
+        <!-- FORM -->
+
+        <div class="widget mb-20">
+
+            <div class="widget-title">
+                Nova Conta
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Nome da Conta</label>
+                    <input
+                        id="nome"
+                        type="text"
+                        class="input">
+                </div>
+
+                <div class="form-group">
+                    <label>Saldo Inicial</label>
+                    <input
+                        id="saldo"
+                        type="number"
+                        step="0.01"
+                        value="0"
+                        class="input">
+                </div>
+
+                <div class="form-group">
+                    <label>Ativa</label>
+
+                    <select
+                        id="ativa"
+                        class="input">
+
+                        <option value="true">
+                            Sim
+                        </option>
+
+                        <option value="false">
+                            Não
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <button
+                class="btn btn-primary"
+                onclick="salvarConta()">
+
+                Salvar Conta
+
+            </button>
+
+        </div>
+
+        <!-- TABELA -->
+
+        <div class="widget">
+
+            <div class="widget-title">
+                Contas Cadastradas
+            </div>
+
+            <table class="mini-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Conta</th>
+                        <th>Saldo Inicial</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="listaContas">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</main>
+
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/contas.js"></script>
+
+</body>
+</html>
