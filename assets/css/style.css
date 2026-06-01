@@ -934,3 +934,10 @@ a{
     flex-wrap:wrap;
 
 }
+.table-actions .btn{
+
+    padding:8px 12px;
+
+    font-size:.85rem;
+
+}
