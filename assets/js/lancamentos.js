@@ -1,5 +1,9 @@
 let lancamentoEditando = null;
 
+let contasMap = {};
+
+let todosLancamentos = [];
+
 document.addEventListener(
     'DOMContentLoaded',
     iniciarPagina
@@ -77,19 +81,21 @@ async function carregarContas(){
 
     data.forEach(item => {
 
-        conta.innerHTML += `
-            <option value="${item.id}">
-                ${item.nome}
-            </option>
-        `;
+    contasMap[item.id] = item.nome;
 
-        filtroConta.innerHTML += `
-            <option value="${item.id}">
-                ${item.nome}
-            </option>
-        `;
+    conta.innerHTML += `
+        <option value="${item.id}">
+            ${item.nome}
+        </option>
+    `;
 
-    });
+    filtroConta.innerHTML += `
+        <option value="${item.id}">
+            ${item.nome}
+        </option>
+    `;
+
+});
 
 }
 
@@ -240,7 +246,7 @@ function montarTabela(lancamentos){
 
             <td>
                 ${
-                    item.conta_id
+                    contasMap[item.conta_id] || '-'
                 }
             </td>
 
