@@ -1,115 +1,549 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lançamentos - MF Finanças</title>
 
-    <link rel="stylesheet" href="assets/css/variaveis.css">
+    <title>Lançamentos | MF Finanças</title>
+
+    <link rel="stylesheet" href="assets/css/variables.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/dashboard.css">
 
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
 
-<body>
-
-<div class="dashboard">
+<body class="dashboard">
 
     <!-- SIDEBAR -->
+
     <aside class="sidebar">
 
         <div class="sidebar-logo">
             <h1>MF <span>Finanças</span></h1>
         </div>
 
-        <div class="sidebar-menu">
+        <div class="sidebar-user">
 
-            <p class="menu-title">Menu</p>
+            <div
+                id="userName"
+                class="sidebar-user-name">
 
-            <a class="menu-link" href="dashboard.html">
-                📊 Dashboard
-            </a>
+                Usuário
 
-            <a class="menu-link active" href="lancamentos.html">
-                💰 Lançamentos
-            </a>
+            </div>
 
-            <a class="menu-link" href="veiculos.html">
-                🚗 Frota
-            </a>
+            <div class="sidebar-user-role">
+
+                Administrador
+
+            </div>
 
         </div>
 
+        <nav class="sidebar-menu">
+
+            <div class="menu-title">
+                Principal
+            </div>
+
+            <a href="dashboard.html" class="menu-link">
+                Dashboard
+            </a>
+
+            <div class="menu-title">
+                Financeiro
+            </div>
+
+            <a href="lancamentos.html" class="menu-link active">
+                Lançamentos
+            </a>
+
+            <a href="contas.html" class="menu-link">
+                Contas Financeiras
+            </a>
+
+            <a href="categorias.html" class="menu-link">
+                Categorias
+            </a>
+
+        </nav>
+
         <div class="sidebar-footer">
-            <button onclick="logout()" class="menu-link logout-btn">
+
+            <button
+                onclick="logout()"
+                class="btn btn-secondary btn-full">
+
                 Sair
+
             </button>
+
         </div>
 
     </aside>
 
     <!-- CONTEÚDO -->
+
     <main class="main-content">
 
-        <!-- TOPBAR -->
         <header class="topbar">
 
             <div class="topbar-title">
-                <h2>Lançamentos</h2>
-                <span>Receitas e despesas do sistema</span>
+
+                <h2>
+                    Lançamentos Financeiros
+                </h2>
+
+                <span>
+                    Controle completo de receitas e despesas
+                </span>
+
             </div>
 
         </header>
 
-        <section class="content">
+        <div class="content">
 
-            <!-- FORM -->
-            <div class="widget">
+            <!-- KPIS -->
 
-                <h3 class="widget-title">Novo lançamento</h3>
+            <div class="kpi-grid">
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="kpi-card">
 
-                    <select id="tipo" class="p-3 bg-zinc-900 border border-zinc-700 rounded-xl">
-                        <option value="receita">Receita</option>
-                        <option value="despesa">Despesa</option>
-                    </select>
+                    <div class="kpi-label">
+                        Receitas
+                    </div>
 
-                    <input id="descricao" placeholder="Descrição"
-                        class="p-3 bg-zinc-900 border border-zinc-700 rounded-xl">
+                    <div
+                        id="kpiReceitas"
+                        class="kpi-value">
 
-                    <input id="valor" type="number" placeholder="Valor"
-                        class="p-3 bg-zinc-900 border border-zinc-700 rounded-xl">
+                        R$ 0,00
 
-                    <button onclick="salvarLancamento()"
-                        class="bg-amber-500 text-black font-bold rounded-xl">
-                        Salvar
+                    </div>
+
+                </div>
+
+                <div class="kpi-card">
+
+                    <div class="kpi-label">
+                        Despesas
+                    </div>
+
+                    <div
+                        id="kpiDespesas"
+                        class="kpi-value">
+
+                        R$ 0,00
+
+                    </div>
+
+                </div>
+
+                <div class="kpi-card">
+
+                    <div class="kpi-label">
+                        Saldo
+                    </div>
+
+                    <div
+                        id="kpiSaldo"
+                        class="kpi-value">
+
+                        R$ 0,00
+
+                    </div>
+
+                </div>
+
+                <div class="kpi-card">
+
+                    <div class="kpi-label">
+                        Pendentes
+                    </div>
+
+                    <div
+                        id="kpiPendentes"
+                        class="kpi-value">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- FILTROS -->
+
+            <div class="widget mb-3">
+
+                <div class="widget-title">
+
+                    Filtros
+
+                </div>
+
+                <div class="grid grid-4">
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Tipo
+                        </label>
+
+                        <select
+                            id="filtroTipo"
+                            class="select">
+
+                            <option value="">
+                                Todos
+                            </option>
+
+                            <option value="receita">
+                                Receita
+                            </option>
+
+                            <option value="despesa">
+                                Despesa
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Status
+                        </label>
+
+                        <select
+                            id="filtroStatus"
+                            class="select">
+
+                            <option value="">
+                                Todos
+                            </option>
+
+                            <option value="pendente">
+                                Pendente
+                            </option>
+
+                            <option value="pago">
+                                Pago
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Conta
+                        </label>
+
+                        <select
+                            id="filtroConta"
+                            class="select">
+
+                            <option value="">
+                                Todas
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Competência
+                        </label>
+
+                        <input
+                            id="filtroCompetencia"
+                            type="month"
+                            class="input">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- GRID PRINCIPAL -->
+
+            <div
+                style="
+                display:grid;
+                grid-template-columns:2fr 1fr;
+                gap:20px;
+            ">
+
+                <!-- TABELA -->
+
+                <div class="widget">
+
+                    <div class="widget-title">
+
+                        Extrato Financeiro
+
+                    </div>
+
+                    <div class="table-wrapper">
+
+                        <table class="table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Data</th>
+                                    <th>Descrição</th>
+                                    <th>Categoria</th>
+                                    <th>Conta</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="listaLancamentos">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+                <!-- FORMULÁRIO -->
+
+                <div class="widget">
+
+                    <div class="widget-title">
+
+                        Novo Lançamento
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Tipo
+                        </label>
+
+                        <select
+                            id="tipo"
+                            class="select">
+
+                            <option value="receita">
+                                Receita
+                            </option>
+
+                            <option value="despesa">
+                                Despesa
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Descrição
+                        </label>
+
+                        <input
+                            id="descricao"
+                            class="input"
+                            type="text">
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Valor
+                        </label>
+
+                        <input
+                            id="valor"
+                            class="input"
+                            type="number"
+                            step="0.01">
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Categoria
+                        </label>
+
+                        <select
+                            id="categoria"
+                            class="select">
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Conta Financeira
+                        </label>
+
+                        <select
+                            id="conta"
+                            class="select">
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Favorecido
+                        </label>
+
+                        <input
+                            id="favorecido"
+                            class="input"
+                            type="text">
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Forma de Pagamento
+                        </label>
+
+                        <select
+                            id="formaPagamento"
+                            class="select">
+
+                            <option>PIX</option>
+                            <option>Dinheiro</option>
+                            <option>Cartão Crédito</option>
+                            <option>Cartão Débito</option>
+                            <option>Transferência</option>
+                            <option>Boleto</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Documento
+                        </label>
+
+                        <input
+                            id="documento"
+                            class="input"
+                            type="text">
+
+                    </div>
+
+                    <div class="grid grid-2">
+
+                        <div class="form-group">
+
+                            <label class="label">
+                                Vencimento
+                            </label>
+
+                            <input
+                                id="dataVencimento"
+                                type="date"
+                                class="input">
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="label">
+                                Competência
+                            </label>
+
+                            <input
+                                id="competencia"
+                                type="date"
+                                class="input">
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Status
+                        </label>
+
+                        <select
+                            id="status"
+                            class="select">
+
+                            <option value="pendente">
+                                Pendente
+                            </option>
+
+                            <option value="pago">
+                                Pago
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="label">
+                            Observações
+                        </label>
+
+                        <textarea
+                            id="observacao"
+                            class="textarea"></textarea>
+
+                    </div>
+
+                    <button
+                        onclick="salvarLancamento()"
+                        class="btn btn-primary btn-full">
+
+                        Salvar Lançamento
+
                     </button>
 
                 </div>
 
             </div>
 
-            <!-- LISTA -->
-            <div class="widget mt-6">
-
-                <h3 class="widget-title">Últimos lançamentos</h3>
-
-                <div id="lista" class="simple-list"></div>
-
-            </div>
-
-        </section>
+        </div>
 
     </main>
 
-</div>
-
-<script src="assets/js/supabase.js"></script>
-<script src="assets/js/auth.js"></script>
-<script src="assets/js/lancamentos.js"></script>
+    <script src="assets/js/supabase.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/lancamentos.js"></script>
 
 </body>
+
 </html>
