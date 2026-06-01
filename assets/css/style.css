@@ -904,3 +904,33 @@ a{
     0%,100%{ opacity:1; }
     50%{ opacity:.6; }
 }
+/* ==========================
+   FORM GRID
+========================== */
+
+.form-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(220px,1fr));
+
+    gap:20px;
+
+    margin-bottom:20px;
+
+}
+
+/* ==========================
+   AÇÕES TABELAS
+========================== */
+
+.table-actions{
+
+    display:flex;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+}
