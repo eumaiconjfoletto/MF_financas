@@ -52,23 +52,27 @@ async function carregarContas() {
 
             <td>
 
-                <button
-                    class="btn btn-secondary"
-                    onclick="editarConta('${conta.id}')">
+    <div class="table-actions">
 
-                    Editar
+        <button
+            class="btn btn-secondary"
+            onclick="editarConta('${conta.id}')">
 
-                </button>
+            Editar
 
-                <button
-                    class="btn btn-danger"
-                    onclick="excluirConta('${conta.id}')">
+        </button>
 
-                    Excluir
+        <button
+            class="btn btn-danger"
+            onclick="excluirConta('${conta.id}')">
 
-                </button>
+            Excluir
 
-            </td>
+        </button>
+
+    </div>
+
+</td>
 
         </tr>
         `;
