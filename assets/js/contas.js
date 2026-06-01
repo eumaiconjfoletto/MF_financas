@@ -2,10 +2,75 @@ let contaEditando = null;
 
 document.addEventListener(
     'DOMContentLoaded',
-    carregarContas
+    iniciarPagina
 );
 
-async function carregarContas() {
+async function iniciarPagina(){
+
+    carregarUsuario();
+
+    await carregarContas();
+
+}
+
+function carregarUsuario(){
+
+    const usuario =
+        JSON.parse(
+            localStorage.getItem(
+                'mf_usuario'
+            )
+        );
+
+    if(usuario){
+
+        document.getElementById(
+            'userName'
+        ).innerText =
+        usuario.nome;
+
+    }
+
+}
+
+async function carregarContas(){
+
+    const { data, error } =
+        await supabaseClient
+            .from('contas_financeiras')
+            .select('*')
+            .order('nome');
+
+    if(error){
+
+        console.error(error);
+        return;
+
+    }
+
+    atualizarKPIs(data);
+
+    montarTabela(data);
+
+}
+
+function atualizarKPIs(contas){
+
+    document.getElementById(
+        'kpiTotal'
+    ).innerText =
+    contas.length;
+
+    document.getElementById(
+        'kpiAtivas'
+    ).innerText =
+    contas.filter(
+        c => c.ativa
+    ).length;
+
+}
+
+function montarTabela(contas){
 
     const tbody =
         document.getElementById(
@@ -14,20 +79,7 @@ async function carregarContas() {
 
     tbody.innerHTML = '';
 
-    const { data, error } =
-        await supabaseClient
-            .from('contas_financeiras')
-            .select('*')
-            .order('nome');
-
-    if (error) {
-
-        console.error(error);
-        return;
-
-    }
-
-    data.forEach(conta => {
+    contas.forEach(conta => {
 
         tbody.innerHTML += `
         <tr>
@@ -43,36 +95,45 @@ async function carregarContas() {
             </td>
 
             <td>
-                ${
-                    conta.ativa
-                    ? 'Ativa'
-                    : 'Inativa'
-                }
+
+                <span class="
+                    badge
+                    ${conta.ativa
+                        ? 'badge-success'
+                        : 'badge-danger'}
+                ">
+
+                    ${conta.ativa
+                        ? 'Ativa'
+                        : 'Inativa'}
+
+                </span>
+
             </td>
 
             <td>
 
-    <div class="table-actions">
+                <div class="table-actions">
 
-        <button
-            class="btn btn-secondary"
-            onclick="editarConta('${conta.id}')">
+                    <button
+                        class="btn btn-secondary"
+                        onclick="editarConta('${conta.id}')">
 
-            Editar
+                        Editar
 
-        </button>
+                    </button>
 
-        <button
-            class="btn btn-danger"
-            onclick="excluirConta('${conta.id}')">
+                    <button
+                        class="btn btn-danger"
+                        onclick="excluirConta('${conta.id}')">
 
-            Excluir
+                        Excluir
 
-        </button>
+                    </button>
 
-    </div>
+                </div>
 
-</td>
+            </td>
 
         </tr>
         `;
@@ -81,36 +142,36 @@ async function carregarContas() {
 
 }
 
-async function salvarConta() {
+async function salvarConta(){
 
     const nome =
-        document
-        .getElementById('nome')
-        .value
-        .trim();
+        document.getElementById(
+            'nome'
+        ).value.trim();
 
     const saldo =
         Number(
-            document
-            .getElementById('saldo')
-            .value
+            document.getElementById(
+                'saldo'
+            ).value
         );
 
     const ativa =
-        document
-        .getElementById('ativa')
-        .value === 'true';
+        document.getElementById(
+            'ativa'
+        ).value === 'true';
 
-    if (!nome) {
+    if(!nome){
 
         alert(
             'Informe o nome da conta.'
         );
 
         return;
+
     }
 
-    if (contaEditando) {
+    if(contaEditando){
 
         await supabaseClient
             .from('contas_financeiras')
@@ -126,7 +187,8 @@ async function salvarConta() {
                 contaEditando
             );
 
-    } else {
+    }
+    else{
 
         await supabaseClient
             .from('contas_financeiras')
@@ -146,7 +208,7 @@ async function salvarConta() {
 
 }
 
-async function editarConta(id) {
+async function editarConta(id){
 
     const { data } =
         await supabaseClient
@@ -157,24 +219,32 @@ async function editarConta(id) {
 
     contaEditando = id;
 
-    document.getElementById('nome').value =
-        data.nome;
+    document.getElementById(
+        'nome'
+    ).value =
+    data.nome;
 
-    document.getElementById('saldo').value =
-        data.saldo_inicial;
+    document.getElementById(
+        'saldo'
+    ).value =
+    data.saldo_inicial;
 
-    document.getElementById('ativa').value =
-        data.ativa.toString();
+    document.getElementById(
+        'ativa'
+    ).value =
+    data.ativa.toString();
 
 }
 
-async function excluirConta(id) {
+async function excluirConta(id){
 
-    if (
+    if(
         !confirm(
-            'Excluir esta conta?'
+            'Deseja excluir esta conta?'
         )
-    ) return;
+    ){
+        return;
+    }
 
     await supabaseClient
         .from('contas_financeiras')
@@ -185,15 +255,29 @@ async function excluirConta(id) {
 
 }
 
-function limparFormulario() {
+function limparFormulario(){
 
     contaEditando = null;
 
-    document.getElementById('nome').value = '';
+    document.getElementById(
+        'nome'
+    ).value = '';
 
-    document.getElementById('saldo').value = 0;
+    document.getElementById(
+        'saldo'
+    ).value = 0;
 
-    document.getElementById('ativa').value =
-        'true';
+    document.getElementById(
+        'ativa'
+    ).value = 'true';
+
+}
+
+function logout(){
+
+    localStorage.clear();
+
+    window.location.href =
+        'index.html';
 
 }
