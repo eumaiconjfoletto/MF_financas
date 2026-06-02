@@ -1,4 +1,5 @@
 let contaEditando = null;
+let idExclusaoConta = null;
 
 document.addEventListener(
     'DOMContentLoaded',
@@ -204,7 +205,9 @@ async function salvarConta(){
 
     limparFormulario();
 
-    carregarContas();
+    fecharModalConta();
+
+    await carregarContas();
 
 }
 
@@ -234,24 +237,47 @@ async function editarConta(id){
     ).value =
     data.ativa.toString();
 
+    document.getElementById(
+    'tituloModalConta'
+).innerText =
+    'Editar Conta';
+
+abrirModalConta();
+
 }
 
-async function excluirConta(id){
+function excluirConta(id){
 
-    if(
-        !confirm(
-            'Deseja excluir esta conta?'
+    idExclusaoConta = id;
+
+    document
+        .getElementById(
+            'modalExcluirConta'
         )
-    ){
+        .classList
+        .remove(
+            'hidden'
+        );
+
+}
+
+async function confirmarExclusaoConta(){
+
+    if(!idExclusaoConta){
         return;
     }
 
     await supabaseClient
         .from('contas_financeiras')
         .delete()
-        .eq('id', id);
+        .eq(
+            'id',
+            idExclusaoConta
+        );
 
-    carregarContas();
+    fecharModalExcluirConta();
+
+    await carregarContas();
 
 }
 
@@ -273,6 +299,56 @@ function limparFormulario(){
 
 }
 
+function abrirModalConta(){
+
+    if(!contaEditando){
+
+        document.getElementById(
+            'tituloModalConta'
+        ).innerText =
+            'Nova Conta';
+
+    }
+
+    document
+        .getElementById(
+            'modalConta'
+        )
+        .classList
+        .remove(
+            'hidden'
+        );
+
+}
+
+function fecharModalConta(){
+
+    document
+        .getElementById(
+            'modalConta'
+        )
+        .classList
+        .add(
+            'hidden'
+        );
+
+}
+
+function fecharModalExcluirConta(){
+
+    idExclusaoConta = null;
+
+    document
+        .getElementById(
+            'modalExcluirConta'
+        )
+        .classList
+        .add(
+            'hidden'
+        );
+
+}
+
 function logout(){
 
     localStorage.clear();
@@ -281,3 +357,21 @@ function logout(){
         'index.html';
 
 }
+
+window.salvarConta = salvarConta;
+window.editarConta = editarConta;
+window.excluirConta = excluirConta;
+
+window.abrirModalConta =
+    abrirModalConta;
+
+window.fecharModalConta =
+    fecharModalConta;
+
+window.confirmarExclusaoConta =
+    confirmarExclusaoConta;
+
+window.fecharModalExcluirConta =
+    fecharModalExcluirConta;
+
+window.logout = logout;
