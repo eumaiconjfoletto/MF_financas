@@ -459,6 +459,12 @@ async function editarLancamento(id){
 
     document.getElementById('observacao').value =
         data.observacao || '';
+    document.getElementById(
+    'tituloModal'
+).innerText =
+    'Editar Lançamento';
+
+abrirModalLancamento();
 
 }
 
@@ -492,6 +498,7 @@ function limparFormulario(){
         .forEach(campo => {
 
             campo.value = '';
+            lancamentoEditando = null;
 
         });
 
@@ -575,6 +582,15 @@ function logout(){
 }
 
 function abrirModalLancamento(){
+
+        if(!lancamentoEditando){
+
+        document.getElementById(
+            'tituloModal'
+        ).innerText =
+            'Novo Lançamento';
+
+    }
 
     document
         .getElementById(
