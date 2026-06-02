@@ -193,16 +193,41 @@ function montar(lista) {
 // SALVAR
 async function salvarDespesaFrota() {
 
-    const obj = {
+    const veiculo =
+        document.getElementById('veiculo').value;
 
-        veiculo_id: document.getElementById('veiculo').value,
-        tipo_despesa_id: document.getElementById('tipoDespesa').value,
-        meio_pagamento_id: document.getElementById('meioPagamento').value,
-        conta_id: document.getElementById('conta').value,
-        valor: Number(document.getElementById('valor').value),
+    const tipo =
+        document.getElementById('tipoDespesa').value;
+
+    const meio =
+        document.getElementById('meioPagamento').value;
+
+    const conta =
+        document.getElementById('conta').value;
+
+    const valor =
+        document.getElementById('valor').value;
+
+    const data =
+        document.getElementById('dataDespesa').value;
+
+    // 🔥 VALIDAÇÃO OBRIGATÓRIA
+    if (!veiculo || !tipo || !meio || !conta || !valor || !data) {
+
+        alert('Preencha todos os campos obrigatórios antes de salvar.');
+
+        return;
+    }
+
+    const registro = {
+        veiculo_id: veiculo,
+        tipo_despesa_id: tipo,
+        meio_pagamento_id: meio,
+        conta_id: conta,
+        valor: Number(valor),
         quilometragem: Number(document.getElementById('quilometragem').value),
         observacao: document.getElementById('observacao').value,
-        data_despesa: document.getElementById('dataDespesa').value
+        data_despesa: data
     };
 
     if (despesaEditando) {
