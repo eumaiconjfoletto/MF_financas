@@ -394,4 +394,3 @@ window.fecharModalExcluirCategoria =
 
 window.logout =
     logout;
-```
