@@ -652,11 +652,6 @@ window.abrirModalLancamento =
 window.fecharModalLancamento =
     fecharModalLancamento;
 
-window.fecharModalExcluir =
-    fecharModalExcluir;
-
-window.confirmarExclusao =
-    confirmarExclusao;
 
 window.logout = logout;
 
