@@ -1,4 +1,9 @@
+```javascript
 let categoriaEditando = null;
+
+let idExclusaoCategoria = null;
+
+let todasCategorias = [];
 
 document.addEventListener(
     'DOMContentLoaded',
@@ -27,7 +32,7 @@ function carregarUsuario(){
         document.getElementById(
             'userName'
         ).innerText =
-        usuario.nome;
+            usuario.nome;
 
     }
 
@@ -37,9 +42,13 @@ async function carregarCategorias(){
 
     const { data, error } =
         await supabaseClient
-            .from('categorias_lancamentos')
+            .from(
+                'categorias_lancamentos'
+            )
             .select('*')
-            .order('nome');
+            .order(
+                'nome'
+            );
 
     if(error){
 
@@ -47,6 +56,8 @@ async function carregarCategorias(){
         return;
 
     }
+
+    todasCategorias = data;
 
     atualizarKPIs(data);
 
@@ -59,21 +70,21 @@ function atualizarKPIs(categorias){
     document.getElementById(
         'kpiTotal'
     ).innerText =
-    categorias.length;
+        categorias.length;
 
     document.getElementById(
         'kpiReceitas'
     ).innerText =
-    categorias.filter(
-        c => c.tipo === 'receita'
-    ).length;
+        categorias.filter(
+            c => c.tipo === 'receita'
+        ).length;
 
     document.getElementById(
         'kpiDespesas'
     ).innerText =
-    categorias.filter(
-        c => c.tipo === 'despesa'
-    ).length;
+        categorias.filter(
+            c => c.tipo === 'despesa'
+        ).length;
 
 }
 
@@ -86,13 +97,16 @@ function montarTabela(categorias){
 
     tbody.innerHTML = '';
 
-    categorias.forEach(cat => {
+    categorias.forEach(item => {
 
         tbody.innerHTML += `
+
         <tr>
 
             <td>
-                ${cat.nome}
+
+                ${item.nome}
+
             </td>
 
             <td>
@@ -100,17 +114,13 @@ function montarTabela(categorias){
                 <span class="
                     badge
                     ${
-                        cat.tipo === 'receita'
+                        item.tipo === 'receita'
                         ? 'badge-success'
                         : 'badge-danger'
                     }
                 ">
 
-                    ${
-                        cat.tipo === 'receita'
-                        ? 'Receita'
-                        : 'Despesa'
-                    }
+                    ${item.tipo}
 
                 </span>
 
@@ -118,11 +128,16 @@ function montarTabela(categorias){
 
             <td>
 
-                <div class="table-actions">
+                <div
+                    style="
+                    display:flex;
+                    gap:8px;
+                    flex-wrap:wrap;
+                ">
 
                     <button
                         class="btn btn-secondary"
-                        onclick="editarCategoria('${cat.id}')">
+                        onclick="editarCategoria('${item.id}')">
 
                         Editar
 
@@ -130,7 +145,7 @@ function montarTabela(categorias){
 
                     <button
                         class="btn btn-danger"
-                        onclick="excluirCategoria('${cat.id}')">
+                        onclick="excluirCategoria('${item.id}')">
 
                         Excluir
 
@@ -141,6 +156,7 @@ function montarTabela(categorias){
             </td>
 
         </tr>
+
         `;
 
     });
@@ -149,17 +165,26 @@ function montarTabela(categorias){
 
 async function salvarCategoria(){
 
-    const nome =
-        document.getElementById(
-            'nome'
-        ).value.trim();
+    const registro = {
 
-    const tipo =
-        document.getElementById(
-            'tipo'
-        ).value;
+        nome:
+            document
+                .getElementById(
+                    'nome'
+                )
+                .value
+                .trim(),
 
-    if(!nome){
+        tipo:
+            document
+                .getElementById(
+                    'tipo'
+                )
+                .value
+
+    };
+
+    if(!registro.nome){
 
         alert(
             'Informe o nome da categoria.'
@@ -172,35 +197,34 @@ async function salvarCategoria(){
     if(categoriaEditando){
 
         await supabaseClient
-            .from('categorias_lancamentos')
-            .update({
-
-                nome,
-                tipo
-
-            })
+            .from(
+                'categorias_lancamentos'
+            )
+            .update(
+                registro
+            )
             .eq(
                 'id',
                 categoriaEditando
             );
 
-    }
-    else{
+    }else{
 
         await supabaseClient
-            .from('categorias_lancamentos')
-            .insert({
-
-                nome,
-                tipo
-
-            });
+            .from(
+                'categorias_lancamentos'
+            )
+            .insert(
+                registro
+            );
 
     }
 
     limparFormulario();
 
-    carregarCategorias();
+    fecharModalCategoria();
+
+    await carregarCategorias();
 
 }
 
@@ -208,7 +232,9 @@ async function editarCategoria(id){
 
     const { data } =
         await supabaseClient
-            .from('categorias_lancamentos')
+            .from(
+                'categorias_lancamentos'
+            )
             .select('*')
             .eq('id', id)
             .single();
@@ -218,31 +244,108 @@ async function editarCategoria(id){
     document.getElementById(
         'nome'
     ).value =
-    data.nome;
+        data.nome;
 
     document.getElementById(
         'tipo'
     ).value =
-    data.tipo;
+        data.tipo;
+
+    document.getElementById(
+        'tituloModalCategoria'
+    ).innerText =
+        'Editar Categoria';
+
+    abrirModalCategoria();
 
 }
 
-async function excluirCategoria(id){
+function excluirCategoria(id){
 
-    if(
-        !confirm(
-            'Deseja excluir esta categoria?'
+    idExclusaoCategoria = id;
+
+    document
+        .getElementById(
+            'modalExcluirCategoria'
         )
-    ){
+        .classList
+        .remove(
+            'hidden'
+        );
+
+}
+
+async function confirmarExclusaoCategoria(){
+
+    if(!idExclusaoCategoria){
         return;
     }
 
     await supabaseClient
-        .from('categorias_lancamentos')
+        .from(
+            'categorias_lancamentos'
+        )
         .delete()
-        .eq('id', id);
+        .eq(
+            'id',
+            idExclusaoCategoria
+        );
 
-    carregarCategorias();
+    fecharModalExcluirCategoria();
+
+    await carregarCategorias();
+
+}
+
+function abrirModalCategoria(){
+
+    if(!categoriaEditando){
+
+        document.getElementById(
+            'tituloModalCategoria'
+        ).innerText =
+            'Nova Categoria';
+
+    }
+
+    document
+        .getElementById(
+            'modalCategoria'
+        )
+        .classList
+        .remove(
+            'hidden'
+        );
+
+}
+
+function fecharModalCategoria(){
+
+    limparFormulario();
+
+    document
+        .getElementById(
+            'modalCategoria'
+        )
+        .classList
+        .add(
+            'hidden'
+        );
+
+}
+
+function fecharModalExcluirCategoria(){
+
+    idExclusaoCategoria = null;
+
+    document
+        .getElementById(
+            'modalExcluirCategoria'
+        )
+        .classList
+        .add(
+            'hidden'
+        );
 
 }
 
@@ -268,3 +371,28 @@ function logout(){
         'index.html';
 
 }
+
+window.salvarCategoria =
+    salvarCategoria;
+
+window.editarCategoria =
+    editarCategoria;
+
+window.excluirCategoria =
+    excluirCategoria;
+
+window.confirmarExclusaoCategoria =
+    confirmarExclusaoCategoria;
+
+window.abrirModalCategoria =
+    abrirModalCategoria;
+
+window.fecharModalCategoria =
+    fecharModalCategoria;
+
+window.fecharModalExcluirCategoria =
+    fecharModalExcluirCategoria;
+
+window.logout =
+    logout;
+```
