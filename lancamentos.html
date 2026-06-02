@@ -296,13 +296,23 @@
 
                 <!-- TABELA -->
 
-                <div class="widget">
+        <div class="card-header">
 
-                    <div class="widget-title">
+            <div class="widget">
 
-                        Extrato Financeiro
+        Extrato Financeiro
 
-                    </div>
+          </div>
+
+            <button
+        class="btn btn-primary"
+        onclick="abrirModalLancamento()">
+
+        + Novo Lançamento
+
+        </button>
+
+</div>
 
                     <div class="table-wrapper">
 
@@ -333,7 +343,213 @@
                     </div>
 
                 </div>
+<div
+    id="modalLancamento"
+    class="modal-overlay hidden">
 
+    <div
+        class="modal"
+        style="max-width:900px;">
+
+        <div class="card-header">
+
+            <h3 id="tituloModal">
+
+                Novo Lançamento
+
+            </h3>
+
+            <button
+                class="btn btn-secondary"
+                onclick="fecharModalLancamento()">
+
+                X
+
+            </button>
+
+        </div>
+
+        <div class="grid grid-2">
+
+            <div class="form-group">
+
+                <label class="label">
+                    Tipo
+                </label>
+
+                <select
+                    id="tipo"
+                    class="select">
+
+                    <option value="receita">
+                        Receita
+                    </option>
+
+                    <option value="despesa">
+                        Despesa
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="label">
+                    Valor
+                </label>
+
+                <input
+                    id="valor"
+                    type="number"
+                    step="0.01"
+                    class="input">
+
+            </div>
+
+        </div>
+
+        <div class="form-group">
+
+            <label class="label">
+                Descrição
+            </label>
+
+            <input
+                id="descricao"
+                class="input">
+
+        </div>
+
+        <div class="grid grid-2">
+
+            <div class="form-group">
+
+                <label class="label">
+                    Categoria
+                </label>
+
+                <select
+                    id="categoria"
+                    class="select">
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="label">
+                    Conta
+                </label>
+
+                <select
+                    id="conta"
+                    class="select">
+                </select>
+
+            </div>
+
+        </div>
+
+        <div class="grid grid-2">
+
+            <div class="form-group">
+
+                <label class="label">
+                    Favorecido
+                </label>
+
+                <input
+                    id="favorecido"
+                    class="input">
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="label">
+                    Documento
+                </label>
+
+                <input
+                    id="documento"
+                    class="input">
+
+            </div>
+
+        </div>
+
+        <div class="grid grid-2">
+
+            <div class="form-group">
+
+                <label class="label">
+                    Vencimento
+                </label>
+
+                <input
+                    id="dataVencimento"
+                    type="date"
+                    class="input">
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="label">
+                    Competência
+                </label>
+
+                <input
+                    id="competencia"
+                    type="date"
+                    class="input">
+
+            </div>
+
+        </div>
+
+        <div class="form-group">
+
+            <label class="label">
+                Observações
+            </label>
+
+            <textarea
+                id="observacao"
+                class="textarea"></textarea>
+
+        </div>
+
+        <div
+            style="
+            display:flex;
+            justify-content:flex-end;
+            gap:10px;
+            margin-top:20px;
+        ">
+
+            <button
+                class="btn btn-secondary"
+                onclick="fecharModalLancamento()">
+
+                Cancelar
+
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="salvarLancamento()">
+
+                Salvar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 
     <script src="assets/js/supabase.js"></script>
