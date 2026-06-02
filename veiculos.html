@@ -1,1 +1,401 @@
-página dos veículos.
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Veículos | MF Finanças</title>
+
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body class="dashboard">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+            <h1>MF <span>Finanças</span></h1>
+        </div>
+
+        <div class="sidebar-user">
+
+            <div
+                id="userName"
+                class="sidebar-user-name">
+
+                Usuário
+
+            </div>
+
+            <div class="sidebar-user-role">
+
+                Administrador
+
+            </div>
+
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <div class="menu-title">
+                Principal
+            </div>
+
+            <a href="dashboard.html" class="menu-link">
+                Dashboard
+            </a>
+
+            <div class="menu-title">
+                Financeiro
+            </div>
+
+            <a href="lancamentos.html" class="menu-link">
+                Lançamentos
+            </a>
+
+            <a href="contas.html" class="menu-link">
+                Contas Financeiras
+            </a>
+
+            <a href="categorias.html" class="menu-link">
+                Categorias
+            </a>
+
+            <a href="veiculos.html" class="menu-link active">
+                Veículos
+            </a>
+
+        </nav>
+
+        <div class="sidebar-footer">
+
+            <button
+                onclick="logout()"
+                class="btn btn-secondary btn-full">
+
+                Sair
+
+            </button>
+
+        </div>
+
+    </aside>
+
+    <!-- CONTEÚDO -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div class="topbar-title">
+
+                <h2>
+                    Veículos
+                </h2>
+
+                <span>
+                    Cadastro e gestão da frota
+                </span>
+
+            </div>
+
+        </header>
+
+        <div class="content">
+
+            <!-- KPIS -->
+
+            <div class="kpi-grid">
+
+                <div class="kpi-card">
+
+                    <div class="kpi-label">
+                        Total de Veículos
+                    </div>
+
+                    <div
+                        id="kpiTotal"
+                        class="kpi-value">
+
+                        0
+
+                    </div>
+
+                </div>
+
+                <div class="kpi-card">
+
+                    <div class="kpi-label">
+                        Com Placa
+                    </div>
+
+                    <div
+                        id="kpiPlaca"
+                        class="kpi-value">
+
+                        0
+
+                    </div>
+
+                </div>
+
+                <div class="kpi-card">
+
+                    <div class="kpi-label">
+                        Média de Ano
+                    </div>
+
+                    <div
+                        id="kpiAno"
+                        class="kpi-value">
+
+                        -
+
+                    </div>
+
+                </div>
+
+                <div class="kpi-card">
+
+                    <div class="kpi-label">
+                        Último Cadastro
+                    </div>
+
+                    <div
+                        id="kpiUltimo"
+                        class="kpi-value">
+
+                        -
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- TABELA -->
+
+            <div class="widget">
+
+                <div
+                    style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    margin-bottom:20px;
+                ">
+
+                    <div class="widget-title">
+
+                        Veículos Cadastrados
+
+                    </div>
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="abrirModalVeiculo()">
+
+                        Novo Veículo
+
+                    </button>
+
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table class="table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>Placa</th>
+                                <th>Ano</th>
+                                <th>Ações</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="listaVeiculos">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL VEÍCULO -->
+
+    <div
+        id="modalVeiculo"
+        class="modal-overlay hidden">
+
+        <div class="modal">
+
+            <div class="card-header">
+
+                <div
+                    id="tituloModalVeiculo"
+                    class="card-title">
+
+                    Novo Veículo
+
+                </div>
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="fecharModalVeiculo()">
+
+                    Fechar
+
+                </button>
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="label">
+
+                    Marca
+
+                </label>
+
+                <input
+                    id="marca"
+                    class="input"
+                    type="text">
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="label">
+
+                    Modelo
+
+                </label>
+
+                <input
+                    id="modelo"
+                    class="input"
+                    type="text">
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="label">
+
+                    Placa
+
+                </label>
+
+                <input
+                    id="placa"
+                    class="input"
+                    type="text">
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="label">
+
+                    Ano
+
+                </label>
+
+                <input
+                    id="ano"
+                    class="input"
+                    type="number">
+
+            </div>
+
+            <button
+                onclick="salvarVeiculo()"
+                class="btn btn-primary btn-full">
+
+                Salvar Veículo
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL EXCLUIR -->
+
+    <div
+        id="modalExcluirVeiculo"
+        class="modal-overlay hidden">
+
+        <div
+            class="modal"
+            style="max-width:500px;">
+
+            <div class="card-title mb-2">
+
+                Excluir Veículo
+
+            </div>
+
+            <p class="mb-3">
+
+                Deseja realmente excluir este veículo?
+
+            </p>
+
+            <div
+                style="
+                display:flex;
+                justify-content:flex-end;
+                gap:10px;
+            ">
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="fecharModalExcluirVeiculo()">
+
+                    Cancelar
+
+                </button>
+
+                <button
+                    class="btn btn-danger"
+                    onclick="confirmarExclusaoVeiculo()">
+
+                    Excluir
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="assets/js/supabase.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/veiculos.js"></script>
+
+</body>
+</html>
