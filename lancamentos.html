@@ -598,6 +598,78 @@
 
 </div>
 
+            <!-- MODAL EXCLUIR -->
+
+<div
+    id="modalExcluir"
+    class="modal-overlay hidden">
+
+    <div
+        class="modal"
+        style="max-width:500px;">
+
+        <div style="text-align:center;">
+
+            <div
+                style="
+                font-size:3rem;
+                margin-bottom:10px;
+            ">
+                ⚠️
+            </div>
+
+            <h3
+                style="
+                margin-bottom:15px;
+                font-size:1.3rem;
+            ">
+
+                Excluir lançamento?
+
+            </h3>
+
+            <p
+                style="
+                color:var(--text-muted);
+                margin-bottom:25px;
+                line-height:1.6;
+            ">
+
+                Esta ação removerá o lançamento permanentemente
+                e não poderá ser desfeita.
+
+            </p>
+
+        </div>
+
+        <div
+            style="
+            display:flex;
+            justify-content:center;
+            gap:12px;
+        ">
+
+            <button
+                class="btn btn-secondary"
+                onclick="fecharModalExcluir()">
+
+                Cancelar
+
+            </button>
+
+            <button
+                class="btn btn-danger"
+                onclick="confirmarExclusao()">
+
+                Excluir
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
     <script src="assets/js/supabase.js"></script>
     <script src="assets/js/auth.js"></script>
