@@ -18,537 +18,239 @@
 
 <body class="dashboard">
 
-    <!-- SIDEBAR -->
+<aside class="sidebar">
 
-    <aside class="sidebar">
+    <div class="sidebar-logo">
+        <h1>MF <span>Finanças</span></h1>
+    </div>
 
-        <div class="sidebar-logo">
-            <h1>MF <span>Finanças</span></h1>
+    <div class="sidebar-user">
+
+        <div id="userName" class="sidebar-user-name">Usuário</div>
+        <div class="sidebar-user-role">Administrador</div>
+
+    </div>
+
+    <nav class="sidebar-menu">
+
+        <a href="dashboard.html" class="menu-link">Dashboard</a>
+        <a href="lancamentos.html" class="menu-link">Lançamentos</a>
+        <a href="contas.html" class="menu-link">Contas</a>
+        <a href="categorias.html" class="menu-link">Categorias</a>
+
+        <div class="menu-title">Frota</div>
+
+        <a href="veiculos.html" class="menu-link">Veículos</a>
+        <a href="frota.html" class="menu-link active">Despesas</a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+        <button onclick="logout()" class="btn btn-secondary btn-full">
+            Sair
+        </button>
+
+    </div>
+
+</aside>
+
+<main class="main-content">
+
+    <header class="topbar">
+
+        <div class="topbar-title">
+            <h2>Despesas da Frota</h2>
+            <span>Controle de abastecimentos e manutenção</span>
         </div>
 
-        <div class="sidebar-user">
+    </header>
 
-            <div
-                id="userName"
-                class="sidebar-user-name">
+    <div class="content">
 
-                Usuário
+        <!-- KPIs -->
+        <div class="kpi-grid">
 
+            <div class="kpi-card">
+                <div class="kpi-label">Total</div>
+                <div id="kpiTotal" class="kpi-value">R$ 0,00</div>
             </div>
 
-            <div class="sidebar-user-role">
-
-                Administrador
-
+            <div class="kpi-card">
+                <div class="kpi-label">Mês</div>
+                <div id="kpiMes" class="kpi-value">R$ 0,00</div>
             </div>
 
-        </div>
-
-        <nav class="sidebar-menu">
-
-            <div class="menu-title">
-                Principal
+            <div class="kpi-card">
+                <div class="kpi-label">Registros</div>
+                <div id="kpiQtd" class="kpi-value">0</div>
             </div>
 
-            <a href="dashboard.html" class="menu-link">
-                Dashboard
-            </a>
-
-            <div class="menu-title">
-                Financeiro
+            <div class="kpi-card">
+                <div class="kpi-label">Último KM</div>
+                <div id="kpiKm" class="kpi-value">0</div>
             </div>
-
-            <a href="lancamentos.html" class="menu-link">
-                Lançamentos
-            </a>
-
-            <a href="contas.html" class="menu-link">
-                Contas Financeiras
-            </a>
-
-            <a href="categorias.html" class="menu-link">
-                Categorias
-            </a>
-
-            <div class="menu-title">
-                Frota
-            </div>
-
-            <a href="veiculos.html" class="menu-link">
-                Veículos
-            </a>
-
-            <a href="frota.html" class="menu-link active">
-                Despesas da Frota
-            </a>
-
-        </nav>
-
-        <div class="sidebar-footer">
-
-            <button
-                onclick="logout()"
-                class="btn btn-secondary btn-full">
-
-                Sair
-
-            </button>
 
         </div>
 
-    </aside>
+        <!-- FILTROS -->
+        <div class="widget mb-3">
 
-    <!-- CONTEÚDO -->
+            <div class="widget-title">Filtros</div>
 
-    <main class="main-content">
+            <div class="grid grid-4">
 
-        <header class="topbar">
-
-            <div class="topbar-title">
-
-                <h2>
-                    Despesas da Frota
-                </h2>
-
-                <span>
-                    Controle de abastecimentos e manutenções
-                </span>
-
-            </div>
-
-        </header>
-
-        <div class="content">
-
-            <!-- KPIs -->
-
-            <div class="kpi-grid">
-
-                <div class="kpi-card">
-
-                    <div class="kpi-label">
-                        Total Gasto
-                    </div>
-
-                    <div
-                        id="kpiTotal"
-                        class="kpi-value">
-
-                        R$ 0,00
-
-                    </div>
-
+                <div class="form-group">
+                    <label class="label">Veículo</label>
+                    <select id="filtroVeiculo" class="select"></select>
                 </div>
 
-                <div class="kpi-card">
-
-                    <div class="kpi-label">
-                        Gastos no Mês
-                    </div>
-
-                    <div
-                        id="kpiMes"
-                        class="kpi-value">
-
-                        R$ 0,00
-
-                    </div>
-
+                <div class="form-group">
+                    <label class="label">Tipo</label>
+                    <select id="filtroTipo" class="select"></select>
                 </div>
 
-                <div class="kpi-card">
-
-                    <div class="kpi-label">
-                        Registros
-                    </div>
-
-                    <div
-                        id="kpiQtd"
-                        class="kpi-value">
-
-                        0
-
-                    </div>
-
+                <div class="form-group">
+                    <label class="label">Início</label>
+                    <input id="filtroInicio" type="date" class="input">
                 </div>
 
-                <div class="kpi-card">
-
-                    <div class="kpi-label">
-                        Último KM
-                    </div>
-
-                    <div
-                        id="kpiKm"
-                        class="kpi-value">
-
-                        0
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- FILTROS -->
-
-            <div class="widget mb-3">
-
-                <div class="widget-title">
-
-                    Filtros
-
-                </div>
-
-                <div class="grid grid-4">
-
-                    <div class="form-group">
-
-                        <label class="label">
-                            Veículo
-                        </label>
-
-                        <select
-                            id="filtroVeiculo"
-                            class="select">
-
-                            <option value="">
-                                Todos
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="label">
-                            Tipo Despesa
-                        </label>
-
-                        <select
-                            id="filtroTipo"
-                            class="select">
-
-                            <option value="">
-                                Todos
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="label">
-                            Data Inicial
-                        </label>
-
-                        <input
-                            id="filtroInicio"
-                            type="date"
-                            class="input">
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="label">
-                            Data Final
-                        </label>
-
-                        <input
-                            id="filtroFim"
-                            type="date"
-                            class="input">
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- TABELA -->
-
-            <div class="widget">
-
-                <div
-                    style="
-                    display:flex;
-                    justify-content:space-between;
-                    align-items:center;
-                    margin-bottom:20px;
-                ">
-
-                    <div class="widget-title">
-
-                        Despesas Registradas
-
-                    </div>
-
-                    <button
-                        onclick="abrirModalFrota()"
-                        class="btn btn-primary">
-
-                        Nova Despesa
-
-                    </button>
-
-                </div>
-
-                <div class="table-wrapper">
-
-                    <table class="table">
-
-                        <thead>
-
-                            <tr>
-
-                                <th>Data</th>
-                                <th>Veículo</th>
-                                <th>Tipo</th>
-                                <th>Pagamento</th>
-                                <th>Valor</th>
-                                <th>KM</th>
-                                <th>Observação</th>
-                                <th>Ações</th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody id="listaFrota">
-
-                        </tbody>
-
-                    </table>
-
+                <div class="form-group">
+                    <label class="label">Fim</label>
+                    <input id="filtroFim" type="date" class="input">
                 </div>
 
             </div>
 
         </div>
 
-    </main>
+        <!-- TABELA -->
+        <div class="widget">
 
-    <!-- MODAL CADASTRO -->
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <div class="widget-title">Despesas</div>
 
-    <div
-        id="modalFrota"
-        class="modal-overlay hidden">
-
-        <div class="modal">
-
-            <div class="card-header">
-
-                <div
-                    id="tituloModalFrota"
-                    class="card-title">
-
+                <button onclick="abrirModalFrota()" class="btn btn-primary">
                     Nova Despesa
-
-                </div>
-
-                <button
-                    onclick="fecharModalFrota()"
-                    class="btn btn-secondary">
-
-                    Fechar
-
                 </button>
+            </div>
+
+            <div class="table-wrapper">
+
+                <table class="table">
+
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Veículo</th>
+                            <th>Tipo</th>
+                            <th>Pagamento</th>
+                            <th>Valor</th>
+                            <th>KM</th>
+                            <th>Obs</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="listaFrota"></tbody>
+
+                </table>
 
             </div>
 
-            <div class="grid grid-2">
+        </div>
 
-                <div class="form-group">
+    </div>
 
-                    <label class="label">
-                        Veículo
-                    </label>
+</main>
 
-                    <select
-                        id="veiculoId"
-                        class="select">
+<!-- MODAL -->
+<div id="modalFrota" class="modal-overlay hidden">
 
-                    </select>
+    <div class="modal">
 
-                </div>
+        <div class="card-header">
 
-                <div class="form-group">
-
-                    <label class="label">
-                        Tipo Despesa
-                    </label>
-
-                    <select
-                        id="tipoDespesaId"
-                        class="select">
-
-                    </select>
-
-                </div>
-
+            <div id="tituloModalFrota" class="card-title">
+                Nova Despesa
             </div>
 
-            <div class="grid grid-2">
-
-                <div class="form-group">
-
-                    <label class="label">
-                        Meio Pagamento
-                    </label>
-
-                    <select
-                        id="meioPagamentoId"
-                        class="select">
-
-                    </select>
-
-                </div>
-
-                <div class="form-group">
-    
-                        <label class="label">
-                            Conta Financeira
-                        </label>
-                    
-                        <select
-                            id="contaID"
-                            class="select">
-                        </select>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="label">
-                        Data da Despesa
-                    </label>
-
-                    <input
-                        id="dataDespesaID"
-                        type="date"
-                        class="input">
-
-                </div>
-
-            </div>
-
-            <div class="grid grid-2">
-
-                <div class="form-group">
-
-                    <label class="label">
-                        Valor
-                    </label>
-
-                    <input
-                        id="valor"
-                        type="number"
-                        step="0.01"
-                        class="input">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="label">
-                        Quilometragem
-                    </label>
-
-                    <input
-                        id="quilometragem"
-                        type="number"
-                        class="input">
-
-                </div>
-
-            </div>
-
-            <div class="form-group">
-
-                <label class="label">
-                    Observação
-                </label>
-
-                <textarea
-                    id="observacao"
-                    class="textarea"></textarea>
-
-            </div>
-
-            <button
-                onclick="salvarDespesaFrota()"
-                class="btn btn-primary btn-full">
-
-                Salvar Despesa
-
+            <button onclick="fecharModalFrota()" class="btn btn-secondary">
+                Fechar
             </button>
 
         </div>
 
-    </div>
-
-    <!-- MODAL EXCLUSÃO -->
-
-    <div
-        id="modalExcluirFrotaID"
-        class="modal-overlay hidden">
-
-        <div
-            class="modal"
-            style="max-width:500px;">
-
-            <div class="card-title mb-2">
-
-                Confirmar Exclusão
-
-            </div>
-
-            <p
-                style="
-                color:var(--text-muted);
-                margin-bottom:20px;
-            ">
-
-                Deseja realmente excluir esta despesa?
-
-            </p>
-
-            <div
-                style="
-                display:flex;
-                justify-content:flex-end;
-                gap:10px;
-            ">
-
-                <button
-                    onclick="fecharModalExcluirFrota()"
-                    class="btn btn-secondary">
-
-                    Cancelar
-
-                </button>
-
-                <button
-                    onclick="confirmarExclusaoFrota()"
-                    class="btn btn-danger">
-
-                    Excluir
-
-                </button>
-
-            </div>
-
+        <div class="form-group">
+            <label class="label">Veículo</label>
+            <select id="veiculo" class="select"></select>
         </div>
 
+        <div class="form-group">
+            <label class="label">Tipo</label>
+            <select id="tipoDespesa" class="select"></select>
+        </div>
+
+        <div class="form-group">
+            <label class="label">Pagamento</label>
+            <select id="meioPagamento" class="select"></select>
+        </div>
+
+        <div class="form-group">
+            <label class="label">Conta</label>
+            <select id="conta" class="select"></select>
+        </div>
+
+        <div class="form-group">
+            <label class="label">Data</label>
+            <input id="dataDespesa" type="date" class="input">
+        </div>
+
+        <div class="form-group">
+            <label class="label">Valor</label>
+            <input id="valor" type="number" class="input">
+        </div>
+
+        <div class="form-group">
+            <label class="label">KM</label>
+            <input id="quilometragem" type="number" class="input">
+        </div>
+
+        <div class="form-group">
+            <label class="label">Observação</label>
+            <textarea id="observacao" class="textarea"></textarea>
+        </div>
+
+        <button onclick="salvarDespesaFrota()" class="btn btn-primary btn-full">
+            Salvar
+        </button>
+
     </div>
 
-    <script src="assets/js/supabase.js"></script>
-    <script src="assets/js/auth.js"></script>
-    <script src="assets/js/frota.js"></script>
+</div>
+
+<!-- EXCLUIR -->
+<div id="modalExcluirFrota" class="modal-overlay hidden">
+
+    <div class="modal">
+
+        <h3>Excluir registro?</h3>
+
+        <button onclick="fecharModalExcluirFrota()" class="btn btn-secondary">
+            Cancelar
+        </button>
+
+        <button onclick="confirmarExclusaoFrota()" class="btn btn-danger">
+            Excluir
+        </button>
+
+    </div>
+
+</div>
+
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/frota.js"></script>
 
 </body>
-
 </html>
