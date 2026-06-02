@@ -1,4 +1,3 @@
-```javascript
 let categoriaEditando = null;
 
 let idExclusaoCategoria = null;
