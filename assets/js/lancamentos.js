@@ -18,6 +18,15 @@ async function iniciarPagina(){
     await carregarCategorias();
 
     await carregarLancamentos();
+    
+    document
+    .getElementById(
+        'buscaDescricao'
+    )
+    .addEventListener(
+        'keyup',
+        aplicarFiltros
+    );
 
 }
 
@@ -151,9 +160,9 @@ async function carregarLancamentos(){
 
     }
 
-    atualizarKPIs(data);
+    todosLancamentos = data;
 
-    montarTabela(data);
+    aplicarFiltros();
 
 }
 
@@ -495,6 +504,62 @@ function formatarMoeda(valor){
             currency:'BRL'
         }
     );
+
+}
+function aplicarFiltros(){
+
+    const busca =
+        document
+            .getElementById(
+                'buscaDescricao'
+            )
+            .value
+            .toLowerCase();
+
+    let lista =
+        [...todosLancamentos];
+
+    if(busca){
+
+        lista =
+            lista.filter(item => {
+
+                const descricao =
+                    (
+                        item.descricao || ''
+                    ).toLowerCase();
+
+                const favorecido =
+                    (
+                        item.favorecido || ''
+                    ).toLowerCase();
+
+                const documento =
+                    (
+                        item.documento || ''
+                    ).toLowerCase();
+
+                return (
+
+                    descricao.includes(busca)
+
+                    ||
+
+                    favorecido.includes(busca)
+
+                    ||
+
+                    documento.includes(busca)
+
+                );
+
+            });
+
+    }
+
+    atualizarKPIs(lista);
+
+    montarTabela(lista);
 
 }
 
