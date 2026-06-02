@@ -4,6 +4,8 @@ let contasMap = {};
 
 let todosLancamentos = [];
 
+let idExclusao = null;
+
 document.addEventListener(
     'DOMContentLoaded',
     iniciarPagina
@@ -469,16 +471,20 @@ abrirModalLancamento();
 
 }
 
-async function excluirLancamento(id){
+async excluirLancamento(id){
 
-    if(
-        !confirm(
-            'Deseja excluir este lançamento?'
+    idExclusao = id;
+
+    document
+        .getElementById(
+            'modalExcluir'
         )
-    ){
-        return;
-    }
+        .classList
+        .remove(
+            'hidden'
+        );
 
+}
     await supabaseClient
         .from('lancamentos')
         .delete()
@@ -620,6 +626,22 @@ function fecharModalLancamento(){
 }
  fecharModalLancamento();
 
+
+function fecharModalExcluir(){
+
+    idExclusao = null;
+
+    document
+        .getElementById(
+            'modalExcluir'
+        )
+        .classList
+        .add(
+            'hidden'
+        );
+
+}
+
 window.salvarLancamento = salvarLancamento;
 window.editarLancamento = editarLancamento;
 window.excluirLancamento = excluirLancamento;
@@ -629,6 +651,12 @@ window.abrirModalLancamento =
 
 window.fecharModalLancamento =
     fecharModalLancamento;
+
+window.fecharModalExcluir =
+    fecharModalExcluir;
+
+window.confirmarExclusao =
+    confirmarExclusao;
 
 window.logout = logout;
 
