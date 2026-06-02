@@ -572,7 +572,42 @@ function logout(){
 
 }
 
+function abrirModalLancamento(){
+
+    document
+        .getElementById(
+            'modalLancamento'
+        )
+        .classList
+        .remove(
+            'hidden'
+        );
+
+}
+
+function fecharModalLancamento(){
+
+    document
+        .getElementById(
+            'modalLancamento'
+        )
+        .classList
+        .add(
+            'hidden'
+        );
+
+}
+
 window.salvarLancamento = salvarLancamento;
 window.editarLancamento = editarLancamento;
 window.excluirLancamento = excluirLancamento;
+
+window.abrirModalLancamento =
+    abrirModalLancamento;
+
+window.fecharModalLancamento =
+    fecharModalLancamento;
+
 window.logout = logout;
+
+
