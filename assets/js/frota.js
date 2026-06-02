@@ -1,461 +1,304 @@
 let despesaEditando = null;
+let idExclusao = null;
 
-let idExclusaoFrota = null;
-
-let todasDespesas = [];
+let todas = [];
 
 let veiculosMap = {};
-
 let tiposMap = {};
-
 let meiosMap = {};
-
 let contasMap = {};
 
-// INIT
-document.addEventListener('DOMContentLoaded', iniciarPagina);
+document.addEventListener('DOMContentLoaded', iniciar);
 
-async function iniciarPagina() {
+async function iniciar() {
 
     carregarUsuario();
 
     await carregarVeiculos();
-    await carregarTiposDespesa();
-    await carregarMeiosPagamento();
+    await carregarTipos();
+    await carregarMeios();
     await carregarContas();
 
-    await carregarDespesas();
+    await carregar();
 
-    document.getElementById('filtroVeiculo').addEventListener('change', aplicarFiltros);
-    document.getElementById('filtroTipo').addEventListener('change', aplicarFiltros);
-    document.getElementById('filtroInicio').addEventListener('change', aplicarFiltros);
-    document.getElementById('filtroFim').addEventListener('change', aplicarFiltros);
 }
 
-// USUÁRIO
 function carregarUsuario() {
 
-    const usuario =
-        JSON.parse(localStorage.getItem('mf_usuario'));
+    const u = JSON.parse(localStorage.getItem('mf_usuario'));
 
-    if (usuario) {
-
-        document.getElementById('userName').innerText =
-            usuario.nome;
+    if (u) {
+        document.getElementById('userName').innerText = u.nome;
     }
 }
 
 // VEÍCULOS
 async function carregarVeiculos() {
 
-    const { data } =
-        await supabaseClient
-            .from('veiculos')
-            .select('*')
-            .order('marca');
+    const { data } = await supabaseClient
+        .from('veiculos')
+        .select('*');
 
-    const select = document.getElementById('veiculoId');
-    const filtro = document.getElementById('filtroVeiculo');
+    const sel = document.getElementById('veiculo');
+    const fil = document.getElementById('filtroVeiculo');
 
-    select.innerHTML = '';
-    filtro.innerHTML = '<option value="">Todos</option>';
+    sel.innerHTML = '';
+    fil.innerHTML = '<option value="">Todos</option>';
 
     data.forEach(v => {
 
-        veiculosMap[v.id] = `${v.marca} ${v.modelo}`;
+        veiculosMap[v.id] = v.marca + ' ' + v.modelo;
 
-        select.innerHTML += `
-            <option value="${v.id}">
-                ${v.marca} ${v.modelo}
-            </option>
-        `;
+        sel.innerHTML += `<option value="${v.id}">${veiculosMap[v.id]}</option>`;
+        fil.innerHTML += `<option value="${v.id}">${veiculosMap[v.id]}</option>`;
 
-        filtro.innerHTML += `
-            <option value="${v.id}">
-                ${v.marca} ${v.modelo}
-            </option>
-        `;
     });
 }
 
 // TIPOS
-async function carregarTiposDespesa() {
+async function carregarTipos() {
 
-    const { data } =
-        await supabaseClient
-            .from('tipos_despesa_frota')
-            .select('*')
-            .order('nome');
+    const { data } = await supabaseClient
+        .from('tipos_despesa_frota')
+        .select('*');
 
-    const select = document.getElementById('tipoDespesaId');
-    const filtro = document.getElementById('filtroTipo');
+    const sel = document.getElementById('tipoDespesa');
+    const fil = document.getElementById('filtroTipo');
 
-    select.innerHTML = '';
-    filtro.innerHTML = '<option value="">Todos</option>';
+    sel.innerHTML = '';
+    fil.innerHTML = '<option value="">Todos</option>';
 
     data.forEach(t => {
 
         tiposMap[t.id] = t.nome;
 
-        select.innerHTML += `
-            <option value="${t.id}">
-                ${t.nome}
-            </option>
-        `;
+        sel.innerHTML += `<option value="${t.id}">${t.nome}</option>`;
+        fil.innerHTML += `<option value="${t.id}">${t.nome}</option>`;
 
-        filtro.innerHTML += `
-            <option value="${t.id}">
-                ${t.nome}
-            </option>
-        `;
     });
 }
 
-// MEIOS PAGAMENTO
-async function carregarMeiosPagamento() {
+// MEIOS
+async function carregarMeios() {
 
-    const { data } =
-        await supabaseClient
-            .from('meios_pagamento')
-            .select('*')
-            .order('nome');
+    const { data } = await supabaseClient
+        .from('meios_pagamento')
+        .select('*');
 
-    const select = document.getElementById('meioPagamentoId');
+    const sel = document.getElementById('meioPagamento');
 
-    select.innerHTML = '';
+    sel.innerHTML = '';
 
     data.forEach(m => {
 
         meiosMap[m.id] = m.nome;
 
-        select.innerHTML += `
-            <option value="${m.id}">
-                ${m.nome}
-            </option>
-        `;
+        sel.innerHTML += `<option value="${m.id}">${m.nome}</option>`;
     });
 }
 
 // CONTAS
 async function carregarContas() {
 
-    const { data } =
-        await supabaseClient
-            .from('contas_financeiras')
-            .select('*')
-            .eq('ativa', true)
-            .order('nome');
+    const { data } = await supabaseClient
+        .from('contas_financeiras')
+        .select('*')
+        .eq('ativa', true);
 
-    const select = document.getElementById('contaId');
+    const sel = document.getElementById('conta');
 
-    select.innerHTML = '';
+    sel.innerHTML = '';
 
     data.forEach(c => {
 
         contasMap[c.id] = c.nome;
 
-        select.innerHTML += `
-            <option value="${c.id}">
-                ${c.nome}
-            </option>
-        `;
+        sel.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
     });
 }
 
-// DESPESAS
-async function carregarDespesas() {
+// LISTA
+async function carregar() {
 
-    const { data } =
-        await supabaseClient
-            .from('despesas_frota')
-            .select('*')
-            .order('data_despesa', { ascending: false });
+    const { data } = await supabaseClient
+        .from('despesas_frota')
+        .select('*')
+        .order('data_despesa', { ascending: false });
 
-    todasDespesas = data;
+    todas = data;
 
-    aplicarFiltros();
+    filtrar();
 }
 
-// FILTROS
-function aplicarFiltros() {
+// FILTRO
+function filtrar() {
 
-    let lista = [...todasDespesas];
+    let lista = [...todas];
 
-    const veiculo = document.getElementById('filtroVeiculo').value;
-    const tipo = document.getElementById('filtroTipo').value;
-    const inicio = document.getElementById('filtroInicio').value;
-    const fim = document.getElementById('filtroFim').value;
+    const v = document.getElementById('filtroVeiculo').value;
+    const t = document.getElementById('filtroTipo').value;
 
-    if (veiculo) {
-        lista = lista.filter(x => x.veiculo_id === veiculo);
-    }
+    if (v) lista = lista.filter(x => x.veiculo_id === v);
+    if (t) lista = lista.filter(x => x.tipo_despesa_id === t);
 
-    if (tipo) {
-        lista = lista.filter(x => x.tipo_despesa_id === tipo);
-    }
-
-    if (inicio) {
-        lista = lista.filter(x => x.data_despesa >= inicio);
-    }
-
-    if (fim) {
-        lista = lista.filter(x => x.data_despesa <= fim);
-    }
-
-    atualizarKPIs(lista);
-    montarTabela(lista);
+    montar(lista);
+    kpis(lista);
 }
 
 // KPIs
-function atualizarKPIs(lista) {
+function kpis(lista) {
 
     const total = lista.reduce((s, i) => s + Number(i.valor || 0), 0);
 
-    const hoje = new Date();
-    const mes = hoje.getMonth() + 1;
-    const ano = hoje.getFullYear();
+    document.getElementById('kpiTotal').innerText =
+        total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-    const mesTotal = lista
-        .filter(i => {
-            if (!i.data_despesa) return false;
-            const d = new Date(i.data_despesa);
-            return d.getMonth() + 1 === mes && d.getFullYear() === ano;
-        })
-        .reduce((s, i) => s + Number(i.valor || 0), 0);
-
-    const km = lista.length
-        ? Math.max(...lista.map(i => Number(i.quilometragem || 0)))
-        : 0;
-
-    document.getElementById('kpiTotal').innerText = formatarMoeda(total);
-    document.getElementById('kpiMes').innerText = formatarMoeda(mesTotal);
     document.getElementById('kpiQtd').innerText = lista.length;
-    document.getElementById('kpiKm').innerText = km;
+
+    document.getElementById('kpiKm').innerText =
+        lista.length ? Math.max(...lista.map(x => Number(x.quilometragem || 0))) : 0;
+
+    document.getElementById('kpiMes').innerText = '';
 }
 
 // TABELA
-function montarTabela(lista) {
+function montar(lista) {
 
     const tbody = document.getElementById('listaFrota');
 
     tbody.innerHTML = '';
 
-    lista.forEach(item => {
+    lista.forEach(i => {
 
         tbody.innerHTML += `
         <tr>
 
-            <td>${item.data_despesa || ''}</td>
-            <td>${veiculosMap[item.veiculo_id] || '-'}</td>
-            <td>${tiposMap[item.tipo_despesa_id] || '-'}</td>
-            <td>${meiosMap[item.meio_pagamento_id] || '-'}</td>
-            <td>${formatarMoeda(item.valor)}</td>
-            <td>${item.quilometragem || 0}</td>
-            <td>${item.observacao || ''}</td>
+            <td>${i.data_despesa || ''}</td>
+            <td>${veiculosMap[i.veiculo_id] || ''}</td>
+            <td>${tiposMap[i.tipo_despesa_id] || ''}</td>
+            <td>${meiosMap[i.meio_pagamento_id] || ''}</td>
+            <td>${i.valor}</td>
+            <td>${i.quilometragem || 0}</td>
+            <td>${i.observacao || ''}</td>
 
             <td>
-                <div class="table-actions">
-
-                    <button class="btn btn-secondary"
-                        onclick="editarDespesaFrota('${item.id}')">
-                        Editar
-                    </button>
-
-                    <button class="btn btn-danger"
-                        onclick="excluirDespesaFrota('${item.id}')">
-                        Excluir
-                    </button>
-
-                </div>
+                <button onclick="editar('${i.id}')" class="btn btn-secondary">Editar</button>
+                <button onclick="excluir('${i.id}')" class="btn btn-danger">Excluir</button>
             </td>
 
-        </tr>
-        `;
+        </tr>`;
     });
 }
 
-// SALVAR + LANÇAMENTO AUTOMÁTICO
+// SALVAR
 async function salvarDespesaFrota() {
 
-    const registro = {
-        veiculo_id: document.getElementById('veiculoId').value,
-        tipo_despesa_id: document.getElementById('tipoDespesaId').value,
-        meio_pagamento_id: document.getElementById('meioPagamentoId').value,
-        conta_id: document.getElementById('contaId').value,
+    const obj = {
+
+        veiculo_id: document.getElementById('veiculo').value,
+        tipo_despesa_id: document.getElementById('tipoDespesa').value,
+        meio_pagamento_id: document.getElementById('meioPagamento').value,
+        conta_id: document.getElementById('conta').value,
         valor: Number(document.getElementById('valor').value),
         quilometragem: Number(document.getElementById('quilometragem').value),
         observacao: document.getElementById('observacao').value,
         data_despesa: document.getElementById('dataDespesa').value
     };
 
-    const descricao = `Frota - ${tiposMap[registro.tipo_despesa_id]}`;
-
     if (despesaEditando) {
-
-        const { data } =
-            await supabaseClient
-                .from('despesas_frota')
-                .select('*')
-                .eq('id', despesaEditando)
-                .single();
-
-        await supabaseClient
-            .from('lancamentos')
-            .update({
-                descricao,
-                valor: registro.valor,
-                conta_id: registro.conta_id,
-                observacao: registro.observacao
-            })
-            .eq('id', data.lancamento_id);
 
         await supabaseClient
             .from('despesas_frota')
-            .update(registro)
+            .update(obj)
             .eq('id', despesaEditando);
 
     } else {
 
-        const { data: lanc } =
-            await supabaseClient
-                .from('lancamentos')
-                .insert({
-                    tipo: 'despesa',
-                    descricao,
-                    valor: registro.valor,
-                    categoria: 'Frota',
-                    conta_id: registro.conta_id,
-                    status: 'pago',
-                    data_vencimento: registro.data_despesa,
-                    competencia: registro.data_despesa,
-                    observacao: registro.observacao
-                })
-                .select()
-                .single();
-
-        registro.lancamento_id = lanc.id;
-
         await supabaseClient
             .from('despesas_frota')
-            .insert(registro);
+            .insert(obj);
     }
 
     fecharModalFrota();
-    limparFormulario();
-    carregarDespesas();
+    limpar();
+    carregar();
 }
 
 // EDITAR
-async function editarDespesaFrota(id) {
+async function editar(id) {
 
-    const { data } =
-        await supabaseClient
-            .from('despesas_frota')
-            .select('*')
-            .eq('id', id)
-            .single();
+    const { data } = await supabaseClient
+        .from('despesas_frota')
+        .select('*')
+        .eq('id', id)
+        .single();
 
     despesaEditando = id;
 
-    document.getElementById('veiculoId').value = data.veiculo_id;
-    document.getElementById('tipoDespesaId').value = data.tipo_despesa_id;
-    document.getElementById('meioPagamentoId').value = data.meio_pagamento_id;
-    document.getElementById('contaId').value = data.conta_id;
+    document.getElementById('veiculo').value = data.veiculo_id;
+    document.getElementById('tipoDespesa').value = data.tipo_despesa_id;
+    document.getElementById('meioPagamento').value = data.meio_pagamento_id;
+    document.getElementById('conta').value = data.conta_id;
     document.getElementById('valor').value = data.valor;
     document.getElementById('quilometragem').value = data.quilometragem;
-    document.getElementById('observacao').value = data.observacao || '';
+    document.getElementById('observacao').value = data.observacao;
     document.getElementById('dataDespesa').value = data.data_despesa;
-
-    document.getElementById('tituloModalFrota').innerText = 'Editar Despesa';
 
     abrirModalFrota();
 }
 
 // EXCLUIR
-function excluirDespesaFrota(id) {
+function excluir(id) {
 
-    idExclusaoFrota = id;
+    idExclusao = id;
 
-    document.getElementById('modalExcluirFrota')
-        .classList.remove('hidden');
+    document.getElementById('modalExcluirFrota').classList.remove('hidden');
 }
 
 async function confirmarExclusaoFrota() {
 
-    const { data } =
-        await supabaseClient
-            .from('despesas_frota')
-            .select('*')
-            .eq('id', idExclusaoFrota)
-            .single();
-
-    if (data?.lancamento_id) {
-
-        await supabaseClient
-            .from('lancamentos')
-            .delete()
-            .eq('id', data.lancamento_id);
-    }
-
     await supabaseClient
         .from('despesas_frota')
         .delete()
-        .eq('id', idExclusaoFrota);
+        .eq('id', idExclusao);
 
     fecharModalExcluirFrota();
-    carregarDespesas();
+    carregar();
 }
 
 // MODAIS
 function abrirModalFrota() {
-
-    document.getElementById('modalFrota')
-        .classList.remove('hidden');
+    document.getElementById('modalFrota').classList.remove('hidden');
 }
 
 function fecharModalFrota() {
-
     despesaEditando = null;
-
-    document.getElementById('modalFrota')
-        .classList.add('hidden');
+    document.getElementById('modalFrota').classList.add('hidden');
 }
 
 function fecharModalExcluirFrota() {
-
-    idExclusaoFrota = null;
-
-    document.getElementById('modalExcluirFrota')
-        .classList.add('hidden');
+    idExclusao = null;
+    document.getElementById('modalExcluirFrota').classList.add('hidden');
 }
 
-// UTIL
-function limparFormulario() {
+function limpar() {
 
     despesaEditando = null;
 
-    document.getElementById('veiculoId').value = '';
-    document.getElementById('tipoDespesaId').value = '';
-    document.getElementById('meioPagamentoId').value = '';
-    document.getElementById('contaId').value = '';
+    document.getElementById('veiculo').value = '';
+    document.getElementById('tipoDespesa').value = '';
+    document.getElementById('meioPagamento').value = '';
+    document.getElementById('conta').value = '';
     document.getElementById('valor').value = '';
     document.getElementById('quilometragem').value = '';
     document.getElementById('observacao').value = '';
     document.getElementById('dataDespesa').value = '';
 }
 
-function formatarMoeda(valor) {
-
-    return Number(valor || 0).toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    });
-}
-
-// WINDOW EXPORTS
+// WINDOW
 window.salvarDespesaFrota = salvarDespesaFrota;
-window.editarDespesaFrota = editarDespesaFrota;
-window.excluirDespesaFrota = excluirDespesaFrota;
+window.editar = editar;
+window.excluir = excluir;
 window.confirmarExclusaoFrota = confirmarExclusaoFrota;
 window.abrirModalFrota = abrirModalFrota;
 window.fecharModalFrota = fecharModalFrota;
