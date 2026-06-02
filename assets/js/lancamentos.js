@@ -468,6 +468,8 @@ abrirModalLancamento();
 
 }
 
+fecharModalLancamento();
+
 async function excluirLancamento(id){
 
     if(
@@ -569,6 +571,8 @@ function aplicarFiltros(){
     atualizarKPIs(lista);
 
     montarTabela(lista);
+
+    fecharModalLancamento();
 
 }
 
