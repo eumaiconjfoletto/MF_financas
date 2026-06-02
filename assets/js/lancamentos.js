@@ -471,7 +471,7 @@ abrirModalLancamento();
 
 }
 
-async excluirLancamento(id){
+    async function excluirLancamento(id){
 
     idExclusao = id;
 
@@ -485,12 +485,46 @@ async excluirLancamento(id){
         );
 
 }
-    await supabaseClient
-        .from('lancamentos')
-        .delete()
-        .eq('id', id);
+function fecharModalExcluir(){
 
-    carregarLancamentos();
+    idExclusao = null;
+
+    document
+        .getElementById(
+            'modalExcluir'
+        )
+        .classList
+        .add(
+            'hidden'
+        );
+
+}
+
+async function confirmarExclusao(){
+
+    if(!idExclusao){
+        return;
+    }
+
+    const { error } =
+        await supabaseClient
+            .from('lancamentos')
+            .delete()
+            .eq(
+                'id',
+                idExclusao
+            );
+
+    if(error){
+
+        console.error(error);
+        return;
+
+    }
+
+    fecharModalExcluir();
+
+    await carregarLancamentos();
 
 }
 
@@ -651,6 +685,12 @@ window.abrirModalLancamento =
 
 window.fecharModalLancamento =
     fecharModalLancamento;
+
+window.fecharModalExcluir =
+    fecharModalExcluir;
+
+window.confirmarExclusao =
+    confirmarExclusao;
 
 
 window.logout = logout;
