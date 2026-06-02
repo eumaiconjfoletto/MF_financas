@@ -409,6 +409,7 @@ async function salvarLancamento(){
 
     carregarLancamentos();
 
+    fecharModalLancamento();
    
 
 }
@@ -467,8 +468,6 @@ async function editarLancamento(id){
 abrirModalLancamento();
 
 }
-
-fecharModalLancamento();
 
 async function excluirLancamento(id){
 
