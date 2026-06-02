@@ -409,7 +409,7 @@ async function salvarLancamento(){
 
     carregarLancamentos();
 
-    fecharModalLancamento();
+   
 
 }
 
@@ -599,6 +599,7 @@ function fecharModalLancamento(){
         );
 
 }
+ fecharModalLancamento();
 
 window.salvarLancamento = salvarLancamento;
 window.editarLancamento = editarLancamento;
