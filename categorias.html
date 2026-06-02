@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -18,6 +19,8 @@
 
 <body class="dashboard">
 
+    <!-- SIDEBAR -->
+
     <aside class="sidebar">
 
         <div class="sidebar-logo">
@@ -35,7 +38,9 @@
             </div>
 
             <div class="sidebar-user-role">
+
                 Administrador
+
             </div>
 
         </div>
@@ -71,8 +76,8 @@
         <div class="sidebar-footer">
 
             <button
-                class="btn btn-secondary btn-full"
-                onclick="logout()">
+                onclick="logout()"
+                class="btn btn-secondary btn-full">
 
                 Sair
 
@@ -82,6 +87,8 @@
 
     </aside>
 
+    <!-- CONTEÚDO -->
+
     <main class="main-content">
 
         <header class="topbar">
@@ -89,7 +96,7 @@
             <div class="topbar-title">
 
                 <h2>
-                    Categorias
+                    Categorias Financeiras
                 </h2>
 
                 <span>
@@ -102,12 +109,14 @@
 
         <div class="content">
 
+            <!-- KPIS -->
+
             <div class="kpi-grid">
 
                 <div class="kpi-card">
 
                     <div class="kpi-label">
-                        Total de Categorias
+                        Total Categorias
                     </div>
 
                     <div
@@ -154,90 +163,55 @@
 
             </div>
 
-            <div class="crud-layout">
+            <!-- TABELA -->
 
-                <div class="widget">
+            <div class="widget">
 
-                    <div class="widget-title">
-                        Categorias Cadastradas
-                    </div>
-
-                    <div class="table-wrapper">
-
-                        <table class="table">
-
-                            <thead>
-
-                                <tr>
-
-                                    <th>Categoria</th>
-                                    <th>Tipo</th>
-                                    <th>Ações</th>
-
-                                </tr>
-
-                            </thead>
-
-                            <tbody id="listaCategorias">
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-                <div class="widget">
+                <div
+                    style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    margin-bottom:20px;
+                ">
 
                     <div class="widget-title">
 
-                        Nova Categoria
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="label">
-                            Nome
-                        </label>
-
-                        <input
-                            id="nome"
-                            type="text"
-                            class="input">
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="label">
-                            Tipo
-                        </label>
-
-                        <select
-                            id="tipo"
-                            class="select">
-
-                            <option value="receita">
-                                Receita
-                            </option>
-
-                            <option value="despesa">
-                                Despesa
-                            </option>
-
-                        </select>
+                        Categorias
 
                     </div>
 
                     <button
-                        onclick="salvarCategoria()"
-                        class="btn btn-primary btn-full">
+                        class="btn btn-primary"
+                        onclick="abrirModalCategoria()">
 
-                        Salvar Categoria
+                        + Nova Categoria
 
                     </button>
+
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table class="table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Nome</th>
+                                <th>Tipo</th>
+                                <th>Ações</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="listaCategorias">
+
+                        </tbody>
+
+                    </table>
 
                 </div>
 
@@ -247,6 +221,181 @@
 
     </main>
 
+    <!-- MODAL CATEGORIA -->
+
+    <div
+        id="modalCategoria"
+        class="modal-overlay hidden">
+
+        <div
+            class="modal"
+            style="max-width:600px;">
+
+            <div
+                class="card-header"
+                style="padding:0;">
+
+                <div
+                    id="tituloModalCategoria"
+                    class="card-title">
+
+                    Nova Categoria
+
+                </div>
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="fecharModalCategoria()">
+
+                    ✕
+
+                </button>
+
+            </div>
+
+            <div class="form-group mt-2">
+
+                <label class="label">
+
+                    Nome
+
+                </label>
+
+                <input
+                    id="nome"
+                    class="input"
+                    type="text">
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="label">
+
+                    Tipo
+
+                </label>
+
+                <select
+                    id="tipo"
+                    class="select">
+
+                    <option value="receita">
+
+                        Receita
+
+                    </option>
+
+                    <option value="despesa">
+
+                        Despesa
+
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div
+                style="
+                display:flex;
+                justify-content:flex-end;
+                gap:10px;
+                margin-top:20px;
+            ">
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="fecharModalCategoria()">
+
+                    Cancelar
+
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="salvarCategoria()">
+
+                    Salvar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL EXCLUIR -->
+
+    <div
+        id="modalExcluirCategoria"
+        class="modal-overlay hidden">
+
+        <div
+            class="modal"
+            style="max-width:500px;">
+
+            <div style="text-align:center;">
+
+                <div
+                    style="
+                    font-size:3rem;
+                    margin-bottom:15px;
+                ">
+
+                    ⚠️
+
+                </div>
+
+                <h3>
+
+                    Excluir categoria?
+
+                </h3>
+
+                <p
+                    style="
+                    color:var(--text-muted);
+                    margin-top:10px;
+                    margin-bottom:25px;
+                ">
+
+                    Esta ação não poderá ser desfeita.
+
+                </p>
+
+            </div>
+
+            <div
+                style="
+                display:flex;
+                justify-content:center;
+                gap:12px;
+            ">
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="fecharModalExcluirCategoria()">
+
+                    Cancelar
+
+                </button>
+
+                <button
+                    class="btn btn-danger"
+                    onclick="confirmarExclusaoCategoria()">
+
+                    Excluir
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
     <script src="assets/js/supabase.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/categorias.js"></script>
@@ -254,3 +403,4 @@
 </body>
 
 </html>
+```
