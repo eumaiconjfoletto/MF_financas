@@ -353,7 +353,7 @@ async function salvarLancamento(){
         forma_pagamento:
             document.getElementById(
                 'formaPagamento'
-            ).value,
+            )?.value || '',
 
         documento:
             document.getElementById(
@@ -373,7 +373,7 @@ async function salvarLancamento(){
         status:
             document.getElementById(
                 'status'
-            ).value,
+            )?.value || 'pendente',
 
         observacao:
             document.getElementById(
@@ -408,6 +408,8 @@ async function salvarLancamento(){
     limparFormulario();
 
     carregarLancamentos();
+
+    fecharModalLancamento();
 
 }
 
