@@ -146,123 +146,256 @@
 
             </div>
 
-            <!-- CRUD -->
+ <!-- TABELA -->
 
-            <div class="crud-layout">
+<div class="widget">
 
-                <!-- TABELA -->
+    <div
+        style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:20px;
+    ">
 
-                <div class="widget">
+        <div class="widget-title">
 
-                    <div class="widget-title">
-
-                        Contas Cadastradas
-
-                    </div>
-
-                    <div class="table-wrapper">
-
-                        <table class="table">
-
-                            <thead>
-
-                                <tr>
-
-                                    <th>Conta</th>
-                                    <th>Saldo Inicial</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-
-                                </tr>
-
-                            </thead>
-
-                            <tbody id="listaContas">
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-                <!-- FORMULÁRIO -->
-
-                <div class="widget">
-
-                    <div class="widget-title">
-
-                        Nova Conta
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="label">
-                            Nome da Conta
-                        </label>
-
-                        <input
-                            id="nome"
-                            type="text"
-                            class="input">
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="label">
-                            Saldo Inicial
-                        </label>
-
-                        <input
-                            id="saldo"
-                            type="number"
-                            step="0.01"
-                            value="0"
-                            class="input">
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="label">
-                            Situação
-                        </label>
-
-                        <select
-                            id="ativa"
-                            class="select">
-
-                            <option value="true">
-                                Ativa
-                            </option>
-
-                            <option value="false">
-                                Inativa
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                    <button
-                        onclick="salvarConta()"
-                        class="btn btn-primary btn-full">
-
-                        Salvar Conta
-
-                    </button>
-
-                </div>
-
-            </div>
+            Contas Financeiras
 
         </div>
 
+        <button
+            class="btn btn-primary"
+            onclick="abrirModalConta()">
+
+            + Nova Conta
+
+        </button>
+
+    </div>
+
+    <div class="table-wrapper">
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Conta</th>
+                    <th>Saldo Inicial</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="listaContas">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
     </main>
 
+    <!-- MODAL CONTA -->
+
+<div
+    id="modalConta"
+    class="modal-overlay hidden">
+
+    <div
+        class="modal"
+        style="max-width:650px;">
+
+        <div
+            class="card-header"
+            style="padding:0; margin-bottom:20px;">
+
+            <div
+                id="tituloModalConta"
+                class="card-title">
+
+                Nova Conta
+
+            </div>
+
+            <button
+                class="btn btn-secondary"
+                onclick="fecharModalConta()">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div class="form-group">
+
+            <label class="label">
+
+                Nome da Conta
+
+            </label>
+
+            <input
+                id="nome"
+                type="text"
+                class="input">
+
+        </div>
+
+        <div class="form-group">
+
+            <label class="label">
+
+                Saldo Inicial
+
+            </label>
+
+            <input
+                id="saldo"
+                type="number"
+                step="0.01"
+                class="input">
+
+        </div>
+
+        <div class="form-group">
+
+            <label class="label">
+
+                Situação
+
+            </label>
+
+            <select
+                id="ativa"
+                class="select">
+
+                <option value="true">
+
+                    Ativa
+
+                </option>
+
+                <option value="false">
+
+                    Inativa
+
+                </option>
+
+            </select>
+
+        </div>
+
+        <div
+            style="
+            display:flex;
+            justify-content:flex-end;
+            gap:10px;
+            margin-top:25px;
+        ">
+
+            <button
+                class="btn btn-secondary"
+                onclick="fecharModalConta()">
+
+                Cancelar
+
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="salvarConta()">
+
+                Salvar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <!-- MODAL EXCLUIR -->
+
+<div
+    id="modalExcluirConta"
+    class="modal-overlay hidden">
+
+    <div
+        class="modal"
+        style="max-width:500px;">
+
+        <div style="text-align:center;">
+
+            <div
+                style="
+                font-size:3rem;
+                margin-bottom:15px;
+            ">
+
+                ⚠️
+
+            </div>
+
+            <h3
+                style="
+                margin-bottom:10px;
+            ">
+
+                Excluir conta?
+
+            </h3>
+
+            <p
+                style="
+                color:var(--text-muted);
+                margin-bottom:25px;
+            ">
+
+                Esta ação não poderá ser desfeita.
+
+            </p>
+
+        </div>
+
+        <div
+            style="
+            display:flex;
+            justify-content:center;
+            gap:12px;
+        ">
+
+            <button
+                class="btn btn-secondary"
+                onclick="fecharModalExcluirConta()">
+
+                Cancelar
+
+            </button>
+
+            <button
+                class="btn btn-danger"
+                onclick="confirmarExclusaoConta()">
+
+                Excluir
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+    
     <script src="assets/js/supabase.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/contas.js"></script>
