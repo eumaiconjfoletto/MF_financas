@@ -1,62 +1,60 @@
 let despesaEditando = null;
 let idExclusao = null;
 
-let todas = [];
+let todasDespesas = [];
 
 let veiculosMap = {};
 let tiposMap = {};
 let meiosMap = {};
+let contasMap = {};
 
 document.addEventListener(
 'DOMContentLoaded',
-iniciar
+iniciarPagina
 );
 
-async function iniciar(){
-
+async function iniciarPagina(){
 
 carregarUsuario();
 
 await carregarVeiculos();
-await carregarTipos();
-await carregarMeios();
+await carregarTiposDespesa();
+await carregarMeiosPagamento();
 await carregarContas();
 
-await carregar();
+await carregarDespesas();
 
-document.getElementById(
-    'filtroVeiculo'
-).addEventListener(
-    'change',
-    filtrar
-);
+document
+    .getElementById('filtroVeiculo')
+    .addEventListener(
+        'change',
+        filtrarDespesas
+    );
 
-document.getElementById(
-    'filtroTipo'
-).addEventListener(
-    'change',
-    filtrar
-);
+document
+    .getElementById('filtroTipo')
+    .addEventListener(
+        'change',
+        filtrarDespesas
+    );
 
-document.getElementById(
-    'filtroInicio'
-).addEventListener(
-    'change',
-    filtrar
-);
+document
+    .getElementById('filtroInicio')
+    .addEventListener(
+        'change',
+        filtrarDespesas
+    );
 
-document.getElementById(
-    'filtroFim'
-).addEventListener(
-    'change',
-    filtrar
-);
-
+document
+    .getElementById('filtroFim')
+    .addEventListener(
+        'change',
+        filtrarDespesas
+    );
 
 }
 
 function carregarUsuario(){
-
 
 const usuario =
     JSON.parse(
@@ -74,19 +72,22 @@ if(usuario){
 
 }
 
-
 }
 
 async function carregarVeiculos(){
 
-
-const { data } =
+const { data, error } =
     await supabaseClient
         .from('veiculos')
         .select('*')
         .order('marca');
 
-const veiculo =
+if(error){
+    console.error(error);
+    return;
+}
+
+const select =
     document.getElementById(
         'veiculo'
     );
@@ -96,7 +97,7 @@ const filtro =
         'filtroVeiculo'
     );
 
-veiculo.innerHTML =
+select.innerHTML =
     '<option value="">Selecione</option>';
 
 filtro.innerHTML =
@@ -107,9 +108,10 @@ data.forEach(item => {
     const nome =
         `${item.marca} ${item.modelo}`;
 
-    veiculosMap[item.id] = nome;
+    veiculosMap[item.id] =
+        nome;
 
-    veiculo.innerHTML += `
+    select.innerHTML += `
         <option value="${item.id}">
             ${nome}
         </option>
@@ -123,19 +125,22 @@ data.forEach(item => {
 
 });
 
-
 }
 
-async function carregarTipos(){
+async function carregarTiposDespesa(){
 
-
-const { data } =
+const { data, error } =
     await supabaseClient
         .from('tipos_despesa_frota')
         .select('*')
         .order('nome');
 
-const tipo =
+if(error){
+    console.error(error);
+    return;
+}
+
+const select =
     document.getElementById(
         'tipoDespesa'
     );
@@ -145,7 +150,7 @@ const filtro =
         'filtroTipo'
     );
 
-tipo.innerHTML =
+select.innerHTML =
     '<option value="">Selecione</option>';
 
 filtro.innerHTML =
@@ -156,7 +161,7 @@ data.forEach(item => {
     tiposMap[item.id] =
         item.nome;
 
-    tipo.innerHTML += `
+    select.innerHTML += `
         <option value="${item.id}">
             ${item.nome}
         </option>
@@ -170,24 +175,27 @@ data.forEach(item => {
 
 });
 
-
 }
 
-async function carregarMeios(){
+async function carregarMeiosPagamento(){
 
-
-const { data } =
+const { data, error } =
     await supabaseClient
         .from('meios_pagamento')
         .select('*')
         .order('nome');
 
-const meio =
+if(error){
+    console.error(error);
+    return;
+}
+
+const select =
     document.getElementById(
         'meioPagamento'
     );
 
-meio.innerHTML =
+select.innerHTML =
     '<option value="">Selecione</option>';
 
 data.forEach(item => {
@@ -195,7 +203,7 @@ data.forEach(item => {
     meiosMap[item.id] =
         item.nome;
 
-    meio.innerHTML += `
+    select.innerHTML += `
         <option value="${item.id}">
             ${item.nome}
         </option>
@@ -203,30 +211,36 @@ data.forEach(item => {
 
 });
 
-
 }
 
 async function carregarContas(){
 
-
-const { data } =
+const { data, error } =
     await supabaseClient
         .from('contas_financeiras')
         .select('*')
         .eq('ativa', true)
         .order('nome');
 
-const conta =
+if(error){
+    console.error(error);
+    return;
+}
+
+const select =
     document.getElementById(
         'conta'
     );
 
-conta.innerHTML =
+select.innerHTML =
     '<option value="">Selecione</option>';
 
 data.forEach(item => {
 
-    conta.innerHTML += `
+    contasMap[item.id] =
+        item.nome;
+
+    select.innerHTML += `
         <option value="${item.id}">
             ${item.nome}
         </option>
@@ -234,13 +248,11 @@ data.forEach(item => {
 
 });
 
-
 }
 
-async function carregar(){
+async function carregarDespesas(){
 
-
-const { data } =
+const { data, error } =
     await supabaseClient
         .from('despesas_frota')
         .select('*')
@@ -249,18 +261,25 @@ const { data } =
             { ascending:false }
         );
 
-todas = data || [];
+if(error){
 
-filtrar();
+    console.error(error);
 
+    return;
 
 }
 
-function filtrar(){
+todasDespesas =
+    data || [];
 
+filtrarDespesas();
+
+}
+
+function filtrarDespesas(){
 
 let lista =
-    [...todas];
+    [...todasDespesas];
 
 const veiculo =
     document.getElementById(
@@ -286,7 +305,8 @@ if(veiculo){
 
     lista =
         lista.filter(
-            x => x.veiculo_id === veiculo
+            x =>
+                x.veiculo_id === veiculo
         );
 
 }
@@ -295,7 +315,8 @@ if(tipo){
 
     lista =
         lista.filter(
-            x => x.tipo_despesa_id === tipo
+            x =>
+                x.tipo_despesa_id === tipo
         );
 
 }
@@ -304,7 +325,8 @@ if(inicio){
 
     lista =
         lista.filter(
-            x => x.data_despesa >= inicio
+            x =>
+                x.data_despesa >= inicio
         );
 
 }
@@ -313,7 +335,8 @@ if(fim){
 
     lista =
         lista.filter(
-            x => x.data_despesa <= fim
+            x =>
+                x.data_despesa <= fim
         );
 
 }
@@ -322,16 +345,15 @@ atualizarKPIs(lista);
 
 montarTabela(lista);
 
-
 }
 
 function atualizarKPIs(lista){
 
-
 const total =
     lista.reduce(
-        (s,i) =>
-            s + Number(i.valor || 0),
+        (soma,item)=>
+            soma +
+            Number(item.valor || 0),
         0
     );
 
@@ -339,7 +361,7 @@ const hoje =
     new Date();
 
 const mesAtual =
-    hoje.getMonth() + 1;
+    hoje.getMonth();
 
 const anoAtual =
     hoje.getFullYear();
@@ -348,8 +370,9 @@ const totalMes =
     lista
         .filter(item => {
 
-            if(!item.data_despesa)
+            if(!item.data_despesa){
                 return false;
+            }
 
             const data =
                 new Date(
@@ -357,7 +380,7 @@ const totalMes =
                 );
 
             return (
-                data.getMonth()+1
+                data.getMonth()
                 === mesAtual
                 &&
                 data.getFullYear()
@@ -366,8 +389,9 @@ const totalMes =
 
         })
         .reduce(
-            (s,i)=>
-                s + Number(i.valor || 0),
+            (soma,item)=>
+                soma +
+                Number(item.valor || 0),
             0
         );
 
@@ -393,18 +417,16 @@ document.getElementById(
         ? Math.max(
             ...lista.map(
                 x =>
-                Number(
-                    x.quilometragem || 0
-                )
+                    Number(
+                        x.quilometragem || 0
+                    )
             )
         )
         : 0;
 
-
 }
 
 function montarTabela(lista){
-
 
 const tbody =
     document.getElementById(
@@ -427,6 +449,8 @@ lista.forEach(item => {
 
         <td>${meiosMap[item.meio_pagamento_id] || ''}</td>
 
+        <td>${contasMap[item.conta_id] || ''}</td>
+
         <td>${formatarMoeda(item.valor || 0)}</td>
 
         <td>${item.quilometragem || ''}</td>
@@ -437,7 +461,7 @@ lista.forEach(item => {
 
             <button
                 class="btn btn-secondary"
-                onclick="editar('${item.id}')">
+                onclick="editarDespesa('${item.id}')">
 
                 Editar
 
@@ -445,7 +469,7 @@ lista.forEach(item => {
 
             <button
                 class="btn btn-danger"
-                onclick="excluir('${item.id}')">
+                onclick="excluirDespesa('${item.id}')">
 
                 Excluir
 
@@ -463,33 +487,51 @@ lista.forEach(item => {
 
 async function salvarDespesaFrota(){
 
-
-const obj = {
+const registro = {
 
     veiculo_id:
-        document.getElementById('veiculo').value,
+        document.getElementById(
+            'veiculo'
+        ).value,
 
     tipo_despesa_id:
-        document.getElementById('tipoDespesa').value,
+        document.getElementById(
+            'tipoDespesa'
+        ).value,
 
     meio_pagamento_id:
-        document.getElementById('meioPagamento').value,
+        document.getElementById(
+            'meioPagamento'
+        ).value,
+
+    conta_id:
+        document.getElementById(
+            'conta'
+        ).value,
 
     valor:
         Number(
-            document.getElementById('valor').value
+            document.getElementById(
+                'valor'
+            ).value
         ),
 
     quilometragem:
         Number(
-            document.getElementById('quilometragem').value || 0
+            document.getElementById(
+                'quilometragem'
+            ).value || 0
         ),
 
     observacao:
-        document.getElementById('observacao').value,
+        document.getElementById(
+            'observacao'
+        ).value,
 
     data_despesa:
-        document.getElementById('dataDespesa').value
+        document.getElementById(
+            'dataDespesa'
+        ).value
 
 };
 
@@ -497,6 +539,7 @@ if(
     !registro.veiculo_id ||
     !registro.tipo_despesa_id ||
     !registro.meio_pagamento_id ||
+    !registro.conta_id ||
     !registro.valor ||
     !registro.data_despesa
 ){
@@ -510,16 +553,82 @@ if(
 }
 
 let erro;
+let lancamentoId = null;
 
 if(despesaEditando){
+
+    const atual =
+        todasDespesas.find(
+            x => x.id === despesaEditando
+        );
+
+    lancamentoId =
+        atual?.lancamento_id || null;
 
     ({ error: erro } =
         await supabaseClient
             .from('despesas_frota')
             .update(registro)
-            .eq('id', despesaEditando));
+            .eq(
+                'id',
+                despesaEditando
+            ));
 
 }else{
+
+    const lancamento = {
+
+        descricao:
+            `Frota - ${tiposMap[registro.tipo_despesa_id]}`,
+
+        valor:
+            registro.valor,
+
+        tipo:
+            'despesa',
+
+        categoria:
+            'Frota',
+
+        data_lancamento:
+            registro.data_despesa,
+
+        conta_id:
+            registro.conta_id,
+
+        status:
+            'pago',
+
+        observacao:
+            registro.observacao,
+
+        veiculo_id:
+            registro.veiculo_id
+
+    };
+
+    const {
+        data: lancamentoCriado,
+        error: erroLancamento
+    } =
+        await supabaseClient
+            .from('lancamentos')
+            .insert(lancamento)
+            .select()
+            .single();
+
+    if(erroLancamento){
+
+        alert(
+            erroLancamento.message
+        );
+
+        return;
+
+    }
+
+    registro.lancamento_id =
+        lancamentoCriado.id;
 
     ({ error: erro } =
         await supabaseClient
@@ -542,70 +651,69 @@ fecharModalFrota();
 
 limparFormulario();
 
-await carregar();
-
-
-}
-let resultado;
-
-if (despesaEditando) {
-
-    resultado = await supabaseClient
-        .from('despesas_frota')
-        .update(registro)
-        .eq('id', despesaEditando);
-
-} else {
-
-    resultado = await supabaseClient
-        .from('despesas_frota')
-        .insert(registro);
+await carregarDespesas();
 
 }
 
-if (resultado.error) {
+async function editarDespesa(id){
 
-    console.error(resultado.error);
-
-    alert(
-        'Erro ao salvar despesa.'
-    );
-
-    return;
-
-}
-
-async function editar(id){
-
-
-const { data } =
+const { data, error } =
     await supabaseClient
         .from('despesas_frota')
         .select('*')
         .eq('id', id)
         .single();
 
+if(error){
+
+    alert(
+        error.message
+    );
+
+    return;
+
+}
+
 despesaEditando = id;
 
-document.getElementById('veiculo').value =
+document.getElementById(
+    'veiculo'
+).value =
     data.veiculo_id;
 
-document.getElementById('tipoDespesa').value =
+document.getElementById(
+    'tipoDespesa'
+).value =
     data.tipo_despesa_id;
 
-document.getElementById('meioPagamento').value =
+document.getElementById(
+    'meioPagamento'
+).value =
     data.meio_pagamento_id;
 
-document.getElementById('valor').value =
+document.getElementById(
+    'conta'
+).value =
+    data.conta_id;
+
+document.getElementById(
+    'valor'
+).value =
     data.valor;
 
-document.getElementById('quilometragem').value =
-    data.quilometragem;
+document.getElementById(
+    'quilometragem'
+).value =
+    data.quilometragem || '';
 
-document.getElementById('observacao').value =
+document.getElementById(
+    'observacao'
+).value =
     data.observacao || '';
 
-document.getElementById('dataDespesa').value =
+document.getElementById(
+    'dataDespesa'
+).value =
     data.data_despesa;
 
 document.getElementById(
@@ -615,11 +723,9 @@ document.getElementById(
 
 abrirModalFrota();
 
-
 }
 
-function excluir(id){
-
+function excluirDespesa(id){
 
 idExclusao = id;
 
@@ -630,30 +736,56 @@ document
     .classList
     .remove('hidden');
 
-
 }
 
 async function confirmarExclusaoFrota(){
-
 
 if(!idExclusao){
     return;
 }
 
+const registro =
+    todasDespesas.find(
+        x => x.id === idExclusao
+    );
+
+if(
+    registro &&
+    registro.lancamento_id
+){
+
+    await supabaseClient
+        .from('lancamentos')
+        .delete()
+        .eq(
+            'id',
+            registro.lancamento_id
+        );
+
+}
+
 await supabaseClient
     .from('despesas_frota')
     .delete()
-    .eq('id', idExclusao);
+    .eq(
+        'id',
+        idExclusao
+    );
 
 fecharModalExcluirFrota();
 
-await carregar();
-
+await carregarDespesas();
 
 }
 
 function abrirModalFrota(){
 
+document.getElementById(
+    'tituloModalFrota'
+).innerText =
+    despesaEditando
+        ? 'Editar Despesa'
+        : 'Nova Despesa';
 
 document
     .getElementById(
@@ -662,11 +794,9 @@ document
     .classList
     .remove('hidden');
 
-
 }
 
 function fecharModalFrota(){
-
 
 document
     .getElementById(
@@ -675,11 +805,9 @@ document
     .classList
     .add('hidden');
 
-
 }
 
 function fecharModalExcluirFrota(){
-
 
 idExclusao = null;
 
@@ -690,11 +818,9 @@ document
     .classList
     .add('hidden');
 
-
 }
 
 function limparFormulario(){
-
 
 despesaEditando = null;
 
@@ -707,39 +833,50 @@ document.getElementById('quilometragem').value = '';
 document.getElementById('observacao').value = '';
 document.getElementById('dataDespesa').value = '';
 
-
 }
 
 function formatarMoeda(valor){
 
-
-return Number(valor).toLocaleString(
-    'pt-BR',
-    {
-        style:'currency',
-        currency:'BRL'
-    }
-);
-
+return Number(valor)
+    .toLocaleString(
+        'pt-BR',
+        {
+            style:'currency',
+            currency:'BRL'
+        }
+    );
 
 }
 
 function logout(){
-
 
 localStorage.clear();
 
 window.location.href =
     'index.html';
 
-
 }
 
-window.salvarDespesaFrota = salvarDespesaFrota;
-window.editar = editar;
-window.excluir = excluir;
-window.confirmarExclusaoFrota = confirmarExclusaoFrota;
-window.abrirModalFrota = abrirModalFrota;
-window.fecharModalFrota = fecharModalFrota;
-window.fecharModalExcluirFrota = fecharModalExcluirFrota;
-window.logout = logout;
+window.salvarDespesaFrota =
+salvarDespesaFrota;
+
+window.editarDespesa =
+editarDespesa;
+
+window.excluirDespesa =
+excluirDespesa;
+
+window.confirmarExclusaoFrota =
+confirmarExclusaoFrota;
+
+window.abrirModalFrota =
+abrirModalFrota;
+
+window.fecharModalFrota =
+fecharModalFrota;
+
+window.fecharModalExcluirFrota =
+fecharModalExcluirFrota;
+
+window.logout =
+logout;
