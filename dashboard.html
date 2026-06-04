@@ -1,168 +1,116 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard | MF Finanças</title>
 
-<title>MF Finanças - Dashboard</title>
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
 
-<!-- CSS -->
-<link rel="stylesheet" href="assets/css/variables.css">
-<link rel="stylesheet" href="assets/css/style.css">
-<link rel="stylesheet" href="assets/css/dashboard.css">
-
-<!-- LIBS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+<body class="dashboard">
 
-<body>
-
-<div class="dashboard">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-
-        <div class="sidebar-logo">
-            <h1>MF <span>Finanças</span></h1>
-        </div>
-
-        <div class="sidebar-user">
-            <div class="sidebar-user-name" id="userName">Administrador</div>
-            <div class="sidebar-user-role">Painel de controle</div>
-        </div>
-
-        <nav class="sidebar-menu">
-
-            <div class="menu-title">Menu</div>
-
-                       <a href="dashboard.html" class="menu-link">
-                Dashboard
-            </a>
-
-            <div class="menu-title">
-                Financeiro
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h1>MF <span>Finanças</span></h1>
             </div>
 
-            <a href="lancamentos.html" class="menu-link">
-                Lançamentos
-            </a>
-
-            <a href="contas.html" class="menu-link">
-                Contas Financeiras
-            </a>
-
-            <a href="categorias.html" class="menu-link">
-                Categorias
-            </a>
-
-            <a href="veiculos.html" class="menu-link active">
-                Veículos
-            </a>
-
-            <a href="frota.html" class="menu-link active">
-                Despesas
-            </a>
-
-        </nav>
-
-        <!-- FOOTER -->
-        <div class="sidebar-footer">
-
-            <button class="menu-link logout-btn" onclick="logout()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                    <path d="M16 17l5-5-5-5"></path>
-                    <path d="M21 12H9"></path>
-                </svg>
-                Sair
-            </button>
-
-            <a class="menu-link" href="em-construcao.html">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 7.04 4.3l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.08a1.65 1.65 0 0 0 1.82-.33l.06-.06A2 2 0 1 1 19.7 7.04l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c0 .69.28 1.32.73 1.77.45.45 1.08.73 1.77.73a2 2 0 0 1 0 4h-.09z"/>
-                </svg>
-                Configurações
-            </a>
-
-        </div>
-
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main-content">
-
-        <header class="topbar">
-
-            <div class="topbar-title">
-                <h2>Sistema Financeiro</h2>
-                <span>Dashboard analítico</span>
+            <div class="sidebar-user">
+                <div class="sidebar-user-name" id="userName">Usuário</div>
+                <div class="sidebar-user-role">Administrador</div>
             </div>
 
-        </header>
+            <nav class="sidebar-menu">
+                <div class="menu-title">Principal</div>
+                <a href="dashboard.html" class="menu-link active">Dashboard</a>
 
-        <section class="content">
+                <div class="menu-title">Financeiro</div>
+                <a href="lancamentos.html" class="menu-link">Lançamentos</a>
+                <a href="contas.html" class="menu-link">Contas Financeiras</a>
+                <a href="categorias.html" class="menu-link">Categorias</a>
 
-            <!-- KPIs -->
-            <div class="kpi-grid">
+                <div class="menu-title">Frota</div>
+                <a href="veiculos.html" class="menu-link">Veículos</a>
+                <a href="frota.html" class="menu-link">Despesas da Frota</a>
+            </nav>
 
-                <div class="kpi-card">
-                    <div class="kpi-label">Assinaturas</div>
-                    <div class="kpi-value" id="kpi-assinaturas">0</div>
-                </div>
-
-                <div class="kpi-card">
-                    <div class="kpi-label">Custo Mensal</div>
-                    <div class="kpi-value" id="kpi-custo">R$ 0</div>
-                </div>
-
-                <div class="kpi-card">
-                    <div class="kpi-label">Frota</div>
-                    <div class="kpi-value" id="kpi-frota">0</div>
-                </div>
-
-                <div class="kpi-card">
-                    <div class="kpi-label">Usuários</div>
-                    <div class="kpi-value" id="kpi-usuarios">0</div>
-                </div>
-
+            <div class="sidebar-footer">
+                <button class="menu-link logout-btn" onclick="logout()" style="width: 100%; border: none; background: transparent; cursor: pointer;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <path d="M16 17l5-5-5-5"></path>
+                        <path d="M21 12H9"></path>
+                    </svg>
+                    Sair
+                </button>
+                <a class="menu-link" href="em-construcao.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 7.04 4.3l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.08a1.65 1.65 0 0 0 1.82-.33l.06-.06A2 2 0 1 1 19.7 7.04l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c0 .69.28 1.32.73 1.77.45.45 1.08.73 1.77.73a2 2 0 0 1 0 4h-.09z"/>
+                    </svg>
+                    Configurações
+                </a>
             </div>
+        </aside>
 
-            <!-- GRÁFICOS -->
-            <div class="chart-grid">
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-title">
+                    <h2>Sistema Financeiro</h2>
+                    <span>Dashboard analítico</span>
+                </div>
+            </header>
 
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <div class="chart-title">Custos por Segmento</div>
+            <section class="content">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Assinaturas</div>
+                        <div class="kpi-value" id="kpi-assinaturas">0</div>
                     </div>
-                    <div class="chart-body">
-                        <canvas id="chartSegmento"></canvas>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Custo Mensal</div>
+                        <div class="kpi-value" id="kpi-custo">R$ 0,00</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Frota</div>
+                        <div class="kpi-value" id="kpi-frota">0</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Usuários</div>
+                        <div class="kpi-value" id="kpi-usuarios">0</div>
                     </div>
                 </div>
 
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <div class="chart-title">Meios de Pagamento</div>
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Custos por Segmento</div>
+                        </div>
+                        <div class="chart-body" style="position: relative; height: 300px;">
+                            <canvas id="chartSegmento"></canvas>
+                        </div>
                     </div>
-                    <div class="chart-body">
-                        <canvas id="chartPagamento"></canvas>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Meios de Pagamento</div>
+                        </div>
+                        <div class="chart-body" style="position: relative; height: 300px;">
+                            <canvas id="chartPagamento"></canvas>
+                        </div>
                     </div>
                 </div>
+            </section>
+        </main>
+    </div>
 
-            </div>
-
-        </section>
-
-    </main>
-
-</div>
-
-<!-- SCRIPTS -->
-<script src="assets/js/supabase.js"></script>
-<script src="assets/js/dashboard.js"></script>
-<script src="assets/js/auth.js"></script>
-
+    <script src="assets/js/supabase.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/dashboard.js"></script>
 </body>
 </html>
