@@ -4,10 +4,11 @@
 
 <head>
 
+```
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Frota | MF Finanças</title>
+<title>Despesas da Frota | MF Finanças</title>
 
 <link rel="stylesheet" href="assets/css/variables.css">
 <link rel="stylesheet" href="assets/css/style.css">
@@ -21,8 +22,6 @@
 <body class="dashboard">
 
 ```
-<!-- SIDEBAR -->
-
 <aside class="sidebar">
 
     <div class="sidebar-logo">
@@ -31,18 +30,12 @@
 
     <div class="sidebar-user">
 
-        <div
-            id="userName"
-            class="sidebar-user-name">
-
+        <div id="userName" class="sidebar-user-name">
             Usuário
-
         </div>
 
         <div class="sidebar-user-role">
-
             Administrador
-
         </div>
 
     </div>
@@ -101,8 +94,6 @@
 
 </aside>
 
-<!-- CONTEÚDO -->
-
 <main class="main-content">
 
     <header class="topbar">
@@ -114,7 +105,7 @@
             </h2>
 
             <span>
-                Controle de abastecimentos, manutenção e custos dos veículos
+                Controle de abastecimentos, manutenção e demais despesas
             </span>
 
         </div>
@@ -178,7 +169,7 @@
             <div class="kpi-card">
 
                 <div class="kpi-label">
-                    Última KM
+                    Último KM
                 </div>
 
                 <div
@@ -198,9 +189,7 @@
         <div class="widget mb-3">
 
             <div class="widget-title">
-
                 Filtros
-
             </div>
 
             <div class="grid grid-4">
@@ -289,14 +278,14 @@
 
                 </div>
 
-                    <button
-                        type="button"
-                        onclick="salvarDespesaFrota()"
-                        class="btn btn-primary btn-full">
-                    
-                        Salvar
-                    
-                    </button>
+                <button
+                    type="button"
+                    onclick="abrirModalFrota()"
+                    class="btn btn-primary">
+
+                    Nova Despesa
+
+                </button>
 
             </div>
 
@@ -312,6 +301,7 @@
                             <th>Veículo</th>
                             <th>Tipo</th>
                             <th>Pagamento</th>
+                            <th>Conta</th>
                             <th>Valor</th>
                             <th>KM</th>
                             <th>Observação</th>
@@ -573,7 +563,7 @@
 <script src="assets/js/supabase.js"></script>
 <script src="assets/js/auth.js"></script>
 <script src="assets/js/frota.js"></script>
+```
 
 </body>
-
 </html>
