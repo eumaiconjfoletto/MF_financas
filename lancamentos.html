@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Lançamentos | MF Finanças</title>
 
     <link rel="stylesheet" href="assets/css/variables.css">
@@ -13,668 +10,241 @@
     <link rel="stylesheet" href="assets/css/dashboard.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 </head>
-
 <body class="dashboard">
 
-    <!-- SIDEBAR -->
-
     <aside class="sidebar">
-
         <div class="sidebar-logo">
             <h1>MF <span>Finanças</span></h1>
         </div>
 
         <div class="sidebar-user">
-
-            <div
-                id="userName"
-                class="sidebar-user-name">
-
-                Usuário
-
-            </div>
-
-            <div class="sidebar-user-role">
-
-                Administrador
-
-            </div>
-
+            <div id="userName" class="sidebar-user-name">Usuário</div>
+            <div class="sidebar-user-role">Administrador</div>
         </div>
 
         <nav class="sidebar-menu">
+            <div class="menu-title">Principal</div>
+            <a href="dashboard.html" class="menu-link">Dashboard</a>
 
-            <div class="menu-title">
-                Principal
-            </div>
+            <div class="menu-title">Financeiro</div>
+            <a href="lancamentos.html" class="menu-link active">Lançamentos</a>
+            <a href="contas.html" class="menu-link">Contas Financeiras</a>
+            <a href="categorias.html" class="menu-link">Categorias</a>
 
-            <a href="dashboard.html" class="menu-link">
-                Dashboard
-            </a>
-
-            <div class="menu-title">
-                Financeiro
-            </div>
-
-            <a href="lancamentos.html" class="menu-link active">
-                Lançamentos
-            </a>
-
-            <a href="contas.html" class="menu-link">
-                Contas Financeiras
-            </a>
-
-            <a href="categorias.html" class="menu-link">
-                Categorias
-            </a>
-
+            <div class="menu-title">Frota</div>
+            <a href="veiculos.html" class="menu-link">Veículos</a>
+            <a href="frota.html" class="menu-link">Despesas da Frota</a>
         </nav>
 
         <div class="sidebar-footer">
-
-            <button
-                onclick="logout()"
-                class="btn btn-secondary btn-full">
-
-                Sair
-
-            </button>
-
+            <button onclick="logout()" class="btn btn-secondary btn-full">Sair</button>
         </div>
-
     </aside>
 
-    <!-- CONTEÚDO -->
-
     <main class="main-content">
-
         <header class="topbar">
-
             <div class="topbar-title">
-
-                <h2>
-                    Lançamentos Financeiros
-                </h2>
-
-                <span>
-                    Controle completo de receitas e despesas
-                </span>
-
+                <h2>Lançamentos Financeiros</h2>
+                <span>Controle completo de receitas e despesas</span>
             </div>
-
         </header>
 
         <div class="content">
-
-            <!-- KPIS -->
-
             <div class="kpi-grid">
-
                 <div class="kpi-card">
-
-                    <div class="kpi-label">
-                        Receitas
-                    </div>
-
-                    <div
-                        id="kpiReceitas"
-                        class="kpi-value">
-
-                        R$ 0,00
-
-                    </div>
-
+                    <div class="kpi-label">Receitas</div>
+                    <div id="kpiReceitas" class="kpi-value">R$ 0,00</div>
                 </div>
-
                 <div class="kpi-card">
-
-                    <div class="kpi-label">
-                        Despesas
-                    </div>
-
-                    <div
-                        id="kpiDespesas"
-                        class="kpi-value">
-
-                        R$ 0,00
-
-                    </div>
-
+                    <div class="kpi-label">Despesas</div>
+                    <div id="kpiDespesas" class="kpi-value">R$ 0,00</div>
                 </div>
-
                 <div class="kpi-card">
-
-                    <div class="kpi-label">
-                        Saldo
-                    </div>
-
-                    <div
-                        id="kpiSaldo"
-                        class="kpi-value">
-
-                        R$ 0,00
-
-                    </div>
-
+                    <div class="kpi-label">Saldo</div>
+                    <div id="kpiSaldo" class="kpi-value">R$ 0,00</div>
                 </div>
-
                 <div class="kpi-card">
-
-                    <div class="kpi-label">
-                        Pendentes
-                    </div>
-
-                    <div
-                        id="kpiPendentes"
-                        class="kpi-value">
-
-                        0
-
-                    </div>
-
+                    <div class="kpi-label">Pendentes</div>
+                    <div id="kpiPendentes" class="kpi-value">0</div>
                 </div>
-
             </div>
-
-            <!-- FILTROS -->
 
             <div class="widget mb-3">
-
-                <div class="widget-title">
-
-                    Filtros
-
-                </div>
-
+                <div class="widget-title">Filtros</div>
                 <div class="grid grid-5">
-
                     <div class="form-group">
-
-                        <label class="label">
-                            Tipo
-                        </label>
-
-                        <select
-                            id="filtroTipo"
-                            class="select">
-
-                            <option value="">
-                                Todos
-                            </option>
-
-                            <option value="receita">
-                                Receita
-                            </option>
-
-                            <option value="despesa">
-                                Despesa
-                            </option>
-
+                        <label class="label">Tipo</label>
+                        <select id="filtroTipo" class="select">
+                            <option value="">Todos</option>
+                            <option value="receita">Receita</option>
+                            <option value="despesa">Despesa</option>
                         </select>
-
                     </div>
 
                     <div class="form-group">
-
-                        <label class="label">
-                            Status
-                        </label>
-
-                        <select
-                            id="filtroStatus"
-                            class="select">
-
-                            <option value="">
-                                Todos
-                            </option>
-
-                            <option value="pendente">
-                                Pendente
-                            </option>
-
-                            <option value="pago">
-                                Pago
-                            </option>
-
+                        <label class="label">Status</label>
+                        <select id="filtroStatus" class="select">
+                            <option value="">Todos</option>
+                            <option value="pendente">Pendente</option>
+                            <option value="pago">Pago</option>
                         </select>
-
                     </div>
 
                     <div class="form-group">
-
-                        <label class="label">
-                            Conta
-                        </label>
-
-                        <select
-                            id="filtroConta"
-                            class="select">
-
-                            <option value="">
-                                Todas
-                            </option>
-
+                        <label class="label">Conta</label>
+                        <select id="filtroConta" class="select">
+                            <option value="">Todas</option>
                         </select>
-
                     </div>
 
                     <div class="form-group">
-
-                        <label class="label">
-                            Competência
-                        </label>
-
-                        <input
-                            id="filtroCompetencia"
-                            type="month"
-                            class="input">
-
+                        <label class="label">Competência</label>
+                        <input id="filtroCompetencia" type="month" class="input">
                     </div>
+
                     <div class="form-group">
-
-    <label class="label">
-        Buscar
-    </label>
-
-    <input
-        id="buscaDescricao"
-        class="input"
-        type="text"
-        placeholder="Descrição, favorecido ou documento">
-
-</div>
-
+                        <label class="label">Buscar</label>
+                        <input id="buscaDescricao" class="input" type="text" placeholder="Descrição, favorecido ou doc...">
+                    </div>
                 </div>
-
             </div>
-
-            <!-- GRID PRINCIPAL -->
-
-            <div>
-
-                <!-- TABELA -->
-
-        <div class="card-header">
 
             <div class="widget">
-
-        Extrato Financeiro
-
-          </div>
-
-            <button
-        class="btn btn-primary"
-        onclick="abrirModalLancamento()">
-
-        + Novo Lançamento
-
-        </button>
-
-</div>
-
-                    <div class="table-wrapper">
-
-                        <table class="table">
-
-                            <thead>
-
-                                <tr>
-
-                                    <th>Data</th>
-                                    <th>Descrição</th>
-                                    <th>Categoria</th>
-                                    <th>Conta</th>
-                                    <th>Valor</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-
-                                </tr>
-
-                            </thead>
-
-                            <tbody id="listaLancamentos">
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <div class="widget-title">Extrato Financeiro</div>
+                    <button class="btn btn-primary" onclick="abrirModalLancamento()">+ Novo Lançamento</button>
                 </div>
-<div
-    id="modalLancamento"
-    class="modal-overlay hidden">
 
-    <div
-        class="modal"
-        style="max-width:900px;">
-
-        <div class="card-header">
-
-            <h3 id="tituloModal">
-
-                Novo Lançamento
-
-            </h3>
-
-            <button
-                class="btn btn-secondary"
-                onclick="fecharModalLancamento()">
-
-                X
-
-            </button>
-
+                <div class="table-wrapper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Descrição</th>
+                                <th>Categoria</th>
+                                <th>Conta</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaLancamentos"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+    </main>
 
-        <div class="grid grid-2">
+    <div id="modalLancamento" class="modal-overlay hidden">
+        <div class="modal" style="max-width:900px;">
+            <div class="card-header">
+                <h3 id="tituloModal">Novo Lançamento</h3>
+                <button class="btn btn-secondary" onclick="fecharModalLancamento()">✕</button>
+            </div>
 
-            <div class="form-group">
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-top: 15px; margin-bottom: 15px;">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="label">Descrição *</label>
+                    <input id="descricao" class="input" type="text" placeholder="Ex: Pagamento Fornecedor X">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="label">Valor *</label>
+                    <input id="valor" type="number" step="0.01" class="input">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="label">Tipo *</label>
+                    <select id="tipo" class="select">
+                        <option value="receita">Receita</option>
+                        <option value="despesa">Despesa</option>
+                    </select>
+                </div>
+            </div>
 
-                <label class="label">
-                    Tipo
-                </label>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label class="label">Categoria *</label>
+                    <select id="categoria" class="select"></select>
+                </div>
+                <div class="form-group">
+                    <label class="label">Conta Financeira *</label>
+                    <select id="conta" class="select"></select>
+                </div>
+            </div>
 
-                <select
-                    id="tipo"
-                    class="select">
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label class="label">Forma de Pagamento</label>
+                    <select id="formaPagamento" class="select">
+                        <option value="PIX">PIX</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="Cartão Crédito">Cartão Crédito</option>
+                        <option value="Cartão Débito">Cartão Débito</option>
+                        <option value="Transferência">Transferência</option>
+                        <option value="Boleto">Boleto</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="label">Status *</label>
+                    <select id="status" class="select">
+                        <option value="pendente">Pendente</option>
+                        <option value="pago">Pago</option>
+                    </select>
+                </div>
+            </div>
 
-                    <option value="receita">
-                        Receita
-                    </option>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="label">Favorecido</label>
+                    <input id="favorecido" class="input" type="text">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="label">Nº Documento</label>
+                    <input id="documento" class="input" type="text">
+                </div>
+            </div>
 
-                    <option value="despesa">
-                        Despesa
-                    </option>
-
-                </select>
-
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label class="label">Data de Vencimento</label>
+                    <input id="dataVencimento" type="date" class="input">
+                </div>
+                <div class="form-group">
+                    <label class="label">Competência</label>
+                    <input id="competencia" type="date" class="input">
+                </div>
             </div>
 
             <div class="form-group">
-
-                <label class="label">
-                    Valor
-                </label>
-
-                <input
-                    id="valor"
-                    type="number"
-                    step="0.01"
-                    class="input">
-
+                <label class="label">Observações</label>
+                <textarea id="observacao" class="textarea"></textarea>
             </div>
 
-        </div>
-
-        <div class="form-group">
-
-            <label class="label">
-                Descrição
-            </label>
-
-            <input
-                id="descricao"
-                class="input">
-
-        </div>
-
-        <div class="grid grid-2">
-
-            <div class="form-group">
-
-                <label class="label">
-                    Categoria
-                </label>
-
-                <select
-                    id="categoria"
-                    class="select">
-                </select>
-
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button class="btn btn-secondary" onclick="fecharModalLancamento()">Cancelar</button>
+                <button class="btn btn-primary" onclick="salvarLancamento()">Salvar</button>
             </div>
-
-            <div class="form-group">
-
-                <label class="label">
-                    Conta
-                </label>
-
-                <select
-                    id="conta"
-                    class="select">
-                </select>
-
-            </div>
-
         </div>
-
-        <div class="grid grid-2">
-
-    <div class="form-group">
-
-        <label class="label">
-            Forma de Pagamento
-        </label>
-
-        <select
-            id="formaPagamento"
-            class="select">
-
-            <option value="PIX">PIX</option>
-            <option value="Dinheiro">Dinheiro</option>
-            <option value="Cartão Crédito">Cartão Crédito</option>
-            <option value="Cartão Débito">Cartão Débito</option>
-            <option value="Transferência">Transferência</option>
-            <option value="Boleto">Boleto</option>
-
-        </select>
-
     </div>
 
-    <div class="form-group">
-
-        <label class="label">
-            Status
-        </label>
-
-        <select
-            id="status"
-            class="select">
-
-            <option value="pendente">
-                Pendente
-            </option>
-
-            <option value="pago">
-                Pago
-            </option>
-
-        </select>
-
+    <div id="modalExcluir" class="modal-overlay hidden">
+        <div class="modal" style="max-width:500px;">
+            <div style="text-align:center;">
+                <div style="font-size:3rem; margin-bottom:10px;">⚠️</div>
+                <h3 style="margin-bottom:15px; font-size:1.3rem;">Excluir lançamento?</h3>
+                <p style="color:var(--text-muted); margin-bottom:25px; line-height:1.6;">
+                    Esta ação removerá o lançamento permanentemente e não poderá ser desfeita.
+                </p>
+            </div>
+            <div style="display:flex; justify-content:center; gap:12px;">
+                <button class="btn btn-secondary" onclick="fecharModalExcluir()">Cancelar</button>
+                <button class="btn btn-danger" onclick="confirmarExclusao()">Excluir</button>
+            </div>
+        </div>
     </div>
-
-</div>
-
-        <div class="grid grid-2">
-
-            <div class="form-group">
-
-                <label class="label">
-                    Favorecido
-                </label>
-
-                <input
-                    id="favorecido"
-                    class="input">
-
-            </div>
-
-            <div class="form-group">
-
-                <label class="label">
-                    Documento
-                </label>
-
-                <input
-                    id="documento"
-                    class="input">
-
-            </div>
-
-        </div>
-
-        <div class="grid grid-2">
-
-            <div class="form-group">
-
-                <label class="label">
-                    Vencimento
-                </label>
-
-                <input
-                    id="dataVencimento"
-                    type="date"
-                    class="input">
-
-            </div>
-
-            <div class="form-group">
-
-                <label class="label">
-                    Competência
-                </label>
-
-                <input
-                    id="competencia"
-                    type="date"
-                    class="input">
-
-            </div>
-
-        </div>
-
-        <div class="form-group">
-
-            <label class="label">
-                Observações
-            </label>
-
-            <textarea
-                id="observacao"
-                class="textarea"></textarea>
-
-        </div>
-
-        <div
-            style="
-            display:flex;
-            justify-content:flex-end;
-            gap:10px;
-            margin-top:20px;
-        ">
-
-            <button
-                class="btn btn-secondary"
-                onclick="fecharModalLancamento()">
-
-                Cancelar
-
-            </button>
-
-            <button
-                class="btn btn-primary"
-                onclick="salvarLancamento()">
-
-                Salvar
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-            <!-- MODAL EXCLUIR -->
-
-<div
-    id="modalExcluir"
-    class="modal-overlay hidden">
-
-    <div
-        class="modal"
-        style="max-width:500px;">
-
-        <div style="text-align:center;">
-
-            <div
-                style="
-                font-size:3rem;
-                margin-bottom:10px;
-            ">
-                ⚠️
-            </div>
-
-            <h3
-                style="
-                margin-bottom:15px;
-                font-size:1.3rem;
-            ">
-
-                Excluir lançamento?
-
-            </h3>
-
-            <p
-                style="
-                color:var(--text-muted);
-                margin-bottom:25px;
-                line-height:1.6;
-            ">
-
-                Esta ação removerá o lançamento permanentemente
-                e não poderá ser desfeita.
-
-            </p>
-
-        </div>
-
-        <div
-            style="
-            display:flex;
-            justify-content:center;
-            gap:12px;
-        ">
-
-            <button
-                class="btn btn-secondary"
-                onclick="fecharModalExcluir()">
-
-                Cancelar
-
-            </button>
-
-            <button
-                class="btn btn-danger"
-                onclick="confirmarExclusao()">
-
-                Excluir
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
 
     <script src="assets/js/supabase.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/lancamentos.js"></script>
-
 </body>
-
 </html>
