@@ -14,7 +14,7 @@ iniciar
 
 async function iniciar(){
 
-```
+
 carregarUsuario();
 
 await carregarVeiculos();
@@ -51,13 +51,13 @@ document.getElementById(
     'change',
     filtrar
 );
-```
+
 
 }
 
 function carregarUsuario(){
 
-```
+
 const usuario =
     JSON.parse(
         localStorage.getItem(
@@ -73,13 +73,13 @@ if(usuario){
         usuario.nome;
 
 }
-```
+
 
 }
 
 async function carregarVeiculos(){
 
-```
+
 const { data } =
     await supabaseClient
         .from('veiculos')
@@ -122,13 +122,13 @@ data.forEach(item => {
     `;
 
 });
-```
+
 
 }
 
 async function carregarTipos(){
 
-```
+
 const { data } =
     await supabaseClient
         .from('tipos_despesa_frota')
@@ -169,13 +169,13 @@ data.forEach(item => {
     `;
 
 });
-```
+
 
 }
 
 async function carregarMeios(){
 
-```
+
 const { data } =
     await supabaseClient
         .from('meios_pagamento')
@@ -202,13 +202,13 @@ data.forEach(item => {
     `;
 
 });
-```
+
 
 }
 
 async function carregarContas(){
 
-```
+
 const { data } =
     await supabaseClient
         .from('contas_financeiras')
@@ -233,13 +233,13 @@ data.forEach(item => {
     `;
 
 });
-```
+
 
 }
 
 async function carregar(){
 
-```
+
 const { data } =
     await supabaseClient
         .from('despesas_frota')
@@ -252,13 +252,13 @@ const { data } =
 todas = data || [];
 
 filtrar();
-```
+
 
 }
 
 function filtrar(){
 
-```
+
 let lista =
     [...todas];
 
@@ -321,13 +321,13 @@ if(fim){
 atualizarKPIs(lista);
 
 montarTabela(lista);
-```
+
 
 }
 
 function atualizarKPIs(lista){
 
-```
+
 const total =
     lista.reduce(
         (s,i) =>
@@ -399,13 +399,13 @@ document.getElementById(
             )
         )
         : 0;
-```
+
 
 }
 
 function montarTabela(lista){
 
-```
+
 const tbody =
     document.getElementById(
         'listaFrota'
@@ -458,13 +458,12 @@ lista.forEach(item => {
     `;
 
 });
-```
 
 }
 
 async function salvarDespesaFrota(){
 
-```
+
 const obj = {
 
     veiculo_id:
@@ -544,13 +543,41 @@ fecharModalFrota();
 limparFormulario();
 
 await carregar();
-```
+
+
+}
+let resultado;
+
+if (despesaEditando) {
+
+    resultado = await supabaseClient
+        .from('despesas_frota')
+        .update(registro)
+        .eq('id', despesaEditando);
+
+} else {
+
+    resultado = await supabaseClient
+        .from('despesas_frota')
+        .insert(registro);
+
+}
+
+if (resultado.error) {
+
+    console.error(resultado.error);
+
+    alert(
+        'Erro ao salvar despesa.'
+    );
+
+    return;
 
 }
 
 async function editar(id){
 
-```
+
 const { data } =
     await supabaseClient
         .from('despesas_frota')
@@ -587,13 +614,13 @@ document.getElementById(
     'Editar Despesa';
 
 abrirModalFrota();
-```
+
 
 }
 
 function excluir(id){
 
-```
+
 idExclusao = id;
 
 document
@@ -602,13 +629,13 @@ document
     )
     .classList
     .remove('hidden');
-```
+
 
 }
 
 async function confirmarExclusaoFrota(){
 
-```
+
 if(!idExclusao){
     return;
 }
@@ -621,39 +648,39 @@ await supabaseClient
 fecharModalExcluirFrota();
 
 await carregar();
-```
+
 
 }
 
 function abrirModalFrota(){
 
-```
+
 document
     .getElementById(
         'modalFrota'
     )
     .classList
     .remove('hidden');
-```
+
 
 }
 
 function fecharModalFrota(){
 
-```
+
 document
     .getElementById(
         'modalFrota'
     )
     .classList
     .add('hidden');
-```
+
 
 }
 
 function fecharModalExcluirFrota(){
 
-```
+
 idExclusao = null;
 
 document
@@ -662,13 +689,13 @@ document
     )
     .classList
     .add('hidden');
-```
+
 
 }
 
 function limparFormulario(){
 
-```
+
 despesaEditando = null;
 
 document.getElementById('veiculo').value = '';
@@ -679,13 +706,13 @@ document.getElementById('valor').value = '';
 document.getElementById('quilometragem').value = '';
 document.getElementById('observacao').value = '';
 document.getElementById('dataDespesa').value = '';
-```
+
 
 }
 
 function formatarMoeda(valor){
 
-```
+
 return Number(valor).toLocaleString(
     'pt-BR',
     {
@@ -693,18 +720,18 @@ return Number(valor).toLocaleString(
         currency:'BRL'
     }
 );
-```
+
 
 }
 
 function logout(){
 
-```
+
 localStorage.clear();
 
 window.location.href =
     'index.html';
-```
+
 
 }
 
