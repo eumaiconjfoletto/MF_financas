@@ -1,12 +1,8 @@
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Categorias | MF Finanças</title>
 
     <link rel="stylesheet" href="assets/css/variables.css">
@@ -14,393 +10,130 @@
     <link rel="stylesheet" href="assets/css/dashboard.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 </head>
-
 <body class="dashboard">
 
-    <!-- SIDEBAR -->
-
     <aside class="sidebar">
-
         <div class="sidebar-logo">
             <h1>MF <span>Finanças</span></h1>
         </div>
 
         <div class="sidebar-user">
-
-            <div
-                id="userName"
-                class="sidebar-user-name">
-
-                Usuário
-
-            </div>
-
-            <div class="sidebar-user-role">
-
-                Administrador
-
-            </div>
-
+            <div id="userName" class="sidebar-user-name">Usuário</div>
+            <div class="sidebar-user-role">Administrador</div>
         </div>
 
         <nav class="sidebar-menu">
+            <div class="menu-title">Principal</div>
+            <a href="dashboard.html" class="menu-link">Dashboard</a>
 
-            <div class="menu-title">
-                Principal
-            </div>
+            <div class="menu-title">Financeiro</div>
+            <a href="lancamentos.html" class="menu-link">Lançamentos</a>
+            <a href="contas.html" class="menu-link">Contas Financeiras</a>
+            <a href="categorias.html" class="menu-link active">Categorias</a>
 
-            <a href="dashboard.html" class="menu-link">
-                Dashboard
-            </a>
-
-            <div class="menu-title">
-                Financeiro
-            </div>
-
-            <a href="lancamentos.html" class="menu-link">
-                Lançamentos
-            </a>
-
-            <a href="contas.html" class="menu-link">
-                Contas Financeiras
-            </a>
-
-            <a href="categorias.html" class="menu-link active">
-                Categorias
-            </a>
-
+            <div class="menu-title">Frota</div>
+            <a href="veiculos.html" class="menu-link">Veículos</a>
+            <a href="frota.html" class="menu-link">Despesas da Frota</a>
         </nav>
 
         <div class="sidebar-footer">
-
-            <button
-                onclick="logout()"
-                class="btn btn-secondary btn-full">
-
-                Sair
-
-            </button>
-
+            <button onclick="logout()" class="btn btn-secondary btn-full">Sair</button>
         </div>
-
     </aside>
 
-    <!-- CONTEÚDO -->
-
     <main class="main-content">
-
         <header class="topbar">
-
             <div class="topbar-title">
-
-                <h2>
-                    Categorias Financeiras
-                </h2>
-
-                <span>
-                    Organize receitas e despesas
-                </span>
-
+                <h2>Categorias Financeiras</h2>
+                <span>Organize receitas e despesas</span>
             </div>
-
         </header>
 
         <div class="content">
-
-            <!-- KPIS -->
-
             <div class="kpi-grid">
-
                 <div class="kpi-card">
-
-                    <div class="kpi-label">
-                        Total Categorias
-                    </div>
-
-                    <div
-                        id="kpiTotal"
-                        class="kpi-value">
-
-                        0
-
-                    </div>
-
+                    <div class="kpi-label">Total Categorias</div>
+                    <div id="kpiTotal" class="kpi-value">0</div>
                 </div>
-
                 <div class="kpi-card">
-
-                    <div class="kpi-label">
-                        Receitas
-                    </div>
-
-                    <div
-                        id="kpiReceitas"
-                        class="kpi-value">
-
-                        0
-
-                    </div>
-
+                    <div class="kpi-label">Receitas</div>
+                    <div id="kpiReceitas" class="kpi-value">0</div>
                 </div>
-
                 <div class="kpi-card">
-
-                    <div class="kpi-label">
-                        Despesas
-                    </div>
-
-                    <div
-                        id="kpiDespesas"
-                        class="kpi-value">
-
-                        0
-
-                    </div>
-
+                    <div class="kpi-label">Despesas</div>
+                    <div id="kpiDespesas" class="kpi-value">0</div>
                 </div>
-
             </div>
 
-            <!-- TABELA -->
-
             <div class="widget">
-
-                <div
-                    style="
-                    display:flex;
-                    justify-content:space-between;
-                    align-items:center;
-                    margin-bottom:20px;
-                ">
-
-                    <div class="widget-title">
-
-                        Categorias
-
-                    </div>
-
-                    <button
-                        class="btn btn-primary"
-                        onclick="abrirModalCategoria()">
-
-                        + Nova Categoria
-
-                    </button>
-
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <div class="widget-title">Categorias</div>
+                    <button class="btn btn-primary" onclick="abrirModalCategoria()">+ Nova Categoria</button>
                 </div>
 
                 <div class="table-wrapper">
-
                     <table class="table">
-
                         <thead>
-
                             <tr>
-
                                 <th>Nome</th>
                                 <th>Tipo</th>
                                 <th>Ações</th>
-
                             </tr>
-
                         </thead>
-
-                        <tbody id="listaCategorias">
-
-                        </tbody>
-
+                        <tbody id="listaCategorias"></tbody>
                     </table>
-
                 </div>
-
             </div>
-
         </div>
-
     </main>
 
-    <!-- MODAL CATEGORIA -->
+    <div id="modalCategoria" class="modal-overlay hidden">
+        <div class="modal" style="max-width:600px;">
+            <div class="card-header" style="padding:0;">
+                <div id="tituloModalCategoria" class="card-title">Nova Categoria</div>
+                <button class="btn btn-secondary" onclick="fecharModalCategoria()">✕</button>
+            </div>
 
-    <div
-        id="modalCategoria"
-        class="modal-overlay hidden">
-
-        <div
-            class="modal"
-            style="max-width:600px;">
-
-            <div
-                class="card-header"
-                style="padding:0;">
-
-                <div
-                    id="tituloModalCategoria"
-                    class="card-title">
-
-                    Nova Categoria
-
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-top: 20px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="label">Nome *</label>
+                    <input id="nome" class="input" type="text" placeholder="Ex: Combustível, Serviços...">
                 </div>
-
-                <button
-                    class="btn btn-secondary"
-                    onclick="fecharModalCategoria()">
-
-                    ✕
-
-                </button>
-
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="label">Tipo *</label>
+                    <select id="tipo" class="select">
+                        <option value="receita">Receita</option>
+                        <option value="despesa">Despesa</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="form-group mt-2">
-
-                <label class="label">
-
-                    Nome
-
-                </label>
-
-                <input
-                    id="nome"
-                    class="input"
-                    type="text">
-
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:25px;">
+                <button class="btn btn-secondary" onclick="fecharModalCategoria()">Cancelar</button>
+                <button class="btn btn-primary" onclick="salvarCategoria()">Salvar</button>
             </div>
-
-            <div class="form-group">
-
-                <label class="label">
-
-                    Tipo
-
-                </label>
-
-                <select
-                    id="tipo"
-                    class="select">
-
-                    <option value="receita">
-
-                        Receita
-
-                    </option>
-
-                    <option value="despesa">
-
-                        Despesa
-
-                    </option>
-
-                </select>
-
-            </div>
-
-            <div
-                style="
-                display:flex;
-                justify-content:flex-end;
-                gap:10px;
-                margin-top:20px;
-            ">
-
-                <button
-                    class="btn btn-secondary"
-                    onclick="fecharModalCategoria()">
-
-                    Cancelar
-
-                </button>
-
-                <button
-                    class="btn btn-primary"
-                    onclick="salvarCategoria()">
-
-                    Salvar
-
-                </button>
-
-            </div>
-
         </div>
-
     </div>
 
-    <!-- MODAL EXCLUIR -->
-
-    <div
-        id="modalExcluirCategoria"
-        class="modal-overlay hidden">
-
-        <div
-            class="modal"
-            style="max-width:500px;">
-
+    <div id="modalExcluirCategoria" class="modal-overlay hidden">
+        <div class="modal" style="max-width:500px;">
             <div style="text-align:center;">
-
-                <div
-                    style="
-                    font-size:3rem;
-                    margin-bottom:15px;
-                ">
-
-                    ⚠️
-
-                </div>
-
-                <h3>
-
-                    Excluir categoria?
-
-                </h3>
-
-                <p
-                    style="
-                    color:var(--text-muted);
-                    margin-top:10px;
-                    margin-bottom:25px;
-                ">
-
-                    Esta ação não poderá ser desfeita.
-
+                <div style="font-size:3rem; margin-bottom:15px;">⚠️</div>
+                <h3>Excluir categoria?</h3>
+                <p style="color:var(--text-muted); margin-top:10px; margin-bottom:25px;">
+                    Esta ação não poderá ser desfeita e falhará se houver lançamentos vinculados a ela.
                 </p>
-
             </div>
-
-            <div
-                style="
-                display:flex;
-                justify-content:center;
-                gap:12px;
-            ">
-
-                <button
-                    class="btn btn-secondary"
-                    onclick="fecharModalExcluirCategoria()">
-
-                    Cancelar
-
-                </button>
-
-                <button
-                    class="btn btn-danger"
-                    onclick="confirmarExclusaoCategoria()">
-
-                    Excluir
-
-                </button>
-
+            <div style="display:flex; justify-content:center; gap:12px;">
+                <button class="btn btn-secondary" onclick="fecharModalExcluirCategoria()">Cancelar</button>
+                <button class="btn btn-danger" onclick="confirmarExclusaoCategoria()">Excluir</button>
             </div>
-
         </div>
-
     </div>
 
     <script src="assets/js/supabase.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/categorias.js"></script>
-
 </body>
-
 </html>
-```
