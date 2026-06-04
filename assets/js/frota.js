@@ -465,7 +465,7 @@ lista.forEach(item => {
 async function salvarDespesaFrota(){
 
 ```
-const registro = {
+const obj = {
 
     veiculo_id:
         document.getElementById('veiculo').value,
