@@ -323,8 +323,14 @@
 
         </main>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="assets/js/sistema.js"></script>
+    <!-- 1º: Biblioteca do Supabase (Banco de dados) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- 2º: Biblioteca do Chart.js (Gráficos do Dashboard) - ADICIONE ESTA LINHA -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- 3º: O seu arquivo de lógica (Sempre por último) -->
+<script src="sistema.js"></script>
 </body>
 
 </html>
