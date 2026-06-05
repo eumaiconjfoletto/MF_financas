@@ -1,24 +1,71 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>MF Finanças | Sistema Integrado</title>
-    <link rel="icon" href="data:,">
-    
-    <link rel="stylesheet" href="sistema.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MF Finanças</title>
+
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        .hidden { display: none !important; }
+    </style>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body data-theme="dark-orange">
 
-<div class="app-container">
-    
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <h1>MF <span>Finanças</span></h1>
+<body>
+
+    <div id="loginView" class="login-page">
+        <div class="login-hero">
+            <div class="login-brand">
+                <div class="brand-logo">MF</div>
+                <h1>MF Finanças</h1>
+                <p>Plataforma integrada para controle financeiro, assinaturas, fornecedores e gestão de frota.</p>
+            </div>
+            <div class="hero-cards">
+                <div class="hero-card">
+                    <h3>Assinaturas</h3>
+                    <p>Controle recorrências, vencimentos e custos mensais.</p>
+                </div>
+                <div class="hero-card">
+                    <h3>Fornecedores</h3>
+                    <p>Organize parceiros, categorias e contratos.</p>
+                </div>
+                <div class="hero-card">
+                    <h3>Frota</h3>
+                    <p>Gerencie veículos, abastecimentos e despesas.</p>
+                </div>
+            </div>
         </div>
+
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h2>Acesso ao Sistema</h2>
+                    <p>Informe seu e-mail e senha para continuar.</p>
+                </div>
+
+                <div id="erro" class="alert alert-danger hidden"></div>
+
+                <div class="form-group">
+                    <label class="label">E-mail</label>
+                    <input type="email" id="email" class="input" placeholder="Digite seu e-mail">
+                </div>
+
+                <div class="form-group">
+                    <label class="label">Senha</label>
+                    <input type="password" id="senha" class="input" placeholder="Digite sua senha">
+                </div>
+
+                <button id="btnLogin" class="btn btn-primary btn-full" onclick="entrar()">
+                    Entrar
+                </button>
+            </div>
+        </div>
+    </div>
 
         <div class="sidebar-user">
             <div class="sidebar-user-name" id="userName">Carregando...</div>
@@ -271,6 +318,21 @@
     </main>
 </div>
 
-<script src="sistema.js"></script>
+<div id="mainSystemView" class="hidden">
+        
+        <header style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: var(--bg-card, #1e1e1e); border-bottom: 1px solid #333;">
+            <h2 style="margin:0; color: var(--text-primary, #fff);">MF Finanças - Painel</h2>
+            <button onclick="sair()" class="btn" style="background: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+                Sair do Sistema
+            </button>
+        </header>
+
+        <main style="padding: 2rem;">
+            </main>
+
+    </div>
+
+    <script src="assets/js/sistema.js"></script>
 </body>
+
 </html>
