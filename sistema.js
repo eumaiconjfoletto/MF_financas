@@ -1,8 +1,8 @@
 /* ==========================================================================
-      CONFIGURAÇÃO CENTRAL E INSTÂNCIA DO SUPABASE
+   CONFIGURAÇÃO CENTRAL E INSTÂNCIA DO SUPABASE
    ========================================================================== */
-const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co/rest/v1/";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OX0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
+const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OY0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -18,7 +18,6 @@ let veiculosCache = [];
    SEGURANÇA E CONTEXTO DE SESSÃO
    ========================================================================== */
 function checkAuth() {
-    // Para fins de teste local se não houver usuário, cria um temporário para não bloquear a tela
     let user = localStorage.getItem("mf_usuario");
     if (!user) {
         const tempUser = { nome: "Maicon Admin", role: "admin" };
@@ -31,7 +30,6 @@ function checkAuth() {
 function logout() {
     localStorage.clear();
     alert("Sessão encerrada.");
-    // window.location.href = "index.html"; // Remova o comentário quando tiver a página de login index.html
 }
 
 /* ==========================================================================
@@ -57,7 +55,6 @@ function initRouter() {
     });
 }
 
-// Gatilho assíncrono para recarregar dados específicos ao entrar na tela ativa
 async function handleViewLoad(viewId) {
     await carregarCachesAuxiliares();
     
@@ -96,13 +93,13 @@ async function handleViewLoad(viewId) {
 }
 
 /* ==========================================================================
-   CARREGAMENTO DE DATA CACHES (Evita requisições redundantes no banco)
+   CARREGAMENTO DE DATA CACHES (Alinhado com o Schema Real)
    ========================================================================== */
 async function carregarCachesAuxiliares() {
     try {
         const [catRes, conRes, veiRes] = await Promise.all([
-            supabaseClient.from("categorias").select("*"),
-            supabaseClient.from("contas").select("*"),
+            supabaseClient.from("categorias_lancamentos").select("*"),
+            supabaseClient.from("contas_financeiras").select("*"),
             supabaseClient.from("veiculos").select("*")
         ]);
         
@@ -153,9 +150,9 @@ async function loadCharts() {
         if (mes !== "todos") {
             const dataInicio = `${ano}-${mes}-01`;
             const dataFim = `${ano}-${mes}-31`;
-            query = query.gte("data", dataInicio).lte("data", dataFim);
+            query = query.gte("data_lancamento", dataInicio).lte("data_lancamento", dataFim);
         } else {
-            query = query.gte("data", `${ano}-01-01`).lte("data", `${ano}-12-31`);
+            query = query.gte("data_lancamento", `${ano}-01-01`).lte("data_lancamento", `${ano}-12-31`);
         }
 
         const { data: lancamentos, error } = await query;
@@ -169,7 +166,7 @@ async function loadCharts() {
 
         (lancamentos || []).forEach(l => {
             const val = Number(l.valor || 0);
-            const catNome = categoriasCache.find(c => c.id === l.categoria_id)?.nome || "Não Classificado";
+            const catNome = l.categoria || "Não Classificado";
             const contaNome = contasCache.find(c => c.id === l.conta_id)?.nome || "Geral";
 
             segmentMap[catNome] = (segmentMap[catNome] || 0) + val;
@@ -241,7 +238,7 @@ function renderDoughnutChart(id, dataObj) {
 }
 
 /* ==========================================================================
-   BLOCO 2: LANÇAMENTOS CORE & INTEGRAÇÃO DE FROTA
+   BLOCO 2: LANÇAMENTOS CORE (Ajustado para Coluna 'categoria' text e 'data_lancamento')
    ========================================================================= */
 function renderizarSeletoresFormLancamento() {
     const catSel = document.getElementById("lanc-categoria");
@@ -250,7 +247,7 @@ function renderizarSeletoresFormLancamento() {
     catSel.innerHTML = '<option value="">Categoria...</option>';
     conSel.innerHTML = '<option value="">Conta/Cartão...</option>';
 
-    categoriasCache.forEach(c => catSel.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+    categoriasCache.forEach(c => catSel.innerHTML += `<option value="${c.nome}">${c.nome}</option>`);
     contasCache.forEach(c => conSel.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
 }
 
@@ -259,16 +256,17 @@ async function salvarLancamento(e) {
     const payload = {
         descricao: document.getElementById("lanc-descricao").value,
         valor: parseFloat(document.getElementById("lanc-valor").value),
-        data: document.getElementById("lanc-data").value,
+        data_lancamento: document.getElementById("lanc-data").value,
         tipo: document.getElementById("lanc-tipo").value,
-        categoria_id: document.getElementById("lanc-categoria").value || null,
-        conta_id: document.getElementById("lanc-conta").value || null
+        categoria: document.getElementById("lanc-categoria").value || null,
+        conta_id: document.getElementById("lanc-conta").value || null,
+        status: "pago"
     };
 
-    const { data, error } = await supabaseClient.from("lancamentos").insert([payload]);
+    const { error } = await supabaseClient.from("lancamentos").insert([payload]);
     if (error) {
-        console.error("Erro detalhado do Supabase ao salvar Lançamento:", error);
-        alert(`Erro ao salvar Lançamento: ${error.message}\n\nVerifique se o nome das colunas ou as políticas RLS estão corretas.`);
+        console.error("Erro Supabase Lançamento:", error);
+        alert(`Erro ao salvar Lançamento: ${error.message}`);
     } else {
         alert("Lançamento cadastrado com sucesso!");
         document.getElementById("form-lancamento").reset();
@@ -277,7 +275,7 @@ async function salvarLancamento(e) {
 }
 
 async function listarLancamentos() {
-    const { data, error } = await supabaseClient.from("lancamentos").select("*").order("data", { ascending: false });
+    const { data, error } = await supabaseClient.from("lancamentos").select("*").order("data_lancamento", { ascending: false });
     if (error) {
         console.error("Erro ao listar lançamentos:", error.message);
         return;
@@ -286,14 +284,13 @@ async function listarLancamentos() {
     tbody.innerHTML = "";
 
     (data || []).forEach(l => {
-        const cNome = categoriasCache.find(c => c.id === l.categoria_id)?.nome || "-";
         const coNome = contasCache.find(c => c.id === l.conta_id)?.nome || "-";
         tbody.innerHTML += `
             <tr>
-                <td>${fmtData(l.data)}</td>
+                <td>${fmtData(l.data_lancamento)}</td>
                 <td>${l.descricao}</td>
                 <td><span class="badge ${l.tipo === 'receita' ? 'badge-success' : 'badge-danger'}">${l.tipo}</span></td>
-                <td>${cNome}</td>
+                <td>${l.categoria || '-'}</td>
                 <td>${coNome}</td>
                 <td style="font-weight:600; color:${l.tipo === 'receita' ? '#34d399':'#f43f5e'}">${brl(l.valor)}</td>
                 <td><button class="btn btn-danger" style="padding:2px 6px" onclick="deletarGeral('lancamentos', '${l.id}', listarLancamentos)">✖</button></td>
@@ -302,41 +299,44 @@ async function listarLancamentos() {
 }
 
 async function importarDespesasDaFrota() {
-    const { data: despesasV, error: errFetch } = await supabaseClient.from("veiculo_despesas").select("*").eq("importado", false);
+    // Busca despesas onde 'lancamento_id' é nulo (não importadas ainda)
+    const { data: despesasV, error: errFetch } = await supabaseClient.from("despesas_frota").select("*").is("lancamento_id", null);
     if (errFetch) {
         alert("Erro ao buscar despesas pendentes da frota: " + errFetch.message);
         return;
     }
     
     if(!despesasV || despesasV.length === 0) {
-        alert("Nenhuma despesa de frota nova encontrada para importação.");
+        alert("Nenhuma despesa de frota nova encontrada para integração.");
         return;
     }
-
-    let catVeiculo = categoriasCache.find(c => c.nome.toLowerCase().includes("veícul") || c.nome.toLowerCase().includes("frota"));
-    let contaPadrao = contasCache[0];
 
     let contSucesso = 0;
     for(let dv of despesasV) {
         const vModelo = veiculosCache.find(v => v.id === dv.veiculo_id)?.modelo || "Veículo";
-        const { error: errIns } = await supabaseClient.from("lancamentos").insert([{
-            descricao: `[FROTA] ${vModelo} - ${dv.descricao}`,
+        
+        // Insere o lançamento correspondente e retorna o ID gerado usando .select()
+        const { data: insData, error: errIns } = await supabaseClient.from("lancamentos").insert([{
+            descricao: `[FROTA] ${vModelo} - ${dv.observacao || 'Despesa'}`,
             valor: dv.valor,
-            data: dv.data,
+            data_lancamento: dv.data_despesa,
             tipo: 'despesa',
-            categoria_id: catVeiculo ? catVeiculo.id : null,
-            conta_id: contaPadrao ? contaPadrao.id : null
-        }]);
+            categoria: 'Veículos / Frota',
+            conta_id: dv.conta_id || (contasCache[0] ? contasCache[0].id : null),
+            veiculo_id: dv.veiculo_id
+        }]).select();
 
-        if (!errIns) {
-            await supabaseClient.from("veiculo_despesas").update({ importado: true }).eq("id", dv.id);
+        if (!errIns && insData && insData.length > 0) {
+            const novoLancId = insData[0].id;
+            // Vincula o ID do lançamento gerado de volta na tabela despesas_frota para marcar como importado
+            await supabaseClient.from("despesas_frota").update({ lancamento_id: novoLancId }).eq("id", dv.id);
             contSucesso++;
         } else {
-            console.error("Erro ao importar item individual da frota:", errIns.message);
+            console.error("Erro ao importar item individual da frota:", errIns?.message);
         }
     }
     
-    alert(`${contSucesso} de ${despesasV.length} despesas da frota importadas com sucesso!`);
+    alert(`${contSucesso} de ${despesasV.length} despesas da frota integradas com sucesso!`);
     await listarLancamentos();
 }
 
@@ -349,12 +349,12 @@ async function salvarAssinatura(e){
         nome: document.getElementById("ass-nome").value,
         valor: parseFloat(document.getElementById("ass-valor").value),
         segmento_id: document.getElementById("ass-segmento").value || null,
-        meio_pagamento_id: document.getElementById("ass-meio-pagamento").value || null
+        meio_pagamento_id: document.getElementById("ass-meio-pagamento").value || null,
+        status: "ativo"
     };
 
     const { error } = await supabaseClient.from("assinaturas").insert([payload]);
     if (error) {
-        console.error("Erro Supabase Assinaturas:", error);
         alert("Erro ao salvar assinatura: " + error.message);
     } else {
         alert("Serviço recorrente adicionado!");
@@ -368,48 +368,50 @@ async function listarAssinaturas(){
     const tbody = document.getElementById("table-assinaturas-body");
     tbody.innerHTML = "";
     (data || []).forEach(a => {
-        tbody.innerHTML += `<tr><td>${a.nome}</td><td>${a.segmento_id || '-'}</td><td>${a.meio_pagamento_id || '-'}</td><td>${brl(a.valor)}</td><td><button class="btn btn-danger" onclick="deletarGeral('assinaturas', '${a.id}', listarAssinaturas)">✖</button></td></tr>`;
+        tbody.innerHTML += `<tr><td>${a.nome}</td><td>${a.status}</td><td>-</td><td>${brl(a.valor)}</td><td><button class="btn btn-danger" onclick="deletarGeral('assinaturas', '${a.id}', listarAssinaturas)">✖</button></td></tr>`;
     });
 }
 
 /* ==========================================================================
-   BLOCO 4: CONTAS BANCÁRIAS
+   BLOCO 4: CONTAS BANCÁRIAS (Tabela real: contas_financeiras)
    ========================================================================== */
 async function salvarConta(e){
     e.preventDefault();
     const payload = {
         nome: document.getElementById("conta-nome").value,
-        tipo: document.getElementById("conta-tipo").value,
-        saldo_inicial: parseFloat(document.getElementById("conta-saldo").value)
+        saldo_inicial: parseFloat(document.getElementById("conta-saldo").value),
+        ativa: true
     };
 
-    const { error } = await supabaseClient.from("contas").insert([payload]);
+    const { error } = await supabaseClient.from("contas_financeiras").insert([payload]);
     if (error) {
-        console.error("Erro Supabase Contas:", error);
         alert("Erro ao cadastrar conta: " + error.message);
     } else {
-        alert("Conta financeira/Cartão gravado!");
+        alert("Conta financeira gravada com sucesso!");
         document.getElementById("form-conta").reset();
         await listarContas();
     }
 }
 async function listarContas(){
-    const { data, error } = await supabaseClient.from("contas").select("*");
+    const { data, error } = await supabaseClient.from("contas_financeiras").select("*");
     if (error) return console.error("Erro ao listar contas:", error.message);
     const tbody = document.getElementById("table-contas-body");
     tbody.innerHTML = "";
     (data || []).forEach(c => {
-        tbody.innerHTML += `<tr><td>${c.nome}</td><td>${c.tipo}</td><td>${brl(c.saldo_inicial)}</td><td><button class="btn btn-danger" onclick="deletarGeral('contas', '${c.id}', listarContas)">✖</button></td></tr>`;
+        tbody.innerHTML += `<tr><td>${c.nome}</td><td>${c.ativa ? 'Ativa' : 'Inativa'}</td><td>${brl(c.saldo_inicial)}</td><td><button class="btn btn-danger" onclick="deletarGeral('contas_financeiras', '${c.id}', listarContas)">✖</button></td></tr>`;
     });
 }
 
 /* ==========================================================================
-   BLOCO 5: CATEGORIAS
+   BLOCO 5: CATEGORIAS (Tabela real: categorias_lancamentos)
    ========================================================================== */
 async function salvarCategoria(e){
     e.preventDefault();
-    const payload = { nome: document.getElementById("cat-nome").value, tipo: document.getElementById("cat-tipo").value };
-    const { error } = await supabaseClient.from("categorias").insert([payload]);
+    const payload = { 
+        nome: document.getElementById("cat-nome").value, 
+        tipo: document.getElementById("cat-tipo").value 
+    };
+    const { error } = await supabaseClient.from("categorias_lancamentos").insert([payload]);
     if (error) {
         alert("Erro ao criar categoria: " + error.message);
     } else {
@@ -419,24 +421,25 @@ async function salvarCategoria(e){
     }
 }
 async function listarCategorias(){
-    const { data, error } = await supabaseClient.from("categorias").select("*");
+    const { data, error } = await supabaseClient.from("categorias_lancamentos").select("*");
     if (error) return console.error("Erro ao listar categorias:", error.message);
     const tbody = document.getElementById("table-categorias-body");
     tbody.innerHTML = "";
     (data || []).forEach(c => {
-        tbody.innerHTML += `<tr><td>${c.nome}</td><td><span class="badge ${c.tipo === 'receita'?'badge-success':'badge-danger'}">${c.tipo}</span></td><td><button class="btn btn-danger" onclick="deletarGeral('categorias', '${c.id}', listarCategorias)">✖</button></td></tr>`;
+        tbody.innerHTML += `<tr><td>${c.nome}</td><td><span class="badge ${c.tipo === 'receita'?'badge-success':'badge-danger'}">${c.tipo}</span></td><td><button class="btn btn-danger" onclick="deletarGeral('categorias_lancamentos', '${c.id}', listarCategorias)">✖</button></td></tr>`;
     });
 }
 
 /* ==========================================================================
-   BLOCO 6: FORNECEDORES
+   BLOCO 6: FORNECEDORES (Ajustado para colunas reais: telefone, email, observacao)
    ========================================================================== */
 async function salvarFornecedor(e){
     e.preventDefault();
     const payload = {
         nome: document.getElementById("forn-nome").value,
-        documento: document.getElementById("forn-documento").value || null,
-        contato: document.getElementById("forn-contato").value || null
+        telefone: document.getElementById("forn-contato").value || null,
+        observacao: document.getElementById("forn-documento").value || null, // Guardando o campo extra em observação
+        email: ""
     };
     const { error } = await supabaseClient.from("fornecedores").insert([payload]);
     if (error) {
@@ -453,7 +456,7 @@ async function listarFornecedores(){
     const tbody = document.getElementById("table-fornecedores-body");
     tbody.innerHTML = "";
     (data || []).forEach(f => {
-        tbody.innerHTML += `<tr><td>${f.nome}</td><td>${f.documento || '-'}</td><td>${f.contato || '-'}</td><td><button class="btn btn-danger" onclick="deletarGeral('fornecedores', '${f.id}', listarFornecedores)">✖</button></td></tr>`;
+        tbody.innerHTML += `<tr><td>${f.nome}</td><td>${f.observacao || '-'}</td><td>${f.telefone || '-'}</td><td><button class="btn btn-danger" onclick="deletarGeral('fornecedores', '${f.id}', listarFornecedores)">✖</button></td></tr>`;
     });
 }
 
@@ -488,7 +491,7 @@ async function listarVeiculos(){
 }
 
 /* ==========================================================================
-   BLOCO 8: DESPESAS DE VEÍCULOS
+   BLOCO 8: DESPESAS DE VEÍCULOS (Tabela real: despesas_frota)
    ========================================================================== */
 function renderizarSeletorVeiculosDespesa() {
     const sel = document.getElementById("desv-veiculo");
@@ -499,12 +502,12 @@ async function salvarDespesaVeiculo(e) {
     e.preventDefault();
     const payload = {
         veiculo_id: document.getElementById("desv-veiculo").value,
-        descricao: document.getElementById("desv-descricao").value,
+        observacao: document.getElementById("desv-descricao").value, // campo real 'observacao'
         valor: parseFloat(document.getElementById("desv-valor").value),
-        data: document.getElementById("desv-data").value,
-        importado: false
+        data_despesa: document.getElementById("desv-data").value, // campo real 'data_despesa'
+        quilometragem: 0
     };
-    const { error } = await supabaseClient.from("veiculo_despesas").insert([payload]);
+    const { error } = await supabaseClient.from("despesas_frota").insert([payload]);
     if (error) {
         alert("Erro ao salvar despesa de veículo: " + error.message);
     } else {
@@ -514,18 +517,20 @@ async function salvarDespesaVeiculo(e) {
     }
 }
 async function listarDespesasVeiculos() {
-    const { data, error } = await supabaseClient.from("veiculo_despesas").select("*");
+    const { data, error } = await supabaseClient.from("despesas_frota").select("*");
     if (error) return console.error("Erro ao listar despesas da frota:", error.message);
     const tbody = document.getElementById("table-despesas-veiculos-body");
     tbody.innerHTML = "";
     (data || []).forEach(dv => {
         const vMod = veiculosCache.find(v => v.id === dv.veiculo_id)?.modelo || "Desconhecido";
-        tbody.innerHTML += `<tr><td>${fmtData(dv.data)}</td><td>${vMod}</td><td>${dv.descricao}</td><td>${brl(dv.valor)}</td><td><span class="badge ${dv.importado ? 'badge-success':'badge-warning'}">${dv.importado ? 'Integrado':'Pendente'}</span></td><td><button class="btn btn-danger" onclick="deletarGeral('veiculo_despesas', '${dv.id}', listarDespesasVeiculos)">✖</button></td></tr>`;
+        const statusIntegrado = dv.lancamento_id ? 'badge-success' : 'badge-warning';
+        const textoIntegrado = dv.lancamento_id ? 'Integrado' : 'Pendente';
+        tbody.innerHTML += `<tr><td>${fmtData(dv.data_despesa)}</td><td>${vMod}</td><td>${dv.observacao || '-'}</td><td>${brl(dv.valor)}</td><td><span class="badge ${statusIntegrado}">${textoIntegrado}</span></td><td><button class="btn btn-danger" onclick="deletarGeral('despesas_frota', '${dv.id}', listarDespesasVeiculos)">✖</button></td></tr>`;
     });
 }
 
 /* ==========================================================================
-   BLOCO 9: CONFIGURAÇÕES, USUÁRIOS E TEMAS
+   BLOCO 9: CONFIGURAÇÕES, USUÁRIOS E TEMAS (Coluna real: nivel)
    ========================================================================== */
 function mudarTema(nomeTema) {
     document.body.setAttribute("data-theme", nomeTema);
@@ -539,7 +544,8 @@ async function salvarUsuario(e) {
     const payload = {
         nome: document.getElementById("usr-nome").value,
         email: document.getElementById("usr-email").value,
-        role: document.getElementById("usr-role").value
+        nivel: document.getElementById("usr-role").value, // campo real 'nivel'
+        ativo: true
     };
     const { error } = await supabaseClient.from("usuarios").insert([payload]);
     if (error) {
@@ -556,7 +562,7 @@ async function listarUsuarios() {
     const tbody = document.getElementById("table-usuarios-body");
     tbody.innerHTML = "";
     (data || []).forEach(u => {
-        tbody.innerHTML += `<tr><td>${u.nome}</td><td>${u.email}</td><td><span class="badge badge-success">${u.role}</span></td><td><button class="btn btn-danger" onclick="deletarGeral('usuarios', '${u.id}', listarUsuarios)">✖</button></td></tr>`;
+        tbody.innerHTML += `<tr><td>${u.nome}</td><td>${u.email}</td><td><span class="badge badge-success">${u.nivel}</span></td><td><button class="btn btn-danger" onclick="deletarGeral('usuarios', '${u.id}', listarUsuarios)">✖</button></td></tr>`;
     });
 }
 
@@ -603,6 +609,7 @@ window.salvarAssinatura = salvarAssinatura;
 window.salvarConta = salvarConta;
 window.salvarCategoria = salvarCategoria;
 window.salvarFornecedor = salvarFornecedor;
+window.veiculosCache = veiculosCache;
 window.salvarVeiculo = salvarVeiculo;
 window.salvarDespesaVeiculo = salvarDespesaVeiculo;
 window.salvarUsuario = salvarUsuario;
