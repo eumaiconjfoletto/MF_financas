@@ -6,6 +6,110 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ==================================================================
+// 2. CONTROLE DE SESSÃO E EXIBIÇÃO DE TELAS
+// ==================================================================
+document.addEventListener("DOMContentLoaded", () => {
+    // Verifica se o usuário já está logado assim que a página carrega
+    verificarSessao();
+
+    // Atalho para efetuar login pressionando "Enter"
+    document.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            const loginVisivel = !document.getElementById('loginView').classList.contains('hidden');
+            if (loginVisivel) {
+                entrar();
+            }
+        }
+    });
+});
+
+function verificarSessao() {
+    const usuarioLogado = localStorage.getItem('mf_usuario');
+    const loginView = document.getElementById('loginView');
+    const mainSystemView = document.getElementById('mainSystemView');
+
+    if (usuarioLogado) {
+        // Se houver sessão: Esconde Login, Mostra Painel Principal
+        loginView.classList.add('hidden');
+        mainSystemView.classList.remove('hidden');
+        
+        // Dispara o carregamento dos seus dados e gráficos do dashboard
+        inicializarPainel();
+    } else {
+        // Se não houver sessão: Mostra Login, Esconde Painel Principal
+        loginView.classList.remove('hidden');
+        mainSystemView.classList.add('hidden');
+    }
+}
+
+// ==================================================================
+// 3. FUNÇÕES DE AUTENTICAÇÃO
+// ==================================================================
+async function entrar() {
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value.trim();
+    const erro = document.getElementById('erro');
+
+    erro.classList.add('hidden');
+
+    if (!email || !senha) {
+        erro.innerHTML = 'Por favor, preencha todos os campos.';
+        erro.classList.remove('hidden');
+        return;
+    }
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('usuarios')
+            .select('*')
+            .eq('email', email)
+            .eq('senha_hash', senha) // Alinhado com sua coluna de validação
+            .eq('ativo', true)
+            .single();
+
+        if (error || !data) {
+            erro.innerHTML = 'Usuário ou senha inválidos';
+            erro.classList.remove('hidden');
+            return;
+        }
+
+        // Armazena a sessão localmente
+        localStorage.setItem('mf_usuario', JSON.stringify(data));
+        
+        // Atualiza a interface para exibir o dashboard
+        verificarSessao();
+
+    } catch (e) {
+        erro.innerHTML = 'Erro ao conectar com o banco de dados';
+        erro.classList.remove('hidden');
+        console.error(e);
+    }
+}
+
+function sair() {
+    // Remove os dados do cache local e atualiza a tela de volta pro login
+    localStorage.removeItem('mf_usuario');
+    verificarSessao();
+}
+
+// ==================================================================
+// 4. INICIALIZAÇÃO E FUNÇÕES DO SEU PAINEL (Seu código antigo)
+// ==================================================================
+async function inicializarPainel() {
+    console.log("Sessão ativa. Inicializando componentes do dashboard...");
+    try {
+        // Executa as suas funções estruturadas que carregam o sistema
+        await carregarCachesAuxiliares();
+        await loadKPIs();
+        await loadCharts();
+    } catch (err) {
+        console.error("Erro na carga inicial do painel:", err);
+    }
+}
+
 /* ==========================================================================
    ESTADO GLOBAL DA APLICAÇÃO (SPA CACHE)
    ========================================================================== */
