@@ -4,60 +4,57 @@
 const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OY0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
 
+// Correção: Removida a declaração duplicada que quebrava o script
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+/* ==========================================================================
+   ESTADO GLOBAL DA APLICAÇÃO (SPA CACHE)
+   ========================================================================== */
+let charts = {};
+let categoriasCache = [];
+let contasCache = [];
+let veiculosCache = [];
 
-// ==================================================================
-// 2. CONTROLE DE SESSÃO E EXIBIÇÃO DE TELAS
-// ==================================================================
-document.addEventListener("DOMContentLoaded", () => {
-    // Verifica se o usuário já está logado assim que a página carrega
-    verificarSessao();
-
-    // Atalho para efetuar login pressionando "Enter"
-    document.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            const loginVisivel = !document.getElementById('loginView').classList.contains('hidden');
-            if (loginVisivel) {
-                entrar();
-            }
-        }
-    });
-});
-
+/* ==========================================================================
+   CONTROLE DE SESSÃO E AUTENTICAÇÃO
+   ========================================================================== */
 function verificarSessao() {
     const usuarioLogado = localStorage.getItem('mf_usuario');
     const loginView = document.getElementById('loginView');
     const mainSystemView = document.getElementById('mainSystemView');
 
     if (usuarioLogado) {
-        // Se houver sessão: Esconde Login, Mostra Painel Principal
-        loginView.classList.add('hidden');
-        mainSystemView.classList.remove('hidden');
+        const user = JSON.parse(usuarioLogado);
         
-        // Dispara o carregamento dos seus dados e gráficos do dashboard
+        // Atualiza os dados do perfil na interface de forma dinâmica
+        if (document.getElementById("userName")) document.getElementById("userName").innerText = user.nome || "Usuário Geral";
+        if (document.getElementById("userRole")) document.getElementById("userRole").innerText = user.nivel === 'admin' ? "Administrador" : "Operador";
+
+        // Se houver sessão: Esconde Login, Mostra Painel Principal
+        if (loginView) loginView.classList.add('hidden');
+        if (mainSystemView) mainSystemView.classList.remove('hidden');
+        
+        // Dispara a carga inicial unificada do sistema
         inicializarPainel();
     } else {
         // Se não houver sessão: Mostra Login, Esconde Painel Principal
-        loginView.classList.remove('hidden');
-        mainSystemView.classList.add('hidden');
+        if (loginView) loginView.classList.remove('hidden');
+        if (mainSystemView) mainSystemView.classList.add('hidden');
     }
 }
 
-// ==================================================================
-// 3. FUNÇÕES DE AUTENTICAÇÃO
-// ==================================================================
 async function entrar() {
     const email = document.getElementById('email').value.trim();
     const senha = document.getElementById('senha').value.trim();
     const erro = document.getElementById('erro');
 
-    erro.classList.add('hidden');
+    if (erro) erro.classList.add('hidden');
 
     if (!email || !senha) {
-        erro.innerHTML = 'Por favor, preencha todos os campos.';
-        erro.classList.remove('hidden');
+        if (erro) {
+            erro.innerHTML = 'Por favor, preencha todos os campos.';
+            erro.classList.remove('hidden');
+        }
         return;
     }
 
@@ -71,69 +68,53 @@ async function entrar() {
             .single();
 
         if (error || !data) {
-            erro.innerHTML = 'Usuário ou senha inválidos';
-            erro.classList.remove('hidden');
+            if (erro) {
+                erro.innerHTML = 'Usuário ou senha inválidos';
+                erro.classList.remove('hidden');
+            }
             return;
         }
 
         // Armazena a sessão localmente
         localStorage.setItem('mf_usuario', JSON.stringify(data));
         
-        // Atualiza a interface para exibir o dashboard
+        // Atualiza a interface e inicializa os componentes
         verificarSessao();
 
     } catch (e) {
-        erro.innerHTML = 'Erro ao conectar com o banco de dados';
-        erro.classList.remove('hidden');
+        if (erro) {
+            erro.innerHTML = 'Erro ao conectar com o banco de dados';
+            erro.classList.remove('hidden');
+        }
         console.error(e);
     }
 }
 
 function sair() {
-    // Remove os dados do cache local e atualiza a tela de volta pro login
     localStorage.removeItem('mf_usuario');
     verificarSessao();
-}
-
-// ==================================================================
-// 4. INICIALIZAÇÃO E FUNÇÕES DO SEU PAINEL (Seu código antigo)
-// ==================================================================
-async function inicializarPainel() {
-    console.log("Sessão ativa. Inicializando componentes do dashboard...");
-    try {
-        // Executa as suas funções estruturadas que carregam o sistema
-        await carregarCachesAuxiliares();
-        await loadKPIs();
-        await loadCharts();
-    } catch (err) {
-        console.error("Erro na carga inicial do painel:", err);
-    }
-}
-
-/* ==========================================================================
-   ESTADO GLOBAL DA APLICAÇÃO (SPA CACHE)
-   ========================================================================== */
-let charts = {};
-let categoriasCache = [];
-let contasCache = [];
-let veiculosCache = [];
-
-/* ==========================================================================
-   SEGURANÇA E CONTEXTO DE SESSÃO
-   ========================================================================== */
-function checkAuth() {
-    let user = localStorage.getItem("mf_usuario");
-    if (!user) {
-        const tempUser = { nome: "Maicon Admin", role: "admin" };
-        localStorage.setItem("mf_usuario", JSON.stringify(tempUser));
-        return tempUser;
-    }
-    return JSON.parse(user);
 }
 
 function logout() {
     localStorage.clear();
     alert("Sessão encerrada.");
+    verificarSessao();
+}
+
+/* ==========================================================================
+   INICIALIZAÇÃO DO PAINEL (Fluxo Unificado)
+   ========================================================================== */
+async function inicializarPainel() {
+    console.log("Sessão ativa. Inicializando componentes do dashboard...");
+    try {
+        const temaSalvo = localStorage.getItem("mf_tema") || "dark-orange";
+        mudarTema(temaSalvo);
+
+        initRouter();
+        await handleViewLoad("dashboard");
+    } catch (err) {
+        console.error("Erro na carga inicial do painel:", err);
+    }
 }
 
 /* ==========================================================================
@@ -143,16 +124,25 @@ function initRouter() {
     const menuLinks = document.querySelectorAll(".sidebar-menu .menu-link");
 
     menuLinks.forEach(link => {
+        // Remove ouvintes antigos para evitar duplicações indesejadas
+        link.replaceWith(link.cloneNode(true));
+    });
+
+    // Readquire as referências atualizadas após clonagem limpa
+    const activeLinks = document.querySelectorAll(".sidebar-menu .menu-link");
+    activeLinks.forEach(link => {
         link.addEventListener("click", async (e) => {
             e.preventDefault();
             const targetView = link.getAttribute("data-target");
             if (!targetView) return;
 
-            menuLinks.forEach(l => l.classList.remove("active"));
+            activeLinks.forEach(l => l.classList.remove("active"));
             link.classList.add("active");
 
             document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active-view"));
-            document.getElementById(`view-${targetView}`).classList.add("active-view");
+            
+            const targetEl = document.getElementById(`view-${targetView}`);
+            if (targetEl) targetEl.classList.add("active-view");
 
             await handleViewLoad(targetView);
         });
@@ -235,10 +225,10 @@ async function loadKPIs() {
 
         let totalCusto = (assinaturas || []).reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
 
-        document.getElementById("kpi-assinaturas").innerText = assinaturas?.length || 0;
-        document.getElementById("kpi-custo").innerText = brl(totalCusto);
-        document.getElementById("kpi-frota").innerText = frotaCount || 0;
-        document.getElementById("kpi-usuarios").innerText = usuariosCount || 0;
+        if (document.getElementById("kpi-assinaturas")) document.getElementById("kpi-assinaturas").innerText = assinaturas?.length || 0;
+        if (document.getElementById("kpi-custo")) document.getElementById("kpi-custo").innerText = brl(totalCusto);
+        if (document.getElementById("kpi-frota")) document.getElementById("kpi-frota").innerText = frotaCount || 0;
+        if (document.getElementById("kpi-usuarios")) document.getElementById("kpi-usuarios").innerText = usuariosCount || 0;
     } catch (err) {
         console.error("Erro KPIs Geral:", err);
     }
@@ -246,14 +236,19 @@ async function loadKPIs() {
 
 async function loadCharts() {
     try {
-        const ano = document.getElementById("dash-filter-ano").value;
-        const mes = document.getElementById("dash-filter-mes").value;
+        const filterAnoEl = document.getElementById("dash-filter-ano");
+        const filterMesEl = document.getElementById("dash-filter-mes");
+        
+        const ano = filterAnoEl ? filterAnoEl.value : new Date().getFullYear().toString();
+        const mes = filterMesEl ? filterMesEl.value : "todos";
 
         let query = supabaseClient.from("lancamentos").select("*");
         
         if (mes !== "todos") {
+            // Correção: Calcula dinamicamente o último dia real do mês correspondente
+            const ultimoDia = new Date(parseInt(ano), parseInt(mes), 0).getDate();
             const dataInicio = `${ano}-${mes}-01`;
-            const dataFim = `${ano}-${mes}-31`;
+            const dataFim = `${ano}-${mes}-${String(ultimoDia).padStart(2, '0')}`;
             query = query.gte("data_lancamento", dataInicio).lte("data_lancamento", dataFim);
         } else {
             query = query.gte("data_lancamento", `${ano}-01-01`).lte("data_lancamento", `${ano}-12-31`);
@@ -342,17 +337,20 @@ function renderDoughnutChart(id, dataObj) {
 }
 
 /* ==========================================================================
-   BLOCO 2: LANÇAMENTOS CORE (Ajustado para Coluna 'categoria' text e 'data_lancamento')
-   ========================================================================= */
+   BLOCO 2: LANÇAMENTOS CORE
+   ========================================================================== */
 function renderizarSeletoresFormLancamento() {
     const catSel = document.getElementById("lanc-categoria");
     const conSel = document.getElementById("lanc-conta");
     
-    catSel.innerHTML = '<option value="">Categoria...</option>';
-    conSel.innerHTML = '<option value="">Conta/Cartão...</option>';
-
-    categoriasCache.forEach(c => catSel.innerHTML += `<option value="${c.nome}">${c.nome}</option>`);
-    contasCache.forEach(c => conSel.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+    if(catSel) {
+        catSel.innerHTML = '<option value="">Categoria...</option>';
+        categoriasCache.forEach(c => catSel.innerHTML += `<option value="${c.nome}">${c.nome}</option>`);
+    }
+    if(conSel) {
+        conSel.innerHTML = '<option value="">Conta/Cartão...</option>';
+        contasCache.forEach(c => conSel.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+    }
 }
 
 async function salvarLancamento(e) {
@@ -385,6 +383,7 @@ async function listarLancamentos() {
         return;
     }
     const tbody = document.getElementById("table-lancamentos-body");
+    if(!tbody) return;
     tbody.innerHTML = "";
 
     (data || []).forEach(l => {
@@ -403,7 +402,6 @@ async function listarLancamentos() {
 }
 
 async function importarDespesasDaFrota() {
-    // Busca despesas onde 'lancamento_id' é nulo (não importadas ainda)
     const { data: despesasV, error: errFetch } = await supabaseClient.from("despesas_frota").select("*").is("lancamento_id", null);
     if (errFetch) {
         alert("Erro ao buscar despesas pendentes da frota: " + errFetch.message);
@@ -419,7 +417,6 @@ async function importarDespesasDaFrota() {
     for(let dv of despesasV) {
         const vModelo = veiculosCache.find(v => v.id === dv.veiculo_id)?.modelo || "Veículo";
         
-        // Insere o lançamento correspondente e retorna o ID gerado usando .select()
         const { data: insData, error: errIns } = await supabaseClient.from("lancamentos").insert([{
             descricao: `[FROTA] ${vModelo} - ${dv.observacao || 'Despesa'}`,
             valor: dv.valor,
@@ -432,7 +429,6 @@ async function importarDespesasDaFrota() {
 
         if (!errIns && insData && insData.length > 0) {
             const novoLancId = insData[0].id;
-            // Vincula o ID do lançamento gerado de volta na tabela despesas_frota para marcar como importado
             await supabaseClient.from("despesas_frota").update({ lancamento_id: novoLancId }).eq("id", dv.id);
             contSucesso++;
         } else {
@@ -466,10 +462,12 @@ async function salvarAssinatura(e){
         await listarAssinaturas();
     }
 }
+
 async function listarAssinaturas(){
     const { data, error } = await supabaseClient.from("assinaturas").select("*");
     if (error) return console.error("Erro ao listar assinaturas:", error.message);
     const tbody = document.getElementById("table-assinaturas-body");
+    if(!tbody) return;
     tbody.innerHTML = "";
     (data || []).forEach(a => {
         tbody.innerHTML += `<tr><td>${a.nome}</td><td>${a.status}</td><td>-</td><td>${brl(a.valor)}</td><td><button class="btn btn-danger" onclick="deletarGeral('assinaturas', '${a.id}', listarAssinaturas)">✖</button></td></tr>`;
@@ -477,7 +475,7 @@ async function listarAssinaturas(){
 }
 
 /* ==========================================================================
-   BLOCO 4: CONTAS BANCÁRIAS (Tabela real: contas_financeiras)
+   BLOCO 4: CONTAS BANCÁRIAS (contas_financeiras)
    ========================================================================== */
 async function salvarConta(e){
     e.preventDefault();
@@ -496,10 +494,12 @@ async function salvarConta(e){
         await listarContas();
     }
 }
+
 async function listarContas(){
     const { data, error } = await supabaseClient.from("contas_financeiras").select("*");
     if (error) return console.error("Erro ao listar contas:", error.message);
     const tbody = document.getElementById("table-contas-body");
+    if(!tbody) return;
     tbody.innerHTML = "";
     (data || []).forEach(c => {
         tbody.innerHTML += `<tr><td>${c.nome}</td><td>${c.ativa ? 'Ativa' : 'Inativa'}</td><td>${brl(c.saldo_inicial)}</td><td><button class="btn btn-danger" onclick="deletarGeral('contas_financeiras', '${c.id}', listarContas)">✖</button></td></tr>`;
@@ -507,7 +507,7 @@ async function listarContas(){
 }
 
 /* ==========================================================================
-   BLOCO 5: CATEGORIAS (Tabela real: categorias_lancamentos)
+   BLOCO 5: CATEGORIAS (categorias_lancamentos)
    ========================================================================== */
 async function salvarCategoria(e){
     e.preventDefault();
@@ -524,10 +524,12 @@ async function salvarCategoria(e){
         await listarCategorias();
     }
 }
+
 async function listarCategorias(){
     const { data, error } = await supabaseClient.from("categorias_lancamentos").select("*");
     if (error) return console.error("Erro ao listar categorias:", error.message);
     const tbody = document.getElementById("table-categorias-body");
+    if(!tbody) return;
     tbody.innerHTML = "";
     (data || []).forEach(c => {
         tbody.innerHTML += `<tr><td>${c.nome}</td><td><span class="badge ${c.tipo === 'receita'?'badge-success':'badge-danger'}">${c.tipo}</span></td><td><button class="btn btn-danger" onclick="deletarGeral('categorias_lancamentos', '${c.id}', listarCategorias)">✖</button></td></tr>`;
@@ -535,14 +537,14 @@ async function listarCategorias(){
 }
 
 /* ==========================================================================
-   BLOCO 6: FORNECEDORES (Ajustado para colunas reais: telefone, email, observacao)
+   BLOCO 6: FORNECEDORES
    ========================================================================== */
 async function salvarFornecedor(e){
     e.preventDefault();
     const payload = {
         nome: document.getElementById("forn-nome").value,
         telefone: document.getElementById("forn-contato").value || null,
-        observacao: document.getElementById("forn-documento").value || null, // Guardando o campo extra em observação
+        observacao: document.getElementById("forn-documento").value || null,
         email: ""
     };
     const { error } = await supabaseClient.from("fornecedores").insert([payload]);
@@ -554,10 +556,12 @@ async function salvarFornecedor(e){
         await listarFornecedores();
     }
 }
+
 async function listarFornecedores(){
     const { data, error } = await supabaseClient.from("fornecedores").select("*");
     if (error) return console.error("Erro ao listar fornecedores:", error.message);
     const tbody = document.getElementById("table-fornecedores-body");
+    if(!tbody) return;
     tbody.innerHTML = "";
     (data || []).forEach(f => {
         tbody.innerHTML += `<tr><td>${f.nome}</td><td>${f.observacao || '-'}</td><td>${f.telefone || '-'}</td><td><button class="btn btn-danger" onclick="deletarGeral('fornecedores', '${f.id}', listarFornecedores)">✖</button></td></tr>`;
@@ -584,10 +588,12 @@ async function salvarVeiculo(e) {
         await listarVeiculos();
     }
 }
+
 async function listarVeiculos(){
     const { data, error } = await supabaseClient.from("veiculos").select("*");
     if (error) return console.error("Erro ao listar veículos:", error.message);
     const tbody = document.getElementById("table-veiculos-body");
+    if(!tbody) return;
     tbody.innerHTML = "";
     (data || []).forEach(v => {
         tbody.innerHTML += `<tr><td>${v.modelo}</td><td>${v.marca}</td><td><strong>${v.placa}</strong></td><td>${v.ano || '-'}</td><td><button class="btn btn-danger" onclick="deletarGeral('veiculos', '${v.id}', listarVeiculos)">✖</button></td></tr>`;
@@ -595,20 +601,22 @@ async function listarVeiculos(){
 }
 
 /* ==========================================================================
-   BLOCO 8: DESPESAS DE VEÍCULOS (Tabela real: despesas_frota)
+   BLOCO 8: DESPESAS DE VEÍCULOS (despesas_frota)
    ========================================================================== */
 function renderizarSeletorVeiculosDespesa() {
     const sel = document.getElementById("desv-veiculo");
+    if(!sel) return;
     sel.innerHTML = '<option value="">Selecione o Veículo...</option>';
     veiculosCache.forEach(v => sel.innerHTML += `<option value="${v.id}">${v.modelo} (${v.placa})</option>`);
 }
+
 async function salvarDespesaVeiculo(e) {
     e.preventDefault();
     const payload = {
         veiculo_id: document.getElementById("desv-veiculo").value,
-        observacao: document.getElementById("desv-descricao").value, // campo real 'observacao'
+        observacao: document.getElementById("desv-descricao").value,
         valor: parseFloat(document.getElementById("desv-valor").value),
-        data_despesa: document.getElementById("desv-data").value, // campo real 'data_despesa'
+        data_despesa: document.getElementById("desv-data").value,
         quilometragem: 0
     };
     const { error } = await supabaseClient.from("despesas_frota").insert([payload]);
@@ -620,10 +628,12 @@ async function salvarDespesaVeiculo(e) {
         await listarDespesasVeiculos();
     }
 }
+
 async function listarDespesasVeiculos() {
     const { data, error } = await supabaseClient.from("despesas_frota").select("*");
     if (error) return console.error("Erro ao listar despesas da frota:", error.message);
     const tbody = document.getElementById("table-despesas-veiculos-body");
+    if(!tbody) return;
     tbody.innerHTML = "";
     (data || []).forEach(dv => {
         const vMod = veiculosCache.find(v => v.id === dv.veiculo_id)?.modelo || "Desconhecido";
@@ -634,21 +644,23 @@ async function listarDespesasVeiculos() {
 }
 
 /* ==========================================================================
-   BLOCO 9: CONFIGURAÇÕES, USUÁRIOS E TEMAS (Coluna real: nivel)
+   BLOCO 9: CONFIGURAÇÕES, USUÁRIOS E TEMAS
    ========================================================================== */
 function mudarTema(nomeTema) {
     document.body.setAttribute("data-theme", nomeTema);
     localStorage.setItem("mf_tema", nomeTema);
-    if(document.getElementById("view-dashboard").classList.contains("active-view")) {
+    const dashView = document.getElementById("view-dashboard");
+    if(dashView && dashView.classList.contains("active-view")) {
         loadCharts(); 
     }
 }
+
 async function salvarUsuario(e) {
     e.preventDefault();
     const payload = {
         nome: document.getElementById("usr-nome").value,
         email: document.getElementById("usr-email").value,
-        nivel: document.getElementById("usr-role").value, // campo real 'nivel'
+        nivel: document.getElementById("usr-role").value,
         ativo: true
     };
     const { error } = await supabaseClient.from("usuarios").insert([payload]);
@@ -660,10 +672,12 @@ async function salvarUsuario(e) {
         await listarUsuarios();
     }
 }
+
 async function listarUsuarios() {
     const { data, error } = await supabaseClient.from("usuarios").select("*");
     if (error) return console.error("Erro ao listar usuários:", error.message);
     const tbody = document.getElementById("table-usuarios-body");
+    if(!tbody) return;
     tbody.innerHTML = "";
     (data || []).forEach(u => {
         tbody.innerHTML += `<tr><td>${u.nome}</td><td>${u.email}</td><td><span class="badge badge-success">${u.nivel}</span></td><td><button class="btn btn-danger" onclick="deletarGeral('usuarios', '${u.id}', listarUsuarios)">✖</button></td></tr>`;
@@ -680,31 +694,41 @@ async function deletarGeral(tabela, id, callbackRecarga) {
             alert("Erro ao remover registro: " + error.message);
         } else {
             await carregarCachesAuxiliares();
-            await callbackRecarga();
+            if (typeof callbackRecarga === "function") {
+                await callbackRecarga();
+            }
         }
     }
 }
+
 function brl(v) { return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v || 0); }
 function fmtData(d) { if(!d) return "-"; const parts = d.split("-"); return `${parts[2]}/${parts[1]}/${parts[0]}`; }
 
 /* ==========================================================================
-   DISPARADOR INICIAL (DOM READY)
+   DISPARADOR INICIAL ÚNICO (DOM READY)
    ========================================================================== */
-document.addEventListener("DOMContentLoaded", async () => {
-    const user = checkAuth();
-    if (!user) return;
+document.addEventListener("DOMContentLoaded", () => {
+    // Configura o atalho para efetuar login pressionando "Enter"
+    document.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            const loginView = document.getElementById('loginView');
+            const loginVisivel = loginView && !loginView.classList.contains('hidden');
+            if (loginVisivel) {
+                entrar();
+            }
+        }
+    });
 
-    document.getElementById("userName").innerText = user.nome || "Usuário Geral";
-    document.getElementById("userRole").innerText = user.role === 'admin' ? "Administrador" : "Operador";
-    
-    const temaSalvo = localStorage.getItem("mf_tema") || "dark-orange";
-    mudarTema(temaSalvo);
-
-    initRouter();
-    await handleViewLoad("dashboard");
+    // Controla e valida o início da sessão de forma única
+    verificarSessao();
 });
 
+/* ==========================================================================
+   EXPOSIÇÃO AO ESCOPO GLOBAL (Mapeamento de Funções para Chamadas Inline HTML)
+   ========================================================================== */
 window.logout = logout;
+window.sair = sair;
+window.entrar = entrar;
 window.deletarGeral = deletarGeral;
 window.importarDespesasDaFrota = importarDespesasDaFrota;
 window.mudarTema = mudarTema;
@@ -713,8 +737,17 @@ window.salvarAssinatura = salvarAssinatura;
 window.salvarConta = salvarConta;
 window.salvarCategoria = salvarCategoria;
 window.salvarFornecedor = salvarFornecedor;
-window.veiculosCache = veiculosCache;
 window.salvarVeiculo = salvarVeiculo;
 window.salvarDespesaVeiculo = salvarDespesaVeiculo;
 window.salvarUsuario = salvarUsuario;
 window.loadCharts = loadCharts;
+
+// Correção: Exposição obrigatória para os botões e callbacks de remoção funcionarem inline
+window.listarLancamentos = listarLancamentos;
+window.listarAssinaturas = listarAssinaturas;
+window.listarContas = listarContas;
+window.listarCategorias = listarCategorias;
+window.listarFornecedores = listarFornecedores;
+window.listarVeiculos = listarVeiculos;
+window.listarDespesasVeiculos = listarDespesasVeiculos;
+window.listarUsuarios = listarUsuarios;
