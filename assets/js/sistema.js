@@ -73,31 +73,56 @@ async function entrar() {
     }
 
     try {
-        const { data, error } = await supabaseClient
+        console.log("Tentando logar com:", email);
+
+        // Buscamos apenas pelo email primeiro para saber se o usuário existe ou se é o RLS bloqueando
+        const { data: usuario, error } = await supabaseClient
             .from('usuarios')
             .select('*')
             .eq('email', email)
-            .eq('senha_hash', senha)
-            .eq('ativo', true)
-            .single();
+            .maybeSingle();
 
-        if (error || !data) {
+        if (error) {
+            console.error("Erro retornado pelo Supabase:", error);
             if (erro) {
-                erro.innerHTML = 'Usuário ou senha inválidos';
+                erro.innerHTML = `Erro de Segurança/RLS: ${error.message}`;
                 erro.classList.remove('hidden');
             }
             return;
         }
 
-        localStorage.setItem('mf_usuario', JSON.stringify(data));
+        // Se o banco retornar vazio (null), das duas uma: ou o email tá errado ou o RLS está bloqueando a leitura
+        if (!usuario) {
+            console.warn("Nenhum dado retornado. Se o email existe no banco, o RLS está ATIVADO e bloqueando o acesso.");
+            if (erro) {
+                erro.innerHTML = 'Usuário não encontrado (Verifique o email ou as políticas de RLS no Supabase)';
+                erro.classList.remove('hidden');
+            }
+            return;
+        }
+
+        // Se achou o usuário, agora testamos a senha manualmente aqui no JS para você ver no console
+        console.log("Usuário encontrado no banco!", usuario);
+        console.log("Senha digitada:", senha, " | Senha no banco:", usuario.senha_hash);
+
+        if (usuario.senha_hash !== senha) {
+            if (erro) {
+                erro.innerHTML = 'Senha incorreta.';
+                erro.classList.remove('hidden');
+            }
+            return;
+        }
+
+        // Tudo certo! Salva na sessão
+        localStorage.setItem('mf_usuario', JSON.stringify(usuario));
         verificarSessao();
 
     } catch (e) {
         if (erro) {
-            erro.innerHTML = 'Erro ao conectar com o banco de dados';
+            erro.innerHTML = 'Erro interno ao processar o login.';
             erro.classList.remove('hidden');
         }
-        console.error(e);
+        console.error("Erro no catch:", e);
     }
 }
 
