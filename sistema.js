@@ -335,9 +335,9 @@ async function listarAssinaturas(){
 async function salvarConta(e){
     e.preventDefault();
     await supabaseClient.from("contas").insert([{
-        nome: document.getElementById("conta-nome").value,
-        tipo: document.getElementById("conta-tipo").value,
-        saldo_inicial: parseFloat(document.getElementById("conta-saldo").value)
+        nome: document.getElementById("nome").value,
+        tipo: document.getElementById("ativa").value,
+        saldo_inicial: parseFloat(document.getElementById("saldo_inicial").value)
     }]);
     document.getElementById("form-conta").reset();
     listarContas();
