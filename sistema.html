@@ -68,269 +68,260 @@
         </div>
     </div>
 
-        <div class="sidebar-user">
-            <div class="sidebar-user-name" id="userName">Carregando...</div>
-            <div class="sidebar-user-role" id="userRole">Administrador</div>
-        </div>
-
-        <nav class="sidebar-menu">
-            <div class="menu-title">Análise</div>
-            <a href="#" class="menu-link active" data-target="dashboard">Dashboard Analítico</a>
-
-            <div class="menu-title">Financeiro Core</div>
-            <a href="#" class="menu-link" data-target="lancamentos">Lançamentos Geral</a>
-            <a href="#" class="menu-link" data-target="assinaturas">Controle de Assinaturas</a>
-            <a href="#" class="menu-link" data-target="contas">Contas & Cartões</a>
-            <a href="#" class="menu-link" data-target="categorias">Categorias de Fluxo</a>
-            <a href="#" class="menu-link" data-target="fornecedores">Fornecedores</a>
-
-            <div class="menu-title">Controle de Frota</div>
-            <a href="#" class="menu-link" data-target="veiculos">Cadastro de Veículos</a>
-            <a href="#" class="menu-link" data-target="despesas-veiculos">Despesas de Veículos</a>
-
-            <div class="menu-title">Sistema</div>
-            <a href="#" class="menu-link" data-target="configuracoes">Configurações & Temas</a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <button class="logout-btn" onclick="logout()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-                Sair do Sistema
-            </button>
-        </div>
-    </aside>
-
-    <main class="main-content">
-
-        <section id="view-dashboard" class="view-section active-view">
-            <header class="view-header">
-                <h2>Dashboard Analítico</h2>
-                <div class="dashboard-filters">
-                    <select id="dash-filter-ano" onchange="loadCharts()"><option value="2026">2026</option><option value="2025">2025</option></select>
-                    <select id="dash-filter-mes" onchange="loadCharts()">
-                        <option value="todos">Todos os Meses</option>
-                        <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
-                        <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
-                        <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
-                        <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
-                    </select>
-                </div>
-            </header>
-            
-            <div class="kpi-grid">
-                <div class="kpi-card"><div class="kpi-label">Assinaturas Ativas</div><div class="kpi-value" id="kpi-assinaturas">0</div></div>
-                <div class="kpi-card"><div class="kpi-label">Custo Recorrente Mensal</div><div class="kpi-value" id="kpi-custo">R$ 0,00</div></div>
-                <div class="kpi-card"><div class="kpi-label">Frota Cadastrada</div><div class="kpi-value" id="kpi-frota">0</div></div>
-                <div class="kpi-card"><div class="kpi-label">Usuários do Painel</div><div class="kpi-value" id="kpi-usuarios">0</div></div>
+    <div id="mainSystemView" class="hidden">
+        
+        <aside class="sidebar">
+            <div class="sidebar-user">
+                <div class="sidebar-user-name" id="userName">Carregando...</div>
+                <div class="sidebar-user-role" id="userRole">Administrador</div>
             </div>
 
-            <div class="chart-grid">
-                <div class="chart-card">
-                    <h3>Custos Operacionais por Segmento</h3>
-                    <div class="chart-container"><canvas id="chartSegmento"></canvas></div>
-                </div>
-                <div class="chart-card">
-                    <h3>Distribuição por Meio de Pagamento</h3>
-                    <div class="chart-container"><canvas id="chartPagamento"></canvas></div>
-                </div>
-            </div>
-        </section>
+            <nav class="sidebar-menu">
+                <div class="menu-title">Análise</div>
+                <a href="#" class="menu-link active" data-target="dashboard">Dashboard Analítico</a>
 
-        <section id="view-lancamentos" class="view-section">
-            <header class="view-header">
-                <h2>Lançamentos Financeiros</h2>
-                <button class="btn btn-secondary" onclick="importarDespesasDaFrota()">⚡ Importar Despesas de Frota</button>
-            </header>
-            <div class="card">
-                <form id="form-lancamento" class="compact-form" onsubmit="salvarLancamento(event)">
-                    <input type="hidden" id="lancamento-id">
-                    <input type="text" id="lanc-descricao" placeholder="Descrição do lançamento..." required class="f-long">
-                    <input type="number" step="0.01" id="lanc-valor" placeholder="Valor (R$)" required class="f-short">
-                    <input type="date" id="lanc-data" required class="f-short">
-                    <select id="lanc-tipo" class="f-short" required>
-                        <option value="despesa">Despesa</option>
-                        <option value="receita">Receita</option>
-                    </select>
-                    <select id="lanc-categoria" class="f-medium" required><option value="">Categoria...</option></select>
-                    <select id="lanc-conta" class="f-medium" required><option value="">Conta/Cartão...</option></select>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
-                </form>
-            </div>
-            <div class="card table-responsive">
-                <table class="data-table">
-                    <thead>
-                        <tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Categoria</th><th>Conta</th><th>Valor</th><th>Ações</th></tr>
-                    </thead>
-                    <tbody id="table-lancamentos-body"></tbody>
-                </table>
-            </div>
-        </section>
+                <div class="menu-title">Financeiro Core</div>
+                <a href="#" class="menu-link" data-target="lancamentos">Lançamentos Geral</a>
+                <a href="#" class="menu-link" data-target="assinaturas">Controle de Assinaturas</a>
+                <a href="#" class="menu-link" data-target="contas">Contas & Cartões</a>
+                <a href="#" class="menu-link" data-target="categorias">Categorias de Fluxo</a>
+                <a href="#" class="menu-link" data-target="fornecedores">Fornecedores</a>
 
-        <section id="view-assinaturas" class="view-section">
-            <header class="view-header"><h2>Controle de Assinaturas & Serviços Recorrentes</h2></header>
-            <div class="card">
-                <form id="form-assinatura" class="compact-form" onsubmit="salvarAssinatura(event)">
-                    <input type="text" id="ass-nome" placeholder="Nome do Serviço (ex: AWS, Netflix)" required class="f-long">
-                    <input type="number" step="0.01" id="ass-valor" placeholder="Valor Mês" required class="f-short">
-                    <input type="text" id="ass-segmento" placeholder="Segmento" class="f-medium">
-                    <input type="text" id="ass-meio-pagamento" placeholder="Meio de Pagamento" class="f-medium">
-                    <button type="submit" class="btn btn-primary">Adicionar</button>
-                </form>
-            </div>
-            <div class="card table-responsive">
-                <table class="data-table">
-                    <thead><tr><th>Serviço</th><th>Segmento</th><th>Meio Pagamento</th><th>Valor Mensal</th><th>Ações</th></tr></thead>
-                    <tbody id="table-assinaturas-body"></tbody>
-                </table>
-            </div>
-        </section>
+                <div class="menu-title">Controle de Frota</div>
+                <a href="#" class="menu-link" data-target="veiculos">Cadastro de Veículos</a>
+                <a href="#" class="menu-link" data-target="despesas-veiculos">Despesas de Veículos</a>
 
-        <section id="view-contas" class="view-section">
-            <header class="view-header"><h2>Contas Financeiras & Cartões de Crédito</h2></header>
-            <div class="card">
-                <form id="form-conta" class="compact-form" onsubmit="salvarConta(event)">
-                    <input type="text" id="conta-nome" placeholder="Nome da Conta (ex: Banco do Brasil, Nubank)" required class="f-long">
-                    <select id="conta-tipo" class="f-medium" required>
-                        <option value="corrente">Conta Corrente</option>
-                        <option value="poupanca">Poupança</option>
-                        <option value="credito">Cartão de Crédito</option>
-                    </select>
-                    <input type="number" step="0.01" id="conta-saldo" placeholder="Saldo Inicial" required class="f-short">
-                    <button type="submit" class="btn btn-primary">Cadastrar</button>
-                </form>
-            </div>
-            <div class="card table-responsive">
-                <table class="data-table">
-                    <thead><tr><th>Nome / Instituição</th><th>Tipo</th><th>Saldo Atualizado</th><th>Ações</th></tr></thead>
-                    <tbody id="table-contas-body"></tbody>
-                </table>
-            </div>
-        </section>
+                <div class="menu-title">Sistema</div>
+                <a href="#" class="menu-link" data-target="configuracoes">Configurações & Temas</a>
+            </nav>
 
-        <section id="view-categorias" class="view-section">
-            <header class="view-header"><h2>Categorias de Despesas e Receitas</h2></header>
-            <div class="card">
-                <form id="form-categoria" class="compact-form" onsubmit="salvarCategoria(event)">
-                    <input type="text" id="cat-nome" placeholder="Ex: Combustível, Alimentação, Vendas" required class="f-long">
-                    <select id="cat-tipo" class="f-medium" required>
-                        <option value="despesa">Despesa</option>
-                        <option value="receita">Receita</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Criar Categoria</button>
-                </form>
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="sair()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="16">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+                    </svg>
+                    Sair do Sistema
+                </button>
             </div>
-            <div class="card table-responsive">
-                <table class="data-table">
-                    <thead><tr><th>Nome da Categoria</th><th>Fluxo Vinculado</th><th>Ações</th></tr></thead>
-                    <tbody id="table-categorias-body"></tbody>
-                </table>
-            </div>
-        </section>
+        </aside>
 
-        <section id="view-fornecedores" class="view-section">
-            <header class="view-header"><h2>Gerenciamento de Fornecedores</h2></header>
-            <div class="card">
-                <form id="form-fornecedor" class="compact-form" onsubmit="salvarFornecedor(event)">
-                    <input type="text" id="forn-nome" placeholder="Razão Social / Nome Fantasia" required class="f-long">
-                    <input type="text" id="forn-documento" placeholder="CNPJ / CPF" class="f-medium">
-                    <input type="text" id="forn-contato" placeholder="Telefone / E-mail" class="f-medium">
-                    <button type="submit" class="btn btn-primary">Gravar</button>
-                </form>
-            </div>
-            <div class="card table-responsive">
-                <table class="data-table">
-                    <thead><tr><th>Fornecedor</th><th>Documento</th><th>Contato</th><th>Ações</th></tr></thead>
-                    <tbody id="table-fornecedores-body"></tbody>
-                </table>
-            </div>
-        </section>
+        <main class="main-content">
 
-        <section id="view-veiculos" class="view-section">
-            <header class="view-header"><h2>Cadastro de Veículos (Frota)</h2></header>
-            <div class="card">
-                <form id="form-veiculo" class="compact-form" onsubmit="salvarVeiculo(event)">
-                    <input type="text" id="vei-modelo" placeholder="Modelo do Veículo (ex: Fiorino)" required class="f-long">
-                    <input type="text" id="vei-marca" placeholder="Marca" required class="f-medium">
-                    <input type="text" id="vei-placa" placeholder="Placa" required class="f-short">
-                    <input type="number" id="vei-ano" placeholder="Ano" class="f-short">
-                    <button type="submit" class="btn btn-primary">Adicionar Veículo</button>
-                </form>
-            </div>
-            <div class="card table-responsive">
-                <table class="data-table">
-                    <thead><tr><th>Modelo</th><th>Marca</th><th>Placa</th><th>Ano</th><th>Ações</th></tr></thead>
-                    <tbody id="table-veiculos-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="view-despesas-veiculos" class="view-section">
-            <header class="view-header"><h2>Despesas Operacionais com Veículos</h2></header>
-            <div class="card">
-                <form id="form-despesa-veiculo" class="compact-form" onsubmit="salvarDespesaVeiculo(event)">
-                    <select id="desv-veiculo" class="f-medium" required><option value="">Selecione o Veículo...</option></select>
-                    <input type="text" id="desv-descricao" placeholder="Ex: Troca de Óleo, Abastecimento" required class="f-long">
-                    <input type="number" step="0.01" id="desv-valor" placeholder="Valor (R$)" required class="f-short">
-                    <input type="date" id="desv-data" required class="f-short">
-                    <button type="submit" class="btn btn-primary">Registrar Custo</button>
-                </form>
-            </div>
-            <div class="card table-responsive">
-                <table class="data-table">
-                    <thead><tr><th>Data</th><th>Veículo</th><th>Descrição do Gasto</th><th>Valor</th><th>Status Integração</th><th>Ações</th></tr></thead>
-                    <tbody id="table-despesas-veiculos-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="view-configuracoes" class="view-section">
-            <header class="view-header"><h2>Configurações Globais do Painel</h2></header>
-            
-            <div class="card">
-                <h3>Identidade Visual & Tema Cromático</h3>
-                <div style="margin-top: 12px; display: flex; gap: 10px;">
-                    <button class="btn" style="background:#222; border:1px solid #ff7300; color:#fff" onclick="mudarTema('dark-orange')">Dark Orange (Padrão)</button>
-                    <button class="btn" style="background:#f4f6f9; border:1px solid #0056b3; color:#333" onclick="mudarTema('light-blue')">Light Blue</button>
-                    <button class="btn" style="background:#0f172a; border:1px solid #0ea5e9; color:#fff" onclick="mudarTema('midnight-teal')">Midnight Teal</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>Controle de Acessos & Novos Usuários</h3>
-                <form id="form-usuario" class="compact-form" onsubmit="salvarUsuario(event)" style="margin-top:15px;">
-                    <input type="text" id="usr-nome" placeholder="Nome Completo" required class="f-long">
-                    <input type="email" id="usr-email" placeholder="E-mail de Login" required class="f-long">
-                    <select id="usr-role" class="f-medium">
-                        <option value="operador">Operador de Caixa</option>
-                        <option value="admin">Administrador Geral</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Criar Usuário</button>
-                </form>
+            <section id="view-dashboard" class="view-section active-view">
+                <header class="view-header">
+                    <h2>Dashboard Analítico</h2>
+                    <div class="dashboard-filters">
+                        <select id="dash-filter-ano" onchange="loadCharts()"><option value="2026">2026</option><option value="2025">2025</option></select>
+                        <select id="dash-filter-mes" onchange="loadCharts()">
+                            <option value="todos">Todos os Meses</option>
+                            <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
+                            <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
+                            <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
+                            <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+                        </select>
+                    </div>
+                </header>
                 
-                <div class="table-responsive" style="margin-top: 20px;">
+                <div class="kpi-grid">
+                    <div class="kpi-card"><div class="kpi-label">Assinaturas Ativas</div><div class="kpi-value" id="kpi-assinaturas">0</div></div>
+                    <div class="kpi-card"><div class="kpi-label">Custo Recorrente Mensal</div><div class="kpi-value" id="kpi-custo">R$ 0,00</div></div>
+                    <div class="kpi-card"><div class="kpi-label">Frota Cadastrada</div><div class="kpi-value" id="kpi-frota">0</div></div>
+                    <div class="kpi-card"><div class="kpi-label">Usuários do Painel</div><div class="kpi-value" id="kpi-usuarios">0</div></div>
+                </div>
+
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <h3>Custos Operacionais por Segmento</h3>
+                        <div class="chart-container"><canvas id="chartSegmento"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Distribuição por Meio de Pagamento</h3>
+                        <div class="chart-container"><canvas id="chartPagamento"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-lancamentos" class="view-section">
+                <header class="view-header">
+                    <h2>Lançamentos Financeiros</h2>
+                    <button class="btn btn-secondary" onclick="importarDespesasDaFrota()">⚡ Importar Despesas de Frota</button>
+                </header>
+                <div class="card">
+                    <form id="form-lancamento" class="compact-form" onsubmit="salvarLancamento(event)">
+                        <input type="hidden" id="lancamento-id">
+                        <input type="text" id="lanc-descricao" placeholder="Descrição do lançamento..." required class="f-long">
+                        <input type="number" step="0.01" id="lanc-valor" placeholder="Valor (R$)" required class="f-short">
+                        <input type="date" id="lanc-data" required class="f-short">
+                        <select id="lanc-tipo" class="f-short" required>
+                            <option value="despesa">Despesa</option>
+                            <option value="receita">Receita</option>
+                        </select>
+                        <select id="lanc-categoria" class="f-medium" required><option value="">Categoria...</option></select>
+                        <select id="lanc-conta" class="f-medium" required><option value="">Conta/Cartão...</option></select>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
+                </div>
+                <div class="card table-responsive">
                     <table class="data-table">
-                        <thead><tr><th>Nome</th><th>E-mail</th><th>Nível de Acesso</th><th>Ações</th></tr></thead>
-                        <tbody id="table-usuarios-body"></tbody>
+                        <thead>
+                            <tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Categoria</th><th>Conta</th><th>Valor</th><th>Ações</th></tr>
+                        </thead>
+                        <tbody id="table-lancamentos-body"></tbody>
                     </table>
                 </div>
-            </div>
-        </section>
+            </section>
 
-    </main>
-</div>
+            <section id="view-assinaturas" class="view-section">
+                <header class="view-header"><h2>Controle de Assinaturas & Serviços Recorrentes</h2></header>
+                <div class="card">
+                    <form id="form-assinatura" class="compact-form" onsubmit="salvarAssinatura(event)">
+                        <input type="text" id="ass-nome" placeholder="Nome do Serviço (ex: AWS, Netflix)" required class="f-long">
+                        <input type="number" step="0.01" id="ass-valor" placeholder="Valor Mês" required class="f-short">
+                        <input type="text" id="ass-segmento" placeholder="Segmento" class="f-medium">
+                        <input type="text" id="ass-meio-pagamento" placeholder="Meio de Pagamento" class="f-medium">
+                        <button type="submit" class="btn btn-primary">Adicionar</button>
+                    </form>
+                </div>
+                <div class="card table-responsive">
+                    <table class="data-table">
+                        <thead><tr><th>Serviço</th><th>Segmento</th><th>Meio Pagamento</th><th>Valor Mensal</th><th>Ações</th></tr></thead>
+                        <tbody id="table-assinaturas-body"></tbody>
+                    </table>
+                </div>
+            </section>
 
-<div id="mainSystemView" class="hidden">
-        
-        <header style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: var(--bg-card, #1e1e1e); border-bottom: 1px solid #333;">
-            <h2 style="margin:0; color: var(--text-primary, #fff);">MF Finanças - Painel</h2>
-            <button onclick="sair()" class="btn" style="background: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
-                Sair do Sistema
-            </button>
-        </header>
+            <section id="view-contas" class="view-section">
+                <header class="view-header"><h2>Contas Financeiras & Cartões de Crédito</h2></header>
+                <div class="card">
+                    <form id="form-conta" class="compact-form" onsubmit="salvarConta(event)">
+                        <input type="text" id="conta-nome" placeholder="Nome da Conta (ex: Banco do Brasil, Nubank)" required class="f-long">
+                        <select id="conta-tipo" class="f-medium" required>
+                            <option value="corrente">Conta Corrente</option>
+                            <option value="poupanca">Poupança</option>
+                            <option value="credito">Cartão de Crédito</option>
+                        </select>
+                        <input type="number" step="0.01" id="conta-saldo" placeholder="Saldo Inicial" required class="f-short">
+                        <button type="submit" class="btn btn-primary">Cadastrar</button>
+                    </form>
+                </div>
+                <div class="card table-responsive">
+                    <table class="data-table">
+                        <thead><tr><th>Nome / Instituição</th><th>Tipo</th><th>Saldo Atualizado</th><th>Ações</th></tr></thead>
+                        <tbody id="table-contas-body"></tbody>
+                    </table>
+                </div>
+            </section>
 
-        <main style="padding: 2rem;">
-            </main>
+            <section id="view-categorias" class="view-section">
+                <header class="view-header"><h2>Categorias de Despesas e Receitas</h2></header>
+                <div class="card">
+                    <form id="form-categoria" class="compact-form" onsubmit="salvarCategoria(event)">
+                        <input type="text" id="cat-nome" placeholder="Ex: Combustível, Alimentação, Vendas" required class="f-long">
+                        <select id="cat-tipo" class="f-medium" required>
+                            <option value="despesa">Despesa</option>
+                            <option value="receita">Receita</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Criar Categoria</button>
+                    </form>
+                </div>
+                <div class="card table-responsive">
+                    <table class="data-table">
+                        <thead><tr><th>Nome da Categoria</th><th>Fluxo Vinculado</th><th>Ações</th></tr></thead>
+                        <tbody id="table-categorias-body"></tbody>
+                    </table>
+                </div>
+            </section>
 
+            <section id="view-fornecedores" class="view-section">
+                <header class="view-header"><h2>Gerenciamento de Fornecedores</h2></header>
+                <div class="card">
+                    <form id="form-fornecedor" class="compact-form" onsubmit="salvarFornecedor(event)">
+                        <input type="text" id="forn-nome" placeholder="Razão Social / Nome Fantasia" required class="f-long">
+                        <input type="text" id="forn-documento" placeholder="CNPJ / CPF" class="f-medium">
+                        <input type="text" id="forn-contato" placeholder="Telefone / E-mail" class="f-medium">
+                        <button type="submit" class="btn btn-primary">Gravar</button>
+                    </form>
+                </div>
+                <div class="card table-responsive">
+                    <table class="data-table">
+                        <thead><tr><th>Fornecedor</th><th>Documento</th><th>Contato</th><th>Ações</th></tr></thead>
+                        <tbody id="table-fornecedores-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="view-veiculos" class="view-section">
+                <header class="view-header"><h2>Cadastro de Veículos (Frota)</h2></header>
+                <div class="card">
+                    <form id="form-veiculo" class="compact-form" onsubmit="salvarVeiculo(event)">
+                        <input type="text" id="vei-modelo" placeholder="Modelo do Veículo (ex: Fiorino)" required class="f-long">
+                        <input type="text" id="vei-marca" placeholder="Marca" required class="f-medium">
+                        <input type="text" id="vei-placa" placeholder="Placa" required class="f-short">
+                        <input type="number" id="vei-ano" placeholder="Ano" class="f-short">
+                        <button type="submit" class="btn btn-primary">Adicionar Veículo</button>
+                    </form>
+                </div>
+                <div class="card table-responsive">
+                    <table class="data-table">
+                        <thead><tr><th>Modelo</th><th>Marca</th><th>Placa</th><th>Ano</th><th>Ações</th></tr></thead>
+                        <tbody id="table-veiculos-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="view-despesas-veiculos" class="view-section">
+                <header class="view-header"><h2>Despesas Operacionais com Veículos</h2></header>
+                <div class="card">
+                    <form id="form-despesa-veiculo" class="compact-form" onsubmit="salvarDespesaVeiculo(event)">
+                        <select id="desv-veiculo" class="f-medium" required><option value="">Selecione o Veículo...</option></select>
+                        <input type="text" id="desv-descricao" placeholder="Ex: Troca de Óleo, Abastecimento" required class="f-long">
+                        <input type="number" step="0.01" id="desv-valor" placeholder="Valor (R$)" required class="f-short">
+                        <input type="date" id="desv-data" required class="f-short">
+                        <button type="submit" class="btn btn-primary">Registrar Custo</button>
+                    </form>
+                </div>
+                <div class="card table-responsive">
+                    <table class="data-table">
+                        <thead><tr><th>Data</th><th>Veículo</th><th>Descrição do Gasto</th><th>Valor</th><th>Status Integração</th><th>Ações</th></tr></thead>
+                        <tbody id="table-despesas-veiculos-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="view-configuracoes" class="view-section">
+                <header class="view-header"><h2>Configurações Globais do Painel</h2></header>
+                
+                <div class="card">
+                    <h3>Identidade Visual & Tema Cromático</h3>
+                    <div style="margin-top: 12px; display: flex; gap: 10px;">
+                        <button class="btn" style="background:#222; border:1px solid #ff7300; color:#fff" onclick="mudarTema('dark-orange')">Dark Orange (Padrão)</button>
+                        <button class="btn" style="background:#f4f6f9; border:1px solid #0056b3; color:#333" onclick="mudarTema('light-blue')">Light Blue</button>
+                        <button class="btn" style="background:#0f172a; border:1px solid #0ea5e9; color:#fff" onclick="mudarTema('midnight-teal')">Midnight Teal</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Controle de Acessos & Novos Usuários</h3>
+                    <form id="form-usuario" class="compact-form" onsubmit="salvarUsuario(event)" style="margin-top:15px;">
+                        <input type="text" id="usr-nome" placeholder="Nome Completo" required class="f-long">
+                        <input type="email" id="usr-email" placeholder="E-mail de Login" required class="f-long">
+                        <select id="usr-role" class="f-medium">
+                            <option value="operador">Operador de Caixa</option>
+                            <option value="admin">Administrador Geral</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Criar Usuário</button>
+                    </form>
+                    
+                    <div class="table-responsive" style="margin-top: 20px;">
+                        <table class="data-table">
+                            <thead><tr><th>Nome</th><th>E-mail</th><th>Nível de Acesso</th><th>Ações</th></tr></thead>
+                            <tbody id="table-usuarios-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
     </div>
 
     <script src="assets/js/sistema.js"></script>
