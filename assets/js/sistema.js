@@ -1,11 +1,20 @@
 /* ==========================================================================
+   VALIDAÇÃO DE DEPENDÊNCIAS
+   ========================================================================== */
+// Proteção para o script não quebrar caso o CDN do Supabase falhe (Erro 404)
+if (typeof supabase === 'undefined') {
+    console.error("ERRO CRÍTICO: A biblioteca global 'supabase' não foi encontrada. Verifique o link do CDN no seu HTML.");
+    alert("Erro de carregamento: A biblioteca do Supabase não foi encontrada. Verifique se o link do script no arquivo HTML está correto.");
+}
+
+/* ==========================================================================
    CONFIGURAÇÃO CENTRAL E INSTÂNCIA DO SUPABASE
    ========================================================================== */
 const SUPABASE_URL = "https://hrdtylxfkcsgyhghhptr.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZHR5bHhma2NzZ3loZ2hocHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc3NzksImV4cCI6MjA5NTU2Mzc3OY0.DwnwVrOcYfTeiz18BJEvCipoeDUQ4t_dg3biuCtIe94";
 
-// Correção: Removida a declaração duplicada que quebrava o script
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Inicializa o client apenas se a biblioteca existir para evitar travar o escopo global
+const supabaseClient = typeof supabase !== 'undefined' ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 /* ==========================================================================
    ESTADO GLOBAL DA APLICAÇÃO (SPA CACHE)
@@ -26,29 +35,34 @@ function verificarSessao() {
     if (usuarioLogado) {
         const user = JSON.parse(usuarioLogado);
         
-        // Atualiza os dados do perfil na interface de forma dinâmica
         if (document.getElementById("userName")) document.getElementById("userName").innerText = user.nome || "Usuário Geral";
         if (document.getElementById("userRole")) document.getElementById("userRole").innerText = user.nivel === 'admin' ? "Administrador" : "Operador";
 
-        // Se houver sessão: Esconde Login, Mostra Painel Principal
         if (loginView) loginView.classList.add('hidden');
         if (mainSystemView) mainSystemView.classList.remove('hidden');
         
-        // Dispara a carga inicial unificada do sistema
         inicializarPainel();
     } else {
-        // Se não houver sessão: Mostra Login, Esconde Painel Principal
         if (loginView) loginView.classList.remove('hidden');
         if (mainSystemView) mainSystemView.classList.add('hidden');
     }
 }
 
 async function entrar() {
-    const email = document.getElementById('email').value.trim();
-    const senha = document.getElementById('senha').value.trim();
+    if (!supabaseClient) {
+        alert("Não é possível fazer login porque o banco de dados (Supabase) não foi carregado corretamente.");
+        return;
+    }
+
+    const emailEl = document.getElementById('email');
+    const senhaEl = document.getElementById('senha');
     const erro = document.getElementById('erro');
 
     if (erro) erro.classList.add('hidden');
+    if (!emailEl || !senhaEl) return;
+
+    const email = emailEl.value.trim();
+    const senha = senhaEl.value.trim();
 
     if (!email || !senha) {
         if (erro) {
@@ -63,7 +77,7 @@ async function entrar() {
             .from('usuarios')
             .select('*')
             .eq('email', email)
-            .eq('senha_hash', senha) // Alinhado com sua coluna de validação
+            .eq('senha_hash', senha)
             .eq('ativo', true)
             .single();
 
@@ -75,10 +89,7 @@ async function entrar() {
             return;
         }
 
-        // Armazena a sessão localmente
         localStorage.setItem('mf_usuario', JSON.stringify(data));
-        
-        // Atualiza a interface e inicializa os componentes
         verificarSessao();
 
     } catch (e) {
@@ -102,10 +113,10 @@ function logout() {
 }
 
 /* ==========================================================================
-   INICIALIZAÇÃO DO PAINEL (Fluxo Unificado)
+   INICIALIZAÇÃO DO PAINEL
    ========================================================================== */
 async function inicializarPainel() {
-    console.log("Sessão ativa. Inicializando componentes do dashboard...");
+    console.log("Sessão ativa. Inicializando componentes...");
     try {
         const temaSalvo = localStorage.getItem("mf_tema") || "dark-orange";
         mudarTema(temaSalvo);
@@ -118,17 +129,15 @@ async function inicializarPainel() {
 }
 
 /* ==========================================================================
-   ROTEADOR DA SPA (SINGLE PAGE APPLICATION ROUTER)
+   ROTEADOR DA SPA
    ========================================================================== */
 function initRouter() {
     const menuLinks = document.querySelectorAll(".sidebar-menu .menu-link");
 
     menuLinks.forEach(link => {
-        // Remove ouvintes antigos para evitar duplicações indesejadas
         link.replaceWith(link.cloneNode(true));
     });
 
-    // Readquire as referências atualizadas após clonagem limpa
     const activeLinks = document.querySelectorAll(".sidebar-menu .menu-link");
     activeLinks.forEach(link => {
         link.addEventListener("click", async (e) => {
@@ -187,9 +196,10 @@ async function handleViewLoad(viewId) {
 }
 
 /* ==========================================================================
-   CARREGAMENTO DE DATA CACHES (Alinhado com o Schema Real)
+   CARREGAMENTO DE DATA CACHES
    ========================================================================== */
 async function carregarCachesAuxiliares() {
+    if (!supabaseClient) return;
     try {
         const [catRes, conRes, veiRes] = await Promise.all([
             supabaseClient.from("categorias_lancamentos").select("*"),
@@ -210,9 +220,10 @@ async function carregarCachesAuxiliares() {
 }
 
 /* ==========================================================================
-   BLOCO 1: DASHBOARD ANALÍTICO (FILTROS DINÂMICOS & KPIs)
+   BLOCO 1: DASHBOARD ANALÍTICO (KPIs & GRÁFICOS)
    ========================================================================== */
 async function loadKPIs() {
+    if (!supabaseClient) return;
     try {
         const { data: assinaturas, error: errA } = await supabaseClient.from("assinaturas").select("*");
         if (errA) console.error("Erro KPIs Assinaturas:", errA.message);
@@ -235,6 +246,7 @@ async function loadKPIs() {
 }
 
 async function loadCharts() {
+    if (!supabaseClient) return;
     try {
         const filterAnoEl = document.getElementById("dash-filter-ano");
         const filterMesEl = document.getElementById("dash-filter-mes");
@@ -245,7 +257,6 @@ async function loadCharts() {
         let query = supabaseClient.from("lancamentos").select("*");
         
         if (mes !== "todos") {
-            // Correção: Calcula dinamicamente o último dia real do mês correspondente
             const ultimoDia = new Date(parseInt(ano), parseInt(mes), 0).getDate();
             const dataInicio = `${ano}-${mes}-01`;
             const dataFim = `${ano}-${mes}-${String(ultimoDia).padStart(2, '0')}`;
@@ -337,7 +348,7 @@ function renderDoughnutChart(id, dataObj) {
 }
 
 /* ==========================================================================
-   BLOCO 2: LANÇAMENTOS CORE
+   BLOCO 2: LANÇAMENTOS
    ========================================================================== */
 function renderizarSeletoresFormLancamento() {
     const catSel = document.getElementById("lanc-categoria");
@@ -355,6 +366,7 @@ function renderizarSeletoresFormLancamento() {
 
 async function salvarLancamento(e) {
     e.preventDefault();
+    if(!supabaseClient) return;
     const payload = {
         descricao: document.getElementById("lanc-descricao").value,
         valor: parseFloat(document.getElementById("lanc-valor").value),
@@ -377,6 +389,7 @@ async function salvarLancamento(e) {
 }
 
 async function listarLancamentos() {
+    if(!supabaseClient) return;
     const { data, error } = await supabaseClient.from("lancamentos").select("*").order("data_lancamento", { ascending: false });
     if (error) {
         console.error("Erro ao listar lançamentos:", error.message);
@@ -402,6 +415,7 @@ async function listarLancamentos() {
 }
 
 async function importarDespesasDaFrota() {
+    if(!supabaseClient) return;
     const { data: despesasV, error: errFetch } = await supabaseClient.from("despesas_frota").select("*").is("lancamento_id", null);
     if (errFetch) {
         alert("Erro ao buscar despesas pendentes da frota: " + errFetch.message);
@@ -445,6 +459,7 @@ async function importarDespesasDaFrota() {
    ========================================================================== */
 async function salvarAssinatura(e){
     e.preventDefault();
+    if(!supabaseClient) return;
     const payload = {
         nome: document.getElementById("ass-nome").value,
         valor: parseFloat(document.getElementById("ass-valor").value),
@@ -464,6 +479,7 @@ async function salvarAssinatura(e){
 }
 
 async function listarAssinaturas(){
+    if(!supabaseClient) return;
     const { data, error } = await supabaseClient.from("assinaturas").select("*");
     if (error) return console.error("Erro ao listar assinaturas:", error.message);
     const tbody = document.getElementById("table-assinaturas-body");
@@ -475,10 +491,11 @@ async function listarAssinaturas(){
 }
 
 /* ==========================================================================
-   BLOCO 4: CONTAS BANCÁRIAS (contas_financeiras)
+   BLOCO 4: CONTAS BANCÁRIAS
    ========================================================================== */
 async function salvarConta(e){
     e.preventDefault();
+    if(!supabaseClient) return;
     const payload = {
         nome: document.getElementById("conta-nome").value,
         saldo_inicial: parseFloat(document.getElementById("conta-saldo").value),
@@ -496,6 +513,7 @@ async function salvarConta(e){
 }
 
 async function listarContas(){
+    if(!supabaseClient) return;
     const { data, error } = await supabaseClient.from("contas_financeiras").select("*");
     if (error) return console.error("Erro ao listar contas:", error.message);
     const tbody = document.getElementById("table-contas-body");
@@ -507,10 +525,11 @@ async function listarContas(){
 }
 
 /* ==========================================================================
-   BLOCO 5: CATEGORIAS (categorias_lancamentos)
+   BLOCO 5: CATEGORIAS
    ========================================================================== */
 async function salvarCategoria(e){
     e.preventDefault();
+    if(!supabaseClient) return;
     const payload = { 
         nome: document.getElementById("cat-nome").value, 
         tipo: document.getElementById("cat-tipo").value 
@@ -526,6 +545,7 @@ async function salvarCategoria(e){
 }
 
 async function listarCategorias(){
+    if(!supabaseClient) return;
     const { data, error } = await supabaseClient.from("categorias_lancamentos").select("*");
     if (error) return console.error("Erro ao listar categorias:", error.message);
     const tbody = document.getElementById("table-categorias-body");
@@ -541,6 +561,7 @@ async function listarCategorias(){
    ========================================================================== */
 async function salvarFornecedor(e){
     e.preventDefault();
+    if(!supabaseClient) return;
     const payload = {
         nome: document.getElementById("forn-nome").value,
         telefone: document.getElementById("forn-contato").value || null,
@@ -558,6 +579,7 @@ async function salvarFornecedor(e){
 }
 
 async function listarFornecedores(){
+    if(!supabaseClient) return;
     const { data, error } = await supabaseClient.from("fornecedores").select("*");
     if (error) return console.error("Erro ao listar fornecedores:", error.message);
     const tbody = document.getElementById("table-fornecedores-body");
@@ -573,6 +595,7 @@ async function listarFornecedores(){
    ========================================================================== */
 async function salvarVeiculo(e) {
     e.preventDefault();
+    if(!supabaseClient) return;
     const payload = {
         modelo: document.getElementById("vei-modelo").value,
         marca: document.getElementById("vei-marca").value,
@@ -590,6 +613,7 @@ async function salvarVeiculo(e) {
 }
 
 async function listarVeiculos(){
+    if(!supabaseClient) return;
     const { data, error } = await supabaseClient.from("veiculos").select("*");
     if (error) return console.error("Erro ao listar veículos:", error.message);
     const tbody = document.getElementById("table-veiculos-body");
@@ -601,7 +625,7 @@ async function listarVeiculos(){
 }
 
 /* ==========================================================================
-   BLOCO 8: DESPESAS DE VEÍCULOS (despesas_frota)
+   BLOCO 8: DESPESAS DE VEÍCULOS
    ========================================================================== */
 function renderizarSeletorVeiculosDespesa() {
     const sel = document.getElementById("desv-veiculo");
@@ -612,6 +636,7 @@ function renderizarSeletorVeiculosDespesa() {
 
 async function salvarDespesaVeiculo(e) {
     e.preventDefault();
+    if(!supabaseClient) return;
     const payload = {
         veiculo_id: document.getElementById("desv-veiculo").value,
         observacao: document.getElementById("desv-descricao").value,
@@ -630,6 +655,7 @@ async function salvarDespesaVeiculo(e) {
 }
 
 async function listarDespesasVeiculos() {
+    if(!supabaseClient) return;
     const { data, error } = await supabaseClient.from("despesas_frota").select("*");
     if (error) return console.error("Erro ao listar despesas da frota:", error.message);
     const tbody = document.getElementById("table-despesas-veiculos-body");
@@ -657,6 +683,7 @@ function mudarTema(nomeTema) {
 
 async function salvarUsuario(e) {
     e.preventDefault();
+    if(!supabaseClient) return;
     const payload = {
         nome: document.getElementById("usr-nome").value,
         email: document.getElementById("usr-email").value,
@@ -674,6 +701,7 @@ async function salvarUsuario(e) {
 }
 
 async function listarUsuarios() {
+    if(!supabaseClient) return;
     const { data, error } = await supabaseClient.from("usuarios").select("*");
     if (error) return console.error("Erro ao listar usuários:", error.message);
     const tbody = document.getElementById("table-usuarios-body");
@@ -688,6 +716,7 @@ async function listarUsuarios() {
    FUNÇÕES GLOBAIS DE ABSTRAÇÃO (HELPERS)
    ========================================================================== */
 async function deletarGeral(tabela, id, callbackRecarga) {
+    if(!supabaseClient) return;
     if(confirm("Tem certeza que deseja remover este registro permanentemente?")) {
         const { error } = await supabaseClient.from(tabela).delete().eq("id", id);
         if (error) {
@@ -705,30 +734,11 @@ function brl(v) { return new Intl.NumberFormat("pt-BR", { style: "currency", cur
 function fmtData(d) { if(!d) return "-"; const parts = d.split("-"); return `${parts[2]}/${parts[1]}/${parts[0]}`; }
 
 /* ==========================================================================
-   DISPARADOR INICIAL ÚNICO (DOM READY)
+   MAPEAMENTO ANTECIPADO AO ESCOPO GLOBAL (Garante funcionamento do HTML inline)
    ========================================================================== */
-document.addEventListener("DOMContentLoaded", () => {
-    // Configura o atalho para efetuar login pressionando "Enter"
-    document.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            const loginView = document.getElementById('loginView');
-            const loginVisivel = loginView && !loginView.classList.contains('hidden');
-            if (loginVisivel) {
-                entrar();
-            }
-        }
-    });
-
-    // Controla e valida o início da sessão de forma única
-    verificarSessao();
-});
-
-/* ==========================================================================
-   EXPOSIÇÃO AO ESCOPO GLOBAL (Mapeamento de Funções para Chamadas Inline HTML)
-   ========================================================================== */
-window.logout = logout;
-window.sair = sair;
 window.entrar = entrar;
+window.sair = sair;
+window.logout = logout;
 window.deletarGeral = deletarGeral;
 window.importarDespesasDaFrota = importarDespesasDaFrota;
 window.mudarTema = mudarTema;
@@ -742,7 +752,6 @@ window.salvarDespesaVeiculo = salvarDespesaVeiculo;
 window.salvarUsuario = salvarUsuario;
 window.loadCharts = loadCharts;
 
-// Correção: Exposição obrigatória para os botões e callbacks de remoção funcionarem inline
 window.listarLancamentos = listarLancamentos;
 window.listarAssinaturas = listarAssinaturas;
 window.listarContas = listarContas;
@@ -751,3 +760,20 @@ window.listarFornecedores = listarFornecedores;
 window.listarVeiculos = listarVeiculos;
 window.listarDespesasVeiculos = listarDespesasVeiculos;
 window.listarUsuarios = listarUsuarios;
+
+/* ==========================================================================
+   DISPARADOR INICIAL ÚNICO (DOM READY)
+   ========================================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            const loginView = document.getElementById('loginView');
+            const loginVisivel = loginView && !loginView.classList.contains('hidden');
+            if (loginVisivel) {
+                entrar();
+            }
+        }
+    });
+
+    verificarSessao();
+});
